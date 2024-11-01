@@ -1,5 +1,6 @@
 
-let constructing_portalgon = new PortalgonBuilder();
+let constructing_portalgon = null;
+let portalgon = null;
 
 function setupInput(sketch) {
     let canvas = sketch.createCanvas(wW, wH).parent('zone-one');
@@ -7,44 +8,50 @@ function setupInput(sketch) {
     let height = canvas.position().y;
     sketch.fill("black");
     sketch.textSize(40);
-    // Put setup code here
-    sketch.fill("black");
-    sketch.textSize(40);
-    button = sketch.createButton("Reset");
+
+    constructing_portalgon = new PortalgonBuilder();
+
+    let button = sketch.createButton("Reset");
     button.position(width + 20, height + 80);
     button.mousePressed(function (e) {
         e.stopPropagation();
         constructing_portalgon.resetBuild();
     });
 
-    button2 = sketch.createButton("Reset fragment");
+    let button2 = sketch.createButton("Reset fragment");
     button2.position(width + 20, height + 110);
     button2.mousePressed(function (e) {
         e.stopPropagation();
         constructing_portalgon.resetFragment();
     });
 
-    button3 = sketch.createButton("Next Fragment");
+    let button3 = sketch.createButton("Next Fragment");
     button3.position(width + 20, height + 140);
     button3.mousePressed(function (e) {
         e.stopPropagation();
         constructing_portalgon.validate_fragment();
     });
 
-    button4 = sketch.createButton("Toggle grid");
-    button4.position(width + 20, height + 170);
-    button4.mousePressed(function (e) {
-        e.stopPropagation();
-        gridToggle = !gridToggle;
-    });
-
-    button5 = sketch.createButton("Finish portalgon");
+    let button5 = sketch.createButton("Pick Portals");
     button5.position(width + 20, height + 170);
     button5.mousePressed(function (e) {
         e.stopPropagation();
         constructing_portalgon.pick_portals();
     });
 
+    let button6 = sketch.createButton("Next Portal");
+    button6.position(width + 20, height + 200);
+    button6.mousePressed(function (e) {
+        e.stopPropagation();
+        constructing_portalgon.next_portal();
+    });
+
+    let button7 = sketch.createButton("Finish");
+    button7.position(width + 20, height + 230);
+    button7.mousePressed(function (e) {
+        e.stopPropagation();
+        portalgon = constructing_portalgon.finish();
+    });
   }
 
 function drawInput(sketch) {
@@ -59,9 +66,4 @@ function drawInput(sketch) {
 function mousePressure(sketch) {
     constructing_portalgon.click(new Point(previewPoint.x, previewPoint.y));
 }
-
-//function mouseMotion(sketch) {
-//    snapMouseToGrid();
-//}
-
   

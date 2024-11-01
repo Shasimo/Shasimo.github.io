@@ -5,28 +5,13 @@ class PortalgonBuilder {
         this.vertices = [];
         this.overlappingEdges = false;
         this.pickingPortalsPhase = false;
-        this.built = false;
         this.current_portal = new Portal();
         this.portals = [];
     }
 
     click(point) {
-        if (this.pickingPortalsPhase == false) this.addVertex(point);
-        else {
-            let i = 0;
-            let index = null;
-            for (; i < this.fragments.length; i++) {
-                index = this.fragments[i].getVertexIndex(
-                    point,
-                    this.fragments[i].origin
-                );
-                if (index != null) {
-                    break;
-                }
-            }
-            if (index == null) return;
-            this.togglePortal(i, index);
-        }
+        if (this.pickingPortalsPhase === false) this.addVertex(point);
+        else this.addPortalEnd(point)
     }
 
     togglePortal(fragmentIdx, vertexIdx) {
@@ -38,7 +23,7 @@ class PortalgonBuilder {
             );
         } else {
             if (
-                this.fragments[fragmentIdx] == p1.fragment &&
+                this.fragments[fragmentIdx] === p1.fragment &&
                 p1.isMainVertexIdx(vertexIdx)
             ) {
                 if (p1.isMainVertexIdx(p1.edge[0])) p1.reverse();
@@ -51,12 +36,11 @@ class PortalgonBuilder {
                 );
             } else {
                 if (
-                    this.fragments[fragmentIdx] == p2.fragment &&
+                    this.fragments[fragmentIdx] === p2.fragment &&
                     p2.isMainVertexIdx(vertexIdx)
                 ) {
                     if (p2.isMainVertexIdx(p2.edge[0])) p2.reverse();
                     else this.current_portal.deleteEnd2();
-                    return;
                 }
             }
         }
@@ -84,6 +68,30 @@ class PortalgonBuilder {
         return false;
     }
 
+    addPortalEnd(point) {
+        if (this.current_portal === null)
+            this.current_portal = new Portal();
+
+        let i = 0;
+        let index = null;
+        for (; i < this.fragments.length; i++) {
+            index = this.fragments[i].getVertexIndex(
+                point,
+                this.fragments[i].origin
+            );
+            if (index != null) {
+                break;
+            }
+        }
+        if (index == null) return;
+        for (let j = 0; j < this.portals.length; j++) {
+            if ((this.portals[j].portalEnd1.fragment === this.fragments[i] && this.portals[j].portalEnd1.getMainVertexIdx() === index) ||
+                (this.portals[j].portalEnd2.fragment === this.fragments[i] && this.portals[j].portalEnd2.getMainVertexIdx() === index))
+                return
+        }
+        this.togglePortal(i, index);
+    }
+
     addVertex(point) {
         for (let i = 0; i < this.vertices.length; i++) {
             if (this.vertices[i].equals(point)) return;
@@ -96,23 +104,24 @@ class PortalgonBuilder {
         sketch.fill("gray");
         sketch.stroke("gray");
         for (let i = 0; i < this.fragments.length; i++) {
-            this.fragments[i].draw(sketch,this.fragments[i].origin);
+            this.fragments[i].draw(sketch, this.fragments[i].origin);
         }
         sketch.fill("black");
         sketch.stroke("black");
 
-        sketch.stroke("red");
+        for (let i = 0; i < this.portals.length; i++) {
+            this.portals[i].draw(sketch);
+        }
+
+        // weird but we have to initialize the color with the sketch
+        if (this.current_portal.color == null)
+            this.current_portal.color = sketch.color(sketch.random(255), sketch.random(255), sketch.random(255));
         this.current_portal.draw(sketch);
-        sketch.stroke("black");
 
         this.drawBuildingFragment(sketch);
     }
 
     drawBuildingFragment(sketch) {
-        if (this.built) {
-            return;
-        }
-
         sketch.textSize(smallTS);
         for (let i in this.vertices) {
             sketch.ellipse(this.vertices[i].x, this.vertices[i].y, 4, 4);
@@ -162,9 +171,7 @@ class PortalgonBuilder {
 
     resetFragment() {
         this.vertices = [];
-        this.edges = [];
         this.overlappingEdges = false;
-        this.built = false;
     }
 
     validate_fragment() {
@@ -203,7 +210,18 @@ class PortalgonBuilder {
     }
 
     pick_portals() {
-        if (this.fragments.length == 0 || this.vertices.length > 0) return;
+        if (this.fragments.length === 0 || this.vertices.length > 0) return;
         this.pickingPortalsPhase = true;
+    }
+
+    next_portal() {
+        if (this.current_portal.portalEnd1 === null || this.current_portal.portalEnd2 === null)
+            return;
+        this.portals.push(this.current_portal);
+        this.current_portal = new Portal();
+    }
+
+    finish() {
+        return new Portalgon(this.fragments, this.portals);
     }
 }

@@ -5,11 +5,11 @@ class PortalEnd {
     }
 
     isMainVertexIdx(vertexIdx) {
-        return vertexIdx == this.getMainVertexIdx();
+        return vertexIdx === this.getMainVertexIdx();
     }
 
     getMainVertexIdx() {
-        if ((this.edge[0] + 1) % this.fragment.vertices.length == this.edge[1])
+        if ((this.edge[0] + 1) % this.fragment.vertices.length === this.edge[1])
             return this.edge[0];
         return this.edge[1];
     }
@@ -35,7 +35,7 @@ class PortalEnd {
 
         // this code is to make the arrow point
         sketch.push(); //start new drawing state
-        var angle = Math.atan2(p1.y - p2.y, p1.x - p2.x); //gets the angle of the line
+        let angle = Math.atan2(p1.y - p2.y, p1.x - p2.x); //gets the angle of the line
         sketch.translate(p2.x, p2.y); //translates to the destination vertex
         sketch.rotate(angle - sketch.HALF_PI); //rotates the arrow point
         sketch.triangle(
@@ -54,6 +54,7 @@ class Portal {
     constructor() {
         this.portalEnd1 = null;
         this.portalEnd2 = null;
+        this.color = null;
     }
 
     setFirstEnd(portalEnd) {
@@ -62,7 +63,7 @@ class Portal {
     }
 
     setSecondEnd(portalEnd) {
-        if (this.portalEnd1.getLength() != portalEnd.getLength()) return false;
+        if (this.portalEnd1.getLength() !== portalEnd.getLength()) return false;
         this.portalEnd2 = portalEnd;
         return true;
     }
@@ -77,7 +78,9 @@ class Portal {
     }
 
     draw(sketch) {
+        sketch.stroke(this.color);
         if (this.portalEnd1 != null) this.portalEnd1.draw(sketch);
         if (this.portalEnd2 != null) this.portalEnd2.draw(sketch);
+        sketch.stroke("black");
     }
 }

@@ -3,7 +3,7 @@ const gridColor = "black"; // no use yet
 const previewPointColor = "black";
 const previewPointPortalColor = "red";
 let previewPoint = new Point(0, 0); // Variable to hold the current preview point
-var gridToggle = true;
+let gridToggle = true;
 
 function drawGrid(flag, sketch) {
     // Vertical

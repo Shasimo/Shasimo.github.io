@@ -1,19 +1,16 @@
 class Portalgon {
-    constructor() {
-        this.fragments = [];
-        this.portals = [];
+    constructor(fragments, portals) {
+        this.fragments = fragments;
+        this.portals = portals;
     }
 
-    draw() {}
+    draw(sketch) {
+        for (let i = 0; i < this.fragments.length; i++) {
+            this.fragments[i].draw(sketch, this.fragments[i].origin);
+        }
 
-    printEdges() {
-        console.log("Edges:");
-        this.edges.forEach((edge, index) => {
-            console.log(
-                `Edge ${index + 1}: (${edge[0][0]}, ${edge[0][1]}) -> (${edge[1][0]}, ${
-                    edge[1][1]
-                })`
-            );
-        });
+        for (let i = 0; i < this.portals.length; i++) {
+            this.portals[i].draw(sketch);
+        }
     }
 }

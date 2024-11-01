@@ -26,7 +26,7 @@ function tertiaryOrient(a, b, c) {
     let det = orient(a, b, c);
     if (det < 0) return -1;
 
-    if (det == 0) return 0;
+    if (det === 0) return 0;
 
     return 1;
 }
@@ -49,5 +49,5 @@ function isStraight(a, b, c) {
     /**
      * Return True iff a b c is straight
      */
-    return orient(a, b, c) == 0;
+    return orient(a, b, c) === 0;
 }

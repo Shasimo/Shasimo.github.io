@@ -26,7 +26,7 @@ function triangulate(polygon) {
                 // to be an ear, we need every other point that was not removed
                 // to not be in the triangle previous - j - next
                 for (let k = 0; k < unremovedPoints.length; k++) {
-                    if (k == previous || k == j || k == next) continue;
+                    if (k === previous || k === j || k === next) continue;
                     if (
                         isInTriangle(
                             unremovedPoints[previous],
@@ -39,7 +39,7 @@ function triangulate(polygon) {
                         break;
                     }
                 }
-                if (ear == true) {
+                if (ear === true) {
                     // we found an ear !
                     // we can add the found chord to the triangulation and
                     // remove the ear
@@ -56,9 +56,9 @@ function removeIthElementOfArray(arr, i) {
     /**
      * Returns an array with every elements except the one indexed i
      */
-    ret = [];
+    let ret = [];
     for (let j = 0; j < arr.length; j++) {
-        if (j != i) ret.push(arr[j]);
+        if (j !== i) ret.push(arr[j]);
     }
     return ret;
 }
@@ -67,7 +67,7 @@ function createCopy(arr) {
     /**
      * Returns a copy of the given array
      */
-    ret = [];
+    let ret = [];
     for (let p = 0; p < arr.length; p++) {
         ret.push(arr[p]);
     }

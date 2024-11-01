@@ -3,7 +3,7 @@ function toCCW(polygon) {
      * If the given polygon is defind in a CW order, manipulate it in order
      * to make it CCW
      */
-    if (polygon.length == 0) return polygon;
+    if (polygon.length === 0) return polygon;
 
     // find the point with the lowest x-coord
     let leftest = null;
@@ -65,7 +65,7 @@ function checkNoOverlappingEdges(polygon) {
             let j2 = (i2 + 1) % polygon.length;
 
             // they have to be disjoint
-            if (i == i2 || j == j2 || j2 == i || j == i2) continue;
+            if (i === i2 || j === j2 || j2 === i || j === i2) continue;
 
             // simply verify if they are colliding
             if (segmentsIntersect(polygon[i], polygon[j], polygon[i2], polygon[j2]))
