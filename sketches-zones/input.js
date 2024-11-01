@@ -11,35 +11,35 @@ function setupInput(sketch) {
     sketch.fill("black");
     sketch.textSize(40);
     button = sketch.createButton("Reset");
-    button.position(20, 80);
+    button.position(width + 20, height + 80);
     button.mousePressed(function (e) {
         e.stopPropagation();
         constructing_portalgon.resetBuild();
     });
 
     button2 = sketch.createButton("Reset fragment");
-    button2.position(20, 110);
+    button2.position(width + 20, height + 110);
     button2.mousePressed(function (e) {
         e.stopPropagation();
         constructing_portalgon.resetFragment();
     });
 
     button3 = sketch.createButton("Next Fragment");
-    button3.position(20, 140);
+    button3.position(width + 20, height + 140);
     button3.mousePressed(function (e) {
         e.stopPropagation();
         constructing_portalgon.validate_fragment();
     });
 
     button4 = sketch.createButton("Toggle grid");
-    button4.position(20, 170);
+    button4.position(width + 20, height + 170);
     button4.mousePressed(function (e) {
         e.stopPropagation();
         gridToggle = !gridToggle;
     });
 
     button5 = sketch.createButton("Finish portalgon");
-    button5.position(20, 170);
+    button5.position(width + 20, height + 170);
     button5.mousePressed(function (e) {
         e.stopPropagation();
         constructing_portalgon.pick_portals();
