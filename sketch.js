@@ -1,8 +1,13 @@
+/* eslint-disable no-undef, no-unused-vars */
 
+
+// Each block of sketch relates to one appearing canvas,
+//  link actions to their draw, setup and other functions to define behavior
 const sketch_input = (sketch) => {
-    sketch.setup = () => setup_input(sketch);
-    sketch.draw = () => draw_input(sketch);
-    sketch.mousePressed = () => add_points(sketch);
+    sketch.setup = () => setupInput(sketch);
+    sketch.draw = () => drawInput(sketch);
+    sketch.mousePressed = () => mousePressure(sketch);
+    sketch.mouseMoved = () => snapMouseToGrid(sketch);
 };
 
 
