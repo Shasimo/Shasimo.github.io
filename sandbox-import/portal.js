@@ -1,7 +1,7 @@
 class PortalEnd {
-    constructor(fragment, vertexIdx1) {
+    constructor(fragment, vertexIdx1, vertexIdx2) {
         this.fragment = fragment;
-        this.edge = [vertexIdx1, (vertexIdx1 + 1) % this.fragment.vertices.length];
+        this.edge = [vertexIdx1, vertexIdx2];
     }
 
     isMainVertexIdx(vertexIdx) {

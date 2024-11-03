@@ -19,7 +19,7 @@ class PortalgonBuilder {
         let p2 = this.current_portal.portalEnd2;
         if (p1 == null) {
             this.current_portal.setFirstEnd(
-                new PortalEnd(this.fragments[fragmentIdx], vertexIdx)
+                new PortalEnd(this.fragments[fragmentIdx], vertexIdx, (vertexIdx+1)%this.fragments[fragmentIdx].vertices.length)
             );
         } else {
             if (
@@ -32,7 +32,7 @@ class PortalgonBuilder {
             }
             if (p2 == null) {
                 this.current_portal.setSecondEnd(
-                    new PortalEnd(this.fragments[fragmentIdx], vertexIdx)
+                    new PortalEnd(this.fragments[fragmentIdx], vertexIdx,(vertexIdx+1)%this.fragments[fragmentIdx].vertices.length)
                 );
             } else {
                 if (

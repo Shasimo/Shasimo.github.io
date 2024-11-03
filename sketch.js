@@ -16,6 +16,12 @@ const sketch_zone2 = (sketch) => {
     sketch.draw = () => draw_zone2(sketch); 
 };
 
+const sketch_zone3 = (sketch) => {
+    sketch.setup = () => setup_zone3(sketch);
+    sketch.draw = () => draw_zone3(sketch);
+};
+
 
 new p5(sketch_input);
 new p5(sketch_zone2);
+new p5(sketch_zone3);
