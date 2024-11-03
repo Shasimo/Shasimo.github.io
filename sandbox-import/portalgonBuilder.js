@@ -19,7 +19,7 @@ class PortalgonBuilder {
         let p2 = this.current_portal.portalEnd2;
         if (p1 == null) {
             this.current_portal.setFirstEnd(
-                new PortalEnd(this.fragments[fragmentIdx], vertexIdx, (vertexIdx+1)%this.fragments[fragmentIdx].vertices.length)
+                new PortalEnd(this.fragments[fragmentIdx], fragmentIdx, vertexIdx, (vertexIdx+1)%this.fragments[fragmentIdx].vertices.length)
             );
         } else {
             if (
@@ -32,7 +32,7 @@ class PortalgonBuilder {
             }
             if (p2 == null) {
                 this.current_portal.setSecondEnd(
-                    new PortalEnd(this.fragments[fragmentIdx], vertexIdx,(vertexIdx+1)%this.fragments[fragmentIdx].vertices.length)
+                    new PortalEnd(this.fragments[fragmentIdx], fragmentIdx, vertexIdx,(vertexIdx+1)%this.fragments[fragmentIdx].vertices.length)
                 );
             } else {
                 if (
@@ -113,9 +113,6 @@ class PortalgonBuilder {
             this.portals[i].draw(sketch);
         }
 
-        // weird but we have to initialize the color with the sketch
-        if (this.current_portal.color == null)
-            this.current_portal.color = sketch.color(sketch.random(255), sketch.random(255), sketch.random(255));
         this.current_portal.draw(sketch);
 
         this.drawBuildingFragment(sketch);

@@ -1,6 +1,7 @@
 class PortalEnd {
-    constructor(fragment, vertexIdx1, vertexIdx2) {
+    constructor(fragment, fragmentIdx, vertexIdx1, vertexIdx2) {
         this.fragment = fragment;
+        this.fragmentIdx = fragmentIdx;
         this.edge = [vertexIdx1, vertexIdx2];
     }
 
@@ -78,6 +79,10 @@ class Portal {
     }
 
     draw(sketch) {
+        if (this.color == null){
+            this.color = sketch.color(sketch.random(255), sketch.random(255), sketch.random(255));
+        }
+
         sketch.stroke(this.color);
         if (this.portalEnd1 != null) this.portalEnd1.draw(sketch);
         if (this.portalEnd2 != null) this.portalEnd2.draw(sketch);

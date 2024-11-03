@@ -2,7 +2,6 @@ class Fragment {
     constructor(vertices) {
         this.origin = this.getOrigin(vertices);
         this.vertices = this.polygonToFragment(vertices);
-        this.portals = [];
     }
 
     draw(sketch, origin) {

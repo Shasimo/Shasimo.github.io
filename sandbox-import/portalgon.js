@@ -2,9 +2,6 @@ class Portalgon {
     constructor(fragments, portals) {
         this.fragments = fragments;
         this.portals = portals;
-        this.fragmentation = []; // collection of fragments: output of the triangulated this.fragments
-        this.portalChords = [];
-        this.triangulatePortalgon();
     }
 
     draw(sketch) {
@@ -17,27 +14,15 @@ class Portalgon {
         }
     }
 
-    drawTriangulation(sketch) {
-        for (let i = 0; i < this.fragmentation.length; i++) {
-            this.fragmentation[i].draw(sketch, this.fragmentation[i].origin);
-        }
-
-        for (let i = 0; i < this.portals.length; i++) {
-            this.portals[i].draw(sketch);
-            this.portalChords[i].draw(sketch);
-        }
-    }
-
-    triangulatePortalgon(sketch){
-        this.triangulate(sketch)
-    }
-
-    triangulate(sketch) {
+    triangulate() {
         /**
          * Given a polygon, returns the list of chords (pairs of points) that need
          * to be added in order to get a triangulation of the original polygon
          */
-        for (let f =0; f<this.fragments.length; f++) {
+        let newPortalgon= new Portalgon([], []);
+        let map = new Map();
+
+        for (let f = 0; f < this.fragments.length; f++) {
 
             let originalIndices = this.fragments[f].vertices.map((_, index) => index); // Maintain original indices;
             let unremovedPoints = createCopy(this.fragments[f].vertices);
@@ -62,30 +47,65 @@ class Portalgon {
                             // we found an ear !
                             // we can add the found chord to the triangulation and
                             // remove the ear
-                            let vertices_of_triangle = [unremovedPoints[previous], unremovedPoints[j], unremovedPoints[next]]
+                            let vertices_of_triangle = [unremovedPoints[previous].add(this.fragments[f].origin), unremovedPoints[j].add(this.fragments[f].origin), unremovedPoints[next].add(this.fragments[f].origin)]
                             let edge_indices = [originalIndices[previous], originalIndices[next]];
-                            let portal_and_triangle = this.createTriangleFragment(sketch, this.fragments[f], vertices_of_triangle, edge_indices);
-                            this.fragmentation.push(portal_and_triangle[1]);
-                            this.portalChords.push(portal_and_triangle[0]);
+                            let new_fragment_idx = newPortalgon.fragments.length;
+                            let portal_and_triangle = this.createTriangleFragment(this.fragments[f], new_fragment_idx, f, vertices_of_triangle, edge_indices);
+                            newPortalgon.fragments.push(portal_and_triangle[1]);
+                            newPortalgon.portals.push(portal_and_triangle[0]);
+
+                            if (!map.has([f, originalIndices[previous]])) {
+                                map.set([f, originalIndices[previous]].toString(), [newPortalgon.fragments.length - 1, 0]);
+                            }
+
+                            if (!map.has([f, originalIndices[j]])) {
+                                map.set([f, originalIndices[j]].toString(), [newPortalgon.fragments.length - 1, 1]);
+                            }
+
                             unremovedPoints = removeIthElementOfArray(unremovedPoints, j);
                             originalIndices.splice(j, 1); // Also update the original indices array
                         }
                     }
                 }
             }
+            // still a triangle?
         }
+
+        console.log(newPortalgon.portals);
+
+        for (let p = 0; p < this.portals.length; p++) {
+            let oldPortal = this.portals[p];
+            let portal = new Portal();
+            let portalEnd1 = new PortalEnd(
+                newPortalgon.fragments[map.get([oldPortal.portalEnd1.fragmentIdx, oldPortal.portalEnd1.edge[0]].toString())[0]],
+                map.get([oldPortal.portalEnd1.fragmentIdx, oldPortal.portalEnd1.edge[0]].toString())[0],
+                map.get([oldPortal.portalEnd1.fragmentIdx, oldPortal.portalEnd1.edge[0]].toString())[1],
+                map.get([oldPortal.portalEnd1.fragmentIdx, oldPortal.portalEnd1.edge[1]].toString())[1]
+            );
+            let portalEnd2 = new PortalEnd(
+                newPortalgon.fragments[map.get([oldPortal.portalEnd2.fragmentIdx, oldPortal.portalEnd2.edge[0]].toString())[0]],
+                map.get([oldPortal.portalEnd2.fragmentIdx, oldPortal.portalEnd2.edge[0]].toString())[0],
+                map.get([oldPortal.portalEnd2.fragmentIdx, oldPortal.portalEnd2.edge[0]].toString())[1],
+                map.get([oldPortal.portalEnd2.fragmentIdx, oldPortal.portalEnd2.edge[1]].toString())[1]
+            );
+            portal.setFirstEnd(portalEnd1);
+            portal.setSecondEnd(portalEnd2);
+            portal.color = this.portals[p].color;
+            newPortalgon.portals.push(portal);
+        }
+
+        return newPortalgon;
     }
 
-    createTriangleFragment(sketch, original_fragment, vertices_points,edge_vertices_original_indices){
+    createTriangleFragment(original_fragment, new_fragment_idx, idx, vertices_points, edge_vertices_original_indices){
 
         let triangleFragment = new Fragment(vertices_points);
         //create its portalEnd
         let chordPortal = new Portal();
-        let portalEnd1 = new PortalEnd(triangleFragment, 0, 2)
-        let portalEnd2 = new PortalEnd(original_fragment, edge_vertices_original_indices[0], edge_vertices_original_indices[1])
+        let portalEnd1 = new PortalEnd(triangleFragment, new_fragment_idx, 0, 2)
+        let portalEnd2 = new PortalEnd(original_fragment, idx, edge_vertices_original_indices[0], edge_vertices_original_indices[1])
         chordPortal.setFirstEnd(portalEnd1); // portal put on triangle ear (on first and last vertex)
         chordPortal.setSecondEnd(portalEnd2); // portal put on remaining uncut piece
-        //chordPortal.color = sketch.color(sketch.random(255), sketch.random(255), sketch.random(255)); // how is color handled to be drawn ?
         return [chordPortal,triangleFragment];
     }
 
