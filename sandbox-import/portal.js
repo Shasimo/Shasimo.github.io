@@ -1,35 +1,34 @@
 class PortalEnd {
-    constructor(fragment, fragmentIdx, vertexIdx1, vertexIdx2) {
-        this.fragment = fragment;
+    constructor(vertex1, vertex2, fragmentIdx, vertexIdx1, vertexIdx2) {
+        this.mainVertexIdx = vertexIdx1;
+        this.vertex1 = vertex1;
+        this.vertex2 = vertex2;
         this.fragmentIdx = fragmentIdx;
+        this.isReversed = false;
         this.edge = [vertexIdx1, vertexIdx2];
     }
 
     isMainVertexIdx(vertexIdx) {
-        return vertexIdx === this.getMainVertexIdx();
-    }
-
-    getMainVertexIdx() {
-        if ((this.edge[0] + 1) % this.fragment.vertices.length === this.edge[1])
-            return this.edge[0];
-        return this.edge[1];
+        return vertexIdx === this.mainVertexIdx;
     }
 
     getLength() {
-        let p1 = this.fragment.vertices[this.edge[0]];
-        let p2 = this.fragment.vertices[this.edge[1]];
-        return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
+        return Math.sqrt((this.vertex1.x - this.vertex2.x) ** 2 + (this.vertex1.y - this.vertex2.y) ** 2);
     }
 
     reverse() {
         let temp = this.edge[0];
+        let temp2 = this.vertex1;
         this.edge[0] = this.edge[1];
+        this.vertex1 = this.vertex2;
         this.edge[1] = temp;
+        this.vertex2 = temp2;
+        this.isReversed = !this.isReversed;
     }
 
-    draw(sketch) {
-        let p1 = this.fragment.vertices[this.edge[0]].add(this.fragment.origin);
-        let p2 = this.fragment.vertices[this.edge[1]].add(this.fragment.origin);
+    draw(sketch, fragments) {
+        let p1 = this.vertex1.add(fragments[this.fragmentIdx].origin);
+        let p2 = this.vertex2.add(fragments[this.fragmentIdx].origin);
 
         // https://stackoverflow.com/a/44892083
         sketch.line(p1.x, p1.y, p2.x, p2.y); //draw a line beetween the vertices
@@ -48,6 +47,10 @@ class PortalEnd {
             -ARROW_HEAD_SIZE / 2
         ); //draws the arrow point as a triangle
         sketch.pop();
+    }
+
+    copy() {
+        return new PortalEnd(this.vertex1.copy(), this.vertex2.copy(), this.fragmentIdx, [this.edge[0], this.edge[1]]);
     }
 }
 
@@ -78,14 +81,22 @@ class Portal {
         this.portalEnd2 = null;
     }
 
-    draw(sketch) {
+    draw(sketch, fragments) {
         if (this.color == null){
             this.color = sketch.color(sketch.random(255), sketch.random(255), sketch.random(255));
         }
 
         sketch.stroke(this.color);
-        if (this.portalEnd1 != null) this.portalEnd1.draw(sketch);
-        if (this.portalEnd2 != null) this.portalEnd2.draw(sketch);
+        if (this.portalEnd1 != null) this.portalEnd1.draw(sketch, fragments);
+        if (this.portalEnd2 != null) this.portalEnd2.draw(sketch, fragments);
         sketch.stroke("black");
+    }
+
+    copy() {
+        let ret = new Portal();
+        ret.setFirstEnd(this.portalEnd1.copy());
+        ret.setSecondEnd(this.portalEnd2.copy());
+        ret.color = this.color;
+        return ret;
     }
 }

@@ -12,7 +12,7 @@ function draw_zone3(sketch) {
     sketch.text("Zone3", 30, 50);
 
     if (portalgon !== null && triangulatedPortalgon === null) {
-        triangulatedPortalgon = portalgon.triangulate();
+        triangulatedPortalgon = triangulate(portalgon);
     }
     if (triangulatedPortalgon !== null) {
         triangulatedPortalgon.draw(sketch);

@@ -17,13 +17,15 @@ class PortalgonBuilder {
     togglePortal(fragmentIdx, vertexIdx) {
         let p1 = this.current_portal.portalEnd1;
         let p2 = this.current_portal.portalEnd2;
+
         if (p1 == null) {
             this.current_portal.setFirstEnd(
-                new PortalEnd(this.fragments[fragmentIdx], fragmentIdx, vertexIdx, (vertexIdx+1)%this.fragments[fragmentIdx].vertices.length)
+                new PortalEnd(this.fragments[fragmentIdx].vertices[vertexIdx], this.fragments[fragmentIdx].vertices[(vertexIdx+1)%this.fragments[fragmentIdx].vertices.length],
+                    fragmentIdx, vertexIdx, (vertexIdx+1)%this.fragments[fragmentIdx].vertices.length)
             );
         } else {
             if (
-                this.fragments[fragmentIdx] === p1.fragment &&
+                fragmentIdx === p1.fragmentIdx &&
                 p1.isMainVertexIdx(vertexIdx)
             ) {
                 if (p1.isMainVertexIdx(p1.edge[0])) p1.reverse();
@@ -32,11 +34,12 @@ class PortalgonBuilder {
             }
             if (p2 == null) {
                 this.current_portal.setSecondEnd(
-                    new PortalEnd(this.fragments[fragmentIdx], fragmentIdx, vertexIdx,(vertexIdx+1)%this.fragments[fragmentIdx].vertices.length)
+                    new PortalEnd(this.fragments[fragmentIdx].vertices[vertexIdx], this.fragments[fragmentIdx].vertices[(vertexIdx+1)%this.fragments[fragmentIdx].vertices.length],
+                        fragmentIdx, vertexIdx,(vertexIdx+1)%this.fragments[fragmentIdx].vertices.length)
                 );
             } else {
                 if (
-                    this.fragments[fragmentIdx] === p2.fragment &&
+                    fragmentIdx === p2.fragmentIdx &&
                     p2.isMainVertexIdx(vertexIdx)
                 ) {
                     if (p2.isMainVertexIdx(p2.edge[0])) p2.reverse();
@@ -85,8 +88,8 @@ class PortalgonBuilder {
         }
         if (index == null) return;
         for (let j = 0; j < this.portals.length; j++) {
-            if ((this.portals[j].portalEnd1.fragment === this.fragments[i] && this.portals[j].portalEnd1.getMainVertexIdx() === index) ||
-                (this.portals[j].portalEnd2.fragment === this.fragments[i] && this.portals[j].portalEnd2.getMainVertexIdx() === index))
+            if ((this.portals[j].portalEnd1.fragmentIdx === i && this.portals[j].portalEnd1.mainVertexIdx === index) ||
+                (this.portals[j].portalEnd2.fragmentIdx === i && this.portals[j].portalEnd2.mainVertexIdx === index))
                 return
         }
         this.togglePortal(i, index);
@@ -110,10 +113,10 @@ class PortalgonBuilder {
         sketch.stroke("black");
 
         for (let i = 0; i < this.portals.length; i++) {
-            this.portals[i].draw(sketch);
+            this.portals[i].draw(sketch, this.fragments);
         }
 
-        this.current_portal.draw(sketch);
+        this.current_portal.draw(sketch, this.fragments);
 
         this.drawBuildingFragment(sketch);
     }
