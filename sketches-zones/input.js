@@ -56,7 +56,7 @@ function setupInput(sketch) {
 
 function drawInput(sketch) {
     sketch.background(200);
-    sketch.text("ひさしぶりだな。。。ぜははははは", 30, 50);
+    sketch.text("Draw some Portalgon", 30, 50);
     drawGrid(gridToggle, sketch);
     constructing_portalgon.draw(sketch);
     constructing_portalgon.drawPreviewPoint(previewPoint, sketch);

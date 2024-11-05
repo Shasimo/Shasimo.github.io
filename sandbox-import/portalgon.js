@@ -10,7 +10,7 @@ class Portalgon {
         }
 
         for (let i = 0; i < this.portals.length; i++) {
-            this.portals[i].draw(sketch);
+            this.portals[i].draw(sketch, this.fragments);
         }
     }
 }

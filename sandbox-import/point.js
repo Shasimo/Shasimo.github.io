@@ -28,4 +28,8 @@ class Point {
     log() {
         console.log("x: ", this.x, ", y: ", this.y);
     }
+
+    copy() {
+        return new Point(this.x, this.y);
+    }
 }
