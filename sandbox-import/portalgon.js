@@ -6,7 +6,7 @@ class Portalgon {
 
     draw(sketch) {
         for (let i = 0; i < this.fragments.length; i++) {
-            this.fragments[i].draw(sketch, this.fragments[i].origin);
+            this.fragments[i].draw(sketch, this.fragments[i].origin, i);
         }
 
         for (let i = 0; i < this.portals.length; i++) {

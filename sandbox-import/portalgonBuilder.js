@@ -127,7 +127,7 @@ class PortalgonBuilder {
             sketch.ellipse(this.vertices[i].x, this.vertices[i].y, 4, 4);
             sketch.text(i, this.vertices[i].x, this.vertices[i].y);
         }
-        sketch.textSize(oldTS);
+        sketch.textSize(normalTS);
 
         for (let i = 0; i < this.vertices.length; i++) {
             let j = (i + 1) % this.vertices.length;
@@ -167,6 +167,8 @@ class PortalgonBuilder {
         this.pickingPortalsPhase = false;
         this.portals = [];
         this.current_portal = new Portal();
+        triangulatedPortalgon = null;
+        portalgon = null;
     }
 
     resetFragment() {

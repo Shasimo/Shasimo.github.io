@@ -4,14 +4,19 @@ class Fragment {
         this.vertices = this.polygonToFragment(vertices);
     }
 
-    draw(sketch, origin) {
+    draw(sketch, origin, fragmentId=null) {
         sketch.textSize(smallTS);
         for (let i = 0; i < this.vertices.length; i++) {
             let current = this.vertices[i].add(origin);
             sketch.ellipse(current.x, current.y, 4, 4);
             sketch.text(i, current.x, current.y);
         }
-        sketch.textSize(oldTS);
+
+        if (fragmentId != null) {
+            let center = this.getCenter();
+            sketch.text(fragmentId, center.x + origin.x, center.y + origin.y);
+        }
+        sketch.textSize(normalTS);
 
         for (let i = 0; i < this.vertices.length; i++) {
             let j = (i + 1) % this.vertices.length;
@@ -36,6 +41,16 @@ class Fragment {
             if (input_vertices[i].y < minY) minY = input_vertices[i].y;
         }
         return new Point(minX, minY);
+    }
+
+    getCenter() {
+        let resX = 0;
+        let resY = 0;
+        for (let i = 0; i < this.vertices.length; i++) {
+            resX += this.vertices[i].x;
+            resY += this.vertices[i].y;
+        }
+        return new Point(resX / this.vertices.length, resY / this.vertices.length);
     }
 
     polygonToFragment(input_vertices) {
