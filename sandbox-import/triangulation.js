@@ -43,6 +43,12 @@ function triangulate(portalgon) {
         for (let p = 0; p < portalMap.get(f).length; p++) {
             let currentEnd = portalMap.get(f)[p];
             currentEnd.fragmentIdx = newPortalgon.fragments.length;
+            if (currentEnd.mainVertexIdx > 0)
+                currentEnd.mainVertexIdx -= 1;
+            if (currentEnd.edge[0] > 0)
+                currentEnd.edge[0] -= 1;
+            if (currentEnd.edge[1] > 0)
+                currentEnd.edge[1] -= 1;
         }
 
         newPortalgon.fragments.push(fragment);
@@ -111,14 +117,17 @@ function updatePortals(portals, newFragment, fragment, newFragmentIdx, fragmentI
                 currentPortalEnd.isReversed = true;
             }
 
-            removeIthElementOfArray(portals.get(fragmentIdx), p);
+            portals.set(fragmentIdx, removeIthElementOfArray(portals.get(fragmentIdx), p));
             continue;
         }
 
+        // TODO something wrong here
         if (currentPortalEnd.mainVertexIdx > current) {
             currentPortalEnd.mainVertexIdx -= 1;
-            currentPortalEnd.edge[0] -= 1;
-            currentPortalEnd.edge[1] -= 1;
+            if (currentPortalEnd.edge[0] > 0)
+                currentPortalEnd.edge[0] -= 1;
+            if (currentPortalEnd.edge[1] > 0)
+                currentPortalEnd.edge[1] -= 1;
         }
     }
 }
