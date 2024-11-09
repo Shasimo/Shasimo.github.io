@@ -1,21 +1,21 @@
 // demonstration zone
-
+let triangulatedPortalgon = null;
 function setup_zone2(sketch) {
     sketch.createCanvas(wW, wH).parent('zone-two');
     sketch.fill("black");
-    sketch.textSize(40);
+    sketch.textSize(normalTS);
     sketch.strokeWeight(2);
 }
 
 function draw_zone2(sketch) {
     sketch.background(200);
-    sketch.text("Hello Sacha & Mathieu", 30, 50);
+    sketch.text("Zone3", 30, 50);
 
-    if (portalgon !== null) {
-        portalgon.draw(sketch);
+    if (portalgon !== null && triangulatedPortalgon === null) {
+        triangulatedPortalgon = triangulate(portalgon);
+        console.log(triangulatedPortalgon);
     }
-
-    // Note : useful for further usage of algorithms on our portalgon
-    // uncomment and you'll end up duplicating the first input zone input
-    //drawInput(sketch);
+    if (triangulatedPortalgon !== null) {
+        triangulatedPortalgon.draw(sketch);
+    }
 }

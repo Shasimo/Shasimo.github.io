@@ -29,7 +29,23 @@ class Point {
         console.log("x: ", this.x, ", y: ", this.y);
     }
 
+    dot(other) {
+        return this.x * other.x + this.y * other.y;
+    }
+
+    norm() {
+        return Math.sqrt(this.x * this.x + this.y * this.y);
+    }
+
     copy() {
         return new Point(this.x, this.y);
+    }
+
+    rotate(angle) {
+        let oldX = this.x;
+        let oldY = this.y;
+        this.x = oldX * Math.cos(angle) - oldY * Math.sin(angle);
+        this.y = oldX * Math.sin(angle) + oldY * Math.cos(angle);
+        return this;
     }
 }

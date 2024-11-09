@@ -5,9 +5,11 @@ function triangulate(portalgon) {
      */
     let newPortalgon= new Portalgon([], []);
     let portalMap = new Map();
+    let newPortals = [];
 
     for (let i = 0; i < portalgon.portals.length; i++) {
         let current = portalgon.portals[i].copy();
+
         pushPortalEndToMap(portalMap, current.portalEnd1);
         pushPortalEndToMap(portalMap, current.portalEnd2);
         newPortalgon.portals.push(current);
@@ -33,31 +35,37 @@ function triangulate(portalgon) {
                             ear = false;break;}
                     }
                     if (ear === true) {
-                        removeEar(newPortalgon, portalMap, fragment, f, previous, j, next);
+                        removeEar(newPortalgon, portalMap, fragment, f, previous, j, next, newPortals);
                         break;
                     }
                 }
             }
         }
 
+
         for (let p = 0; p < portalMap.get(f).length; p++) {
-            let currentEnd = portalMap.get(f)[p];
-            currentEnd.fragmentIdx = newPortalgon.fragments.length;
-            if (currentEnd.mainVertexIdx > 0)
-                currentEnd.mainVertexIdx -= 1;
-            if (currentEnd.edge[0] > 0)
-                currentEnd.edge[0] -= 1;
-            if (currentEnd.edge[1] > 0)
-                currentEnd.edge[1] -= 1;
+            portalMap.get(f)[p].fragmentIdx = newPortalgon.fragments.length;
         }
 
         newPortalgon.fragments.push(fragment);
     }
 
+    for (let p = 0; p < newPortals.length; p++) {
+        let currentEnd = newPortals[p];
+
+        if (currentEnd.edge[0] !== 3 && currentEnd.edge[1] !== 3) continue;
+        if (currentEnd.mainVertexIdx > 0)
+            currentEnd.mainVertexIdx -= 1;
+        if (currentEnd.edge[0] > 0)
+            currentEnd.edge[0] -= 1;
+        if (currentEnd.edge[1] > 0)
+            currentEnd.edge[1] -= 1;
+    }
+
     return newPortalgon;
 }
 
-function removeEar(newPortalgon, portals, fragment, fragmentIdx, previous, current, next) {
+function removeEar(newPortalgon, portals, fragment, fragmentIdx, previous, current, next, newPortals) {
     let newFragment = new Fragment([
         fragment.vertices[previous].copy(),
         fragment.vertices[current].copy(),
@@ -88,6 +96,8 @@ function removeEar(newPortalgon, portals, fragment, fragmentIdx, previous, curre
     updatePortals(portals, newFragment, fragment, newFragmentIdx, fragmentIdx, previous, current, next);
 
     pushPortalEndToMap(portals, portalEnd2);
+    newPortals.push(portalEnd1);
+    newPortals.push(portalEnd2);
 
     fragment.vertices = removeIthElementOfArray(fragment.vertices, current);
 }
@@ -121,7 +131,6 @@ function updatePortals(portals, newFragment, fragment, newFragmentIdx, fragmentI
             continue;
         }
 
-        // TODO something wrong here
         if (currentPortalEnd.mainVertexIdx > current) {
             currentPortalEnd.mainVertexIdx -= 1;
             if (currentPortalEnd.edge[0] > 0)

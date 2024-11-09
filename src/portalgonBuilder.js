@@ -219,6 +219,7 @@ class PortalgonBuilder {
     next_portal() {
         if (this.current_portal.portalEnd1 === null || this.current_portal.portalEnd2 === null)
             return;
+
         this.portals.push(this.current_portal);
         this.current_portal = new Portal();
     }

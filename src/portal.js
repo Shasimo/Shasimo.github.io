@@ -50,7 +50,12 @@ class PortalEnd {
     }
 
     copy() {
-        return new PortalEnd(this.vertex1.copy(), this.vertex2.copy(), this.fragmentIdx, [this.edge[0], this.edge[1]]);
+        let ret = new PortalEnd(this.vertex1.copy(), this.vertex2.copy(), this.fragmentIdx, this.edge[0], this.edge[1]);
+        if (ret.mainVertexIdx !== this.mainVertexIdx) {
+            ret.isReversed = true;
+            ret.mainVertexIdx = this.mainVertexIdx;
+        }
+        return ret;
     }
 }
 

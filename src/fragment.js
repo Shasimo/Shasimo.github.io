@@ -57,12 +57,7 @@ class Fragment {
         // input_vertices must already be CCW !
         let ret = [];
         for (let i = 0; i < input_vertices.length; i++) {
-            ret.push(
-                new Point(
-                    input_vertices[i].x - this.origin.x,
-                    input_vertices[i].y - this.origin.y
-                )
-            );
+            ret.push(input_vertices[i].sub(this.origin));
         }
         return ret;
     }
@@ -71,5 +66,12 @@ class Fragment {
         let ret = new Fragment([...this.vertices]);
         ret.origin = this.origin;
         return ret;
+    }
+
+    rotate(angle) {
+        let vert = this.vertices.map(x => x.rotate(angle));
+        this.origin = this.getOrigin(vert);
+        this.vertices = this.polygonToFragment(vert);
+        this.origin = new Point(Math.max(10, this.origin.x), Math.max(10, this.origin.y));
     }
 }
