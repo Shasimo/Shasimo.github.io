@@ -68,10 +68,21 @@ class Fragment {
         return ret;
     }
 
-    rotate(angle) {
-        let vert = this.vertices.map(x => x.rotate(angle));
+    rotate(angle, origin) {
+        let vert = this.vertices.map(x => x.rotate(angle, origin));
         this.origin = this.getOrigin(vert);
         this.vertices = this.polygonToFragment(vert);
         this.origin = new Point(Math.max(10, this.origin.x), Math.max(10, this.origin.y));
+    }
+
+    flip(edgeIdx1, edgeIdx2) {
+        let mainVec = this.vertices[edgeIdx2].sub(this.vertices[edgeIdx1]);
+
+        for (let i = 0; i < this.vertices.length; i++) {
+            if (i === edgeIdx1 || i === edgeIdx2) continue;
+
+            let angle = Math.abs(getAngleBetween(mainVec, this.vertices[i].sub(this.vertices[edgeIdx1])));
+            this.vertices[i].rotate(2 * angle, this.vertices[edgeIdx1]);
+        }
     }
 }

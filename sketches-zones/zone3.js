@@ -1,4 +1,5 @@
 // demonstration zone
+let portalTest = null;
 
 function setup_zone3(sketch) {
     sketch.createCanvas(wW, wH).parent('zone-three');
@@ -8,7 +9,9 @@ function setup_zone3(sketch) {
 }
 
 function draw_zone3(sketch) {
-    if (triangulatedPortalgon !== null) {
-        drawFragmentsConnectedByPortal(sketch, triangulatedPortalgon, triangulatedPortalgon.portals[0]);
+    if (triangulatedPortalgon !== null && portalTest === null) {
+        portalTest = getFragmentsConnectedByPortal(triangulatedPortalgon, triangulatedPortalgon.portals[0]);
     }
+    if (portalTest !== null)
+        portalTest.draw(sketch);
 }

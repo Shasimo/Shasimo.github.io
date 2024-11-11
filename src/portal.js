@@ -12,6 +12,12 @@ class PortalEnd {
         return vertexIdx === this.mainVertexIdx;
     }
 
+    getOrderedEdge() {
+        if (this.isReversed)
+            return [this.edge[1], this.edge[0]];
+        return this.edge;
+    }
+
     getLength() {
         return Math.sqrt((this.vertex1.x - this.vertex2.x) ** 2 + (this.vertex1.y - this.vertex2.y) ** 2);
     }

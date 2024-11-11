@@ -41,11 +41,15 @@ class Point {
         return new Point(this.x, this.y);
     }
 
-    rotate(angle) {
+    rotate(angle, origin) {
+        this.x -= origin.x;
+        this.y -= origin.y;
         let oldX = this.x;
         let oldY = this.y;
-        this.x = oldX * Math.cos(angle) - oldY * Math.sin(angle);
-        this.y = oldX * Math.sin(angle) + oldY * Math.cos(angle);
+        this.x = Math.round(oldX * Math.cos(angle) - oldY * Math.sin(angle));
+        this.y = Math.round(oldX * Math.sin(angle) + oldY * Math.cos(angle));
+        this.x += origin.x;
+        this.y += origin.y;
         return this;
     }
 }

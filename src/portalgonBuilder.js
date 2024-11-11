@@ -169,6 +169,7 @@ class PortalgonBuilder {
         this.current_portal = new Portal();
         triangulatedPortalgon = null;
         portalgon = null;
+        portalTest = null;
     }
 
     resetFragment() {
