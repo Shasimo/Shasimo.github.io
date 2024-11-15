@@ -2,6 +2,7 @@
 let constructing_portalgon = null;
 let portalgon = null;
 
+let buttons = []; // used for dynamic positioning on window resize
 function setupInput(sketch) {
     let canvas = sketch.createCanvas(wW, wH).parent('zone-one');
     let width = canvas.position().x;
@@ -10,49 +11,39 @@ function setupInput(sketch) {
     sketch.textSize(40);
 
     constructing_portalgon = new PortalgonBuilder();
-
-    let button = sketch.createButton("Reset");
-    button.position(width + 20, height + 80);
-    button.mousePressed(function (e) {
+    buttons.push(createCustomButton(sketch, "Reset", width, height +80, (e) => {
         e.stopPropagation();
         constructing_portalgon.resetBuild();
-    });
-
-    let button2 = sketch.createButton("Reset fragment");
-    button2.position(width + 20, height + 110);
-    button2.mousePressed(function (e) {
+    }));
+    buttons.push(createCustomButton(sketch, "Reset fragment", width, height +110, (e) => {
         e.stopPropagation();
         constructing_portalgon.resetFragment();
-    });
-
-    let button3 = sketch.createButton("Next Fragment");
-    button3.position(width + 20, height + 140);
-    button3.mousePressed(function (e) {
+    }));
+    buttons.push(createCustomButton(sketch, "Next Fragment", width,height +140, (e) => {
         e.stopPropagation();
         constructing_portalgon.validate_fragment();
-    });
-
-    let button5 = sketch.createButton("Pick Portals");
-    button5.position(width + 20, height + 170);
-    button5.mousePressed(function (e) {
+    }));
+    buttons.push(createCustomButton(sketch,"Pick Portals", width,height +170, (e) => {
         e.stopPropagation();
         constructing_portalgon.pick_portals();
-    });
-
-    let button6 = sketch.createButton("Next Portal");
-    button6.position(width + 20, height + 200);
-    button6.mousePressed(function (e) {
+    }));
+    buttons.push(createCustomButton(sketch, "Next Portal", width, height +200, (e) => {
         e.stopPropagation();
         constructing_portalgon.next_portal();
-    });
-
-    let button7 = sketch.createButton("Finish");
-    button7.position(width + 20, height + 230);
-    button7.mousePressed(function (e) {
+    }));
+    buttons.push(createCustomButton(sketch, "Finish", width,height +230, (e) => {
         e.stopPropagation();
         portalgon = constructing_portalgon.finish();
-    });
-  }
+    }));
+
+}
+
+function createCustomButton(sketch, label, offsetX, offsetY, callback) {
+    let button = sketch.createButton(label);
+    button.position(offsetX+ 20, offsetY); // Initial positioning
+    button.mousePressed(callback);
+    return { button, offsetY }; // Store the button and its offset
+}
 
 function drawInput(sketch) {
     sketch.background(200);
@@ -66,4 +57,13 @@ function drawInput(sketch) {
 function mousePressure(sketch) {
     constructing_portalgon.click(new Point(previewPoint.x, previewPoint.y));
 }
-  
+
+//broken
+function handleCanvasResize(sketch) {
+    sketch.resizeCanvas(wW, wH);
+    buttons.forEach(({ button, offsetY }) => {
+        console.log(button);
+        console.log(sketch.canvas.width)
+        button.position(sketch.position().x + 20, offsetY);
+    });
+}
