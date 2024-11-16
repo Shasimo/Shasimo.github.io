@@ -8,6 +8,7 @@ const sketch_input = (sketch) => {
     sketch.draw = () => drawInput(sketch);
     sketch.mousePressed = () => mousePressure(sketch);
     sketch.mouseMoved = () => snapMouseToGrid(sketch);
+    sketch.windowResized = () => handleCanvasResize(sketch);
 };
 
 

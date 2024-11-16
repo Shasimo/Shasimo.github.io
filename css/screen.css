@@ -1,24 +1,63 @@
-html,
+:root{
+  --canvas-width: 650px;
+  --text-width: calc(var(--canvas-width) - 5px);
+}
+
 body {
   margin: 0;
   padding: 0;
-}
-header { 
-  margin: 0 auto;  
-  text-align: center; 
-  margin-top: 25px;
-  margin-bottom: 50px;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
 }
 
-section {
+header, footer {
+  width: 100%;
+  max-width: 1200px;
+  text-align: center;
+  padding: 10px;
+  background-color: #f4f4f4;
+}
+
+
+canvas {
+  border: 2px solid #ccc; /* Add a subtle border */
+  background-color: #f9f9f9; /* Light background for contrast */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Drop shadow for depth */
+  display: block; /* Prevent inline styling issues */
+  margin: 20px auto; /* Center canvas with spacing */
+}
+
+main {
+  flex: 1;
+  width: var(--text-width);  /* Match canvas width */
+  padding: 20px;
+  box-sizing: border-box;  /* Ensures padding doesn't overflow the width */
+}
+
+/* Updated paragraph style */
+p {
+  line-height: 1.6;
   text-align: justify;
-  margin-left:300px;  
-  margin-right:300px;  
-  margin-bottom:25px;
+  margin-left: 2.5%; /* Adds breathing room from the left */
+  margin-right: 2.5%; /* Adds breathing room from the right */
+  max-width: var(--text-width); /* text remains as wide as the canvases for uniformity */
 }
 
-div {
-  margin-left:300px;  
-  margin-right:300px;  
-  margin-bottom:25px;
+/* Responsive design */
+@media (max-width: 600px) {
+  main {
+    width: 95%;
+    padding: 10px;
+  }
+
+  p {
+    font-size: 14px;
+    margin-left: 5%; /* Reduce margins for smaller screens */
+    margin-right: 5%;
+    max-width: 100%; /* Allow full width on very small devices */
+  }
 }
