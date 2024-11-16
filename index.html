@@ -46,16 +46,20 @@
           <li></li>
         </ul>
     </section>
+
     <section id="Introduction">
       <h2>Introduction</h2>
         <p>
           What are Portalgons?
           First let us define some basic notions of Portalgons.
-          Portalgons are essentially polyhedral structures which are flattened on the 2D plane by a series of fragments where any edge can be part of a so called portal.
+          Portalgons are essentially a collection of simple polygons or any shapes having an intrinsic polyhedral metric and are represented as flattened on the 2D plane by a series of their constituting fragments where any edge of such decomposition can be part of a so called portal.
           A portal is a couple of oriented edges that define a communicating pair of fragments.
-          A fragment is any cut in your initial polygon representation which subtracted,
-          creates portals along the edges your cut created, where any portal shares one side on the freshly cut piece, and your cut polygon.
-          We here limit ourselves to 1-happy-portalgons
+          A fragment is a polygon constituting your portalgon in which any cut once subtracted is a new fragment,
+          creates portals along the edges your cut created, where any portal shares one side on the freshly cut piece, and your cut base polygon.
+          meaning you can seemlessly walk through portal edges to end up in another fragment of your portalgon.
+          We here limit ourselves to 1-happy portalgons whose fragments are simple polygons.
+          The happiness describes the number of times we allow ourselves to cross a portal.
+          We describe later on why such limitation is necessary.
         </p>
       <p>
         \[
@@ -66,21 +70,40 @@
 
     <section id="Inputs">
       <h2>Build your own</h2>
-      <div id="zone-one"> </div>
       <p>
+        Before going into specifics, we invite to design your own portalgon using the tool here under.
+        This way, the created portalgon will become the subject of all further modifications and explanations.
+      </p>
+    </section>
+    <div id="zone-one"> </div>
+
+    <section id="Applications">
+      <h2>Applications</h2>
+        <p>
+
+        </p>
+    </section>
+
+    <div id="zone-two" ></div>
+    <div id="zone-three"> </div>
+
+
+    <section id="Authors">
+      <h2>Authors</h2>
+      <p>
+      Authors details to add here
 
       </p>
     </section>
 
-    <section>
-      <h2>Introduction</h2>
-      <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Aliquam nibh. Mauris ac mauris sed pede pellentesque fermentum. Maecenas adipiscing ante non diam sodales hendrerit.
-        Ut velit mauris, egestas sed, gravida nec, ornare ut, mi. Aenean ut orci vel massa suscipit pulvinar. Nulla sollicitudin. Fusce varius, ligula non tempus aliquam, nunc turpis ullamcorper nibh, in tempus sapien eros vitae ligula. Pellentesque rhoncus nunc et augue. Integer id felis. Curabitur aliquet pellentesque diam. Integer quis metus vitae elit lobortis egestas. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Morbi vel erat non mauris convallis vehicula. Nulla et sapien. Integer tortor tellus, aliquam faucibus, convallis id, congue eu, quam. Mauris ullamcorper felis vitae erat. Proin feugiat, augue non elementum posuere, metus purus iaculis lectus, et tristique ligula justo vitae magna.
-
-        Aliquam convallis sollicitudin purus. Praesent aliquam, enim at fermentum mollis, ligula massa adipiscing nisl, ac euismod nibh nisl eu lectus. Fusce vulputate sem at sapien. Vivamus leo. Aliquam euismod libero eu enim. Nulla nec felis sed leo placerat imperdiet. Aenean suscipit nulla in justo. Suspendisse cursus rutrum augue. Nulla tincidunt tincidunt mi. Curabitur iaculis, lorem vel rhoncus faucibus, felis magna fermentum augue, et ultricies lacus lorem varius purus. Curabitur eu amet.</p>
+    <section id="References">
+      <h2>References</h2>
+      <ul>
+        <li>[1] M.Löffler, T.Ophelders, F.Staals, R.I.Silveira, "Shortest Paths in Portalgons", arXiv:2303.08937v1 [cs.CG] 15 Mar 2023</li>
+        <li>[2] Wolfgang Muzler, "Shortest Paths in Polygons", Frei Universität Berlin, 22 april 2021</li>
+        <li>[3] JOSEPH S. B. MITCHELLt, DAVID M. MOUNT AND CHRISTOS H. PAPADIMITRIOU, "THE DISCRETE GEODESIC PROBLEM", Vol. 16, No. 4, Society for Industrial and Applied Mathematics, pp. 647-668, Aug. 1987</li>
+      </ul>
     </section>
-    <div id="zone-two" ></div>
-    <div id="zone-three"> </div>
 
   </body>
 </html>

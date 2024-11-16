@@ -139,7 +139,7 @@ class PortalgonBuilder {
             );
         }
 
-        if (this.overlappingEdges) sketch.text("Invalid fragment !", 300, 100);
+        if (this.overlappingEdges) sketch.text("Invalid fragment !", 150, 50);
     }
 
     cleanVertices() {

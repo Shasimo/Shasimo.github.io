@@ -1,4 +1,4 @@
-:root{
+:root {
   --canvas-width: 650px;
   --text-width: calc(var(--canvas-width) - 5px);
 }
@@ -11,16 +11,25 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+  line-height: 1.6; /* Improved readability */
 }
-
+h2, h3, h4, h5, h6 {
+  text-decoration: underline;
+  text-decoration-color: #d3b9b9;
+}
 header, footer {
-  width: 100%;
+  width: var(--canvas-width);
   max-width: 1200px;
   text-align: center;
   padding: 10px;
   background-color: #f4f4f4;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for separation */
 }
 
+#Authors, #References {
+  font-size: 0.9em; /* Slightly smaller font size */
+  line-height: 1.5; /* Adjusted line height for readability */
+}
 
 canvas {
   border: 2px solid #ccc; /* Add a subtle border */
@@ -33,31 +42,68 @@ canvas {
 
 main {
   flex: 1;
-  width: var(--text-width);  /* Match canvas width */
+  width: var(--text-width); /* Match canvas width */
   padding: 20px;
-  box-sizing: border-box;  /* Ensures padding doesn't overflow the width */
+  box-sizing: border-box; /* Ensures padding doesn't overflow the width */
 }
 
-/* Updated paragraph style */
+section {
+  width: 100%;
+  max-width: var(--canvas-width);
+  margin: 20px auto; /* Center sections and add spacing */
+  padding: 10px;
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+h1 {
+  margin: 10px 0;
+}
+
+h2 {
+  margin: 10px 0;
+  text-align: left; /* Align section titles to the left */
+}
+
+ul {
+  margin: 10px 20px; /* Add space around lists */
+  padding: 0;
+  list-style-position: inside; /* Keep list items aligned with text */
+}
+
+li {
+  margin-bottom: 8px; /* Add spacing between list items */
+}
+
 p {
-  line-height: 1.6;
+  margin: 10px 0;
   text-align: justify;
-  margin-left: 2.5%; /* Adds breathing room from the left */
-  margin-right: 2.5%; /* Adds breathing room from the right */
-  max-width: var(--text-width); /* text remains as wide as the canvases for uniformity */
+  max-width: var(--text-width);
+  word-wrap: break-word; /* Prevent text from overflowing */
 }
 
-/* Responsive design */
+#zone-one, #zone-two, #zone-three {
+  width: var(--canvas-width);
+  margin: 20px auto;
+}
+
 @media (max-width: 600px) {
+  :root {
+    --canvas-width: 95%; /* Reduce width for smaller screens */
+    --text-width: calc(var(--canvas-width) - 10px);
+  }
+
   main {
-    width: 95%;
+    width: 100%;
     padding: 10px;
   }
 
-  p {
-    font-size: 14px;
-    margin-left: 5%; /* Reduce margins for smaller screens */
-    margin-right: 5%;
-    max-width: 100%; /* Allow full width on very small devices */
+  p, ul, section {
+    width: 100%;
+    padding: 0 5%; /* Add padding inside sections for small screens */
+  }
+
+  h2 {
+    font-size: 1.2em; /* Adjust heading sizes for smaller screens */
+    text-align: left; /* Maintain left alignment for smaller screens */
   }
 }
