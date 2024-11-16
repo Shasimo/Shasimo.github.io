@@ -3,6 +3,7 @@ class Point {
         this.x = x;
         this.y = y;
 
+        /*
         // simulates bracket overload and keeps accessing '.x/y' available
         return new Proxy(this, {
             get(target, prop) {
@@ -10,7 +11,7 @@ class Point {
                 if (prop === "1") return target.y;
                 return target[prop]; // Allow normal property access
             },
-        });
+        });*/
     }
 
     equals(other) {

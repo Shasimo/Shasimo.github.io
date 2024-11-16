@@ -1,31 +1,69 @@
-function getFragmentsConnectedByPortal(portalgon, portal) {
-    let fragment1 = portalgon.fragments[portal.portalEnd1.fragmentIdx].copy();
+function generatePortalgonFromPath(portalgon, originFragmentIdx, path) {
+    console.log(portalgon.copy());
+    let originFragment = portalgon.fragments[originFragmentIdx].copy();
+    let originFragmentIdxs = [originFragmentIdx];
+    originFragment.fragmentIdx = 0;
+
+    let embeddedPortalgon = new Portalgon([originFragment],  []);
+
+    for (let i = 0; i < path.length; i++) {
+        let currentPortal = path[i].copy();
+        if (currentPortal.portalEnd2.fragmentIdx === originFragmentIdxs[i])
+            currentPortal.swapEnds();
+        else if (currentPortal.portalEnd1.fragmentIdx !== originFragmentIdxs[i])
+            throw new Error("Invalid path");
+
+        let newFragmentPortal = getFragmentsConnectedByPortal(portalgon, embeddedPortalgon.fragments[i], currentPortal);
+        embeddedPortalgon.fragments.push(newFragmentPortal[0]);
+        embeddedPortalgon.portals.push(newFragmentPortal[1]);
+        originFragmentIdxs.push(currentPortal.portalEnd2.fragmentIdx);
+    }
+
+    console.log(embeddedPortalgon);
+
+    return embeddedPortalgon;
+}
+
+function getFragmentsConnectedByPortal(portalgon, fragment1, portal) {
+    /**
+     * portalgon is the source portalgon
+     * fragment1 is the fragment (already placed)
+     * portal is the portal that must be linked: portal.portalEnd1 is in fragment1
+     *      and portal.portalEnd2 is in framgent2
+     *
+     * returns the
+     */
+
     let fragment2 = portalgon.fragments[portal.portalEnd2.fragmentIdx].copy();
 
     let portalCopy = portal.copy();
-
-    let portalgonToDraw = new Portalgon([fragment1, fragment2], [portalCopy]);
+    portalCopy.portalEnd1.fragmentIdx = fragment1.fragmentIdx;
+    portalCopy.portalEnd1.vertex1 = fragment1.vertices[portalCopy.portalEnd1.edge[0]];
+    portalCopy.portalEnd1.vertex2 = fragment1.vertices[portalCopy.portalEnd1.edge[1]];
 
     let v1 = portalCopy.portalEnd1.vertex2.sub(portalCopy.portalEnd1.vertex1);
     let v2 = portalCopy.portalEnd2.vertex2.sub(portalCopy.portalEnd2.vertex1);
 
     let angle = getAngleBetween(v1, v2);
 
+    console.log(angle, v1, v2);
+
     fragment2.rotate(-angle, fragment2.getCenter());
 
-    portalCopy.portalEnd1.fragmentIdx = 0;
-    portalCopy.portalEnd2.fragmentIdx = 1;
-    portalCopy.portalEnd1.vertex1 = fragment1.vertices[portalCopy.portalEnd1.edge[0]];
+    portalCopy.portalEnd2.fragmentIdx = fragment1.fragmentIdx + 1;
     portalCopy.portalEnd2.vertex1 = fragment2.vertices[portalCopy.portalEnd2.edge[0]];
-    portalCopy.portalEnd1.vertex2 = fragment1.vertices[portalCopy.portalEnd1.edge[1]];
     portalCopy.portalEnd2.vertex2 = fragment2.vertices[portalCopy.portalEnd2.edge[1]];
 
+    fragment2.fragmentIdx = fragment1.fragmentIdx + 1;
     fragment2.origin = portalCopy.portalEnd1.vertex1.sub(portalCopy.portalEnd2.vertex1).add(fragment1.origin);
 
-    if (isOverlapping(fragment1, fragment2, portalCopy.portalEnd1.getOrderedEdge(), portalCopy.portalEnd2.getOrderedEdge()))
+    if (isOverlapping(fragment1, fragment2, portalCopy.portalEnd1.getOrderedEdge(), portalCopy.portalEnd2.getOrderedEdge())) {
+        console.log("overlap");
         fragment2.flip(portalCopy.portalEnd2.edge[0], portalCopy.portalEnd2.edge[1]);
+    }
 
-    return portalgonToDraw;
+
+    return [fragment2, portalCopy];
 }
 
 function isOverlapping(fragment1, fragment2, exceptEdgeF1, exceptEdgeF2) {
