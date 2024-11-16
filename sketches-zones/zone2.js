@@ -9,11 +9,10 @@ function setup_zone2(sketch) {
 
 function draw_zone2(sketch) {
     sketch.background(200);
-    sketch.text("Zone3", 30, 50);
+    sketch.text("Triangulation", 30, 50);
 
     if (portalgon !== null && triangulatedPortalgon === null) {
         triangulatedPortalgon = triangulate(portalgon);
-        console.log(triangulatedPortalgon);
     }
     if (triangulatedPortalgon !== null) {
         triangulatedPortalgon.draw(sketch);

@@ -42,25 +42,60 @@ function triangulate(portalgon) {
             }
         }
 
-
-        for (let p = 0; p < portalMap.get(f).length; p++) {
-            portalMap.get(f)[p].fragmentIdx = newPortalgon.fragments.length;
-        }
-
         newPortalgon.fragments.push(fragment);
+        if (portalMap.has(f)) {
+            console.log(portalMap.get(f));
+            for (let p = 0; p < portalMap.get(f).length; p++) {
+                let currentPortalEnd = portalMap.get(f)[p];
+                currentPortalEnd.fragmentIdx = newPortalgon.fragments.length - 1;
+
+                for (let i = 0; i < newPortals.length; i++) {
+                    if (newPortals[i].portalEnd2 === currentPortalEnd) {
+                        let twinFragment = newPortalgon.fragments[newPortals[i].portalEnd1.fragmentIdx];
+                        for (let x = 0; x < fragment.vertices.length; x++) {
+                            if (newPortals[i].portalEnd1.vertex2.add(twinFragment.origin).equals(fragment.vertices[x].add(fragment.origin))) {
+                                // x is the destination dot
+                                currentPortalEnd.edge[0] = x;
+                                currentPortalEnd.edge[1] = (x + 1) % 3;
+                                currentPortalEnd.mainVertexIdx = x;
+                                currentPortalEnd.reverse();
+                                currentPortalEnd.isReversed = true;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+
+                currentPortalEnd.vertex1 = fragment.vertices[currentPortalEnd.edge[0]];
+                currentPortalEnd.vertex2 = fragment.vertices[currentPortalEnd.edge[1]];
+            }
+        }
     }
 
+    /*
     for (let p = 0; p < newPortals.length; p++) {
-        let currentEnd = newPortals[p];
+        let end2 = newPortals[p].portalEnd2;
+        //newPortals[p].portalEnd2.vertex1 = newPortalgon.fragments[end2.fragmentIdx].vertices[end2.edge[0]];
+        //newPortals[p].portalEnd2.vertex2 = newPortalgon.fragments[end2.fragmentIdx].vertices[end2.edge[1]];
 
-        if (currentEnd.edge[0] !== 3 && currentEnd.edge[1] !== 3) continue;
-        if (currentEnd.mainVertexIdx > 0)
-            currentEnd.mainVertexIdx -= 1;
-        if (currentEnd.edge[0] > 0)
-            currentEnd.edge[0] -= 1;
-        if (currentEnd.edge[1] > 0)
-            currentEnd.edge[1] -= 1;
-    }
+        if (newPortals[p].portalEnd2 === null) {
+            if (end2.isReversed) {
+                newPortals[p].setSecondEnd(new PortalEnd(
+                    newPortalgon.fragments[end2.fragmentIdx].vertices[end2.edge[1]],
+                    newPortalgon.fragments[end2.fragmentIdx].vertices[end2.edge[0]],
+                    end2.fragmentIdx, end2.edge[1], end2.edge[0]));
+                newPortals[p].portalEnd2.reverse();
+            } else {
+                newPortals[p].setSecondEnd(new PortalEnd(
+                    newPortalgon.fragments[end2.fragmentIdx].vertices[end2.edge[0]],
+                    newPortalgon.fragments[end2.fragmentIdx].vertices[end2.edge[1]],
+                    end2.fragmentIdx, end2.edge[0], end2.edge[1]));
+            }
+        }
+    }*/
+
+    console.log(newPortalgon);
 
     return newPortalgon;
 }
@@ -94,10 +129,18 @@ function removeEar(newPortalgon, portals, fragment, fragmentIdx, previous, curre
     newPortalgon.portals.push(newPortal);
 
     updatePortals(portals, newFragment, fragment, newFragmentIdx, fragmentIdx, previous, current, next);
-
     pushPortalEndToMap(portals, portalEnd2);
-    newPortals.push(portalEnd1);
-    newPortals.push(portalEnd2);
+    portalEnd2.fragmentIdx += 1;
+    if (portalEnd2.mainVertexIdx > current) {
+        portalEnd2.mainVertexIdx -= 1;
+        if (portalEnd2.edge[0] > 0)
+            portalEnd2.edge[0] -= 1;
+
+        if (portalEnd2.edge[1] > 0)
+            portalEnd2.edge[1] -= 1;
+    }
+
+    newPortals.push(newPortal);
 
     fragment.vertices = removeIthElementOfArray(fragment.vertices, current);
 }
@@ -110,36 +153,38 @@ function pushPortalEndToMap(portalMap, portalEnd) {
 }
 
 function updatePortals(portals, newFragment, fragment, newFragmentIdx, fragmentIdx, previous, current, next) {
-    if (!portals.has(fragmentIdx)) return;
+    if (portals.has(fragmentIdx)) {
+        for (let p = portals.get(fragmentIdx).length - 1; p >= 0; p--) {
+            let currentPortalEnd = portals.get(fragmentIdx)[p];
 
-    for (let p = portals.get(fragmentIdx).length - 1; p >= 0; p--) {
-        let currentPortalEnd = portals.get(fragmentIdx)[p];
+            if (currentPortalEnd.mainVertexIdx === previous || currentPortalEnd.mainVertexIdx === current) {
+                currentPortalEnd.mainVertexIdx = previous === currentPortalEnd.mainVertexIdx ? 0 : 1;
+                currentPortalEnd.vertex1 = newFragment.vertices[currentPortalEnd.mainVertexIdx];
+                currentPortalEnd.vertex2 = newFragment.vertices[currentPortalEnd.mainVertexIdx + 1];
+                currentPortalEnd.fragmentIdx = newFragmentIdx;
+                currentPortalEnd.edge = [currentPortalEnd.mainVertexIdx, currentPortalEnd.mainVertexIdx + 1];
 
-        if (currentPortalEnd.mainVertexIdx === previous || currentPortalEnd.mainVertexIdx === current) {
-            currentPortalEnd.mainVertexIdx = previous === currentPortalEnd.mainVertexIdx ? 0 : 1;
-            currentPortalEnd.vertex1 = newFragment.vertices[currentPortalEnd.mainVertexIdx];
-            currentPortalEnd.vertex2 = newFragment.vertices[currentPortalEnd.mainVertexIdx + 1];
-            currentPortalEnd.fragmentIdx = newFragmentIdx;
-            currentPortalEnd.edge = [currentPortalEnd.mainVertexIdx, currentPortalEnd.mainVertexIdx + 1];
+                if (currentPortalEnd.isReversed) {
+                    currentPortalEnd.reverse();
+                    currentPortalEnd.isReversed = true;
+                }
 
-            if (currentPortalEnd.isReversed) {
-                currentPortalEnd.reverse();
-                currentPortalEnd.isReversed = true;
+                portals.set(fragmentIdx, removeIthElementOfArray(portals.get(fragmentIdx), p));
+            } else {
+                currentPortalEnd.fragmentIdx += 1;
+                if (currentPortalEnd.mainVertexIdx > current) {
+                    currentPortalEnd.mainVertexIdx -= 1;
+                    if (currentPortalEnd.edge[0] > 0)
+                        currentPortalEnd.edge[0] -= 1;
+
+                    if (currentPortalEnd.edge[1] > 0)
+                        currentPortalEnd.edge[1] -= 1;
+                }
             }
-
-            portals.set(fragmentIdx, removeIthElementOfArray(portals.get(fragmentIdx), p));
-            continue;
-        }
-
-        if (currentPortalEnd.mainVertexIdx > current) {
-            currentPortalEnd.mainVertexIdx -= 1;
-            if (currentPortalEnd.edge[0] > 0)
-                currentPortalEnd.edge[0] -= 1;
-            if (currentPortalEnd.edge[1] > 0)
-                currentPortalEnd.edge[1] -= 1;
         }
     }
 }
+
 
 function removeIthElementOfArray(arr, i) {
     /**

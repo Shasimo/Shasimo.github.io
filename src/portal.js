@@ -92,6 +92,12 @@ class Portal {
         this.portalEnd2 = null;
     }
 
+    swapEnds() {
+        let temp = this.portalEnd1;
+        this.portalEnd1 = this.portalEnd2;
+        this.portalEnd2 = temp;
+    }
+
     draw(sketch, fragments) {
         if (this.color == null){
             this.color = sketch.color(sketch.random(255), sketch.random(255), sketch.random(255));
