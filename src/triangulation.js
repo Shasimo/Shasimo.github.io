@@ -44,7 +44,6 @@ function triangulate(portalgon) {
 
         newPortalgon.fragments.push(fragment);
         if (portalMap.has(f)) {
-            console.log(portalMap.get(f));
             for (let p = 0; p < portalMap.get(f).length; p++) {
                 let currentPortalEnd = portalMap.get(f)[p];
                 currentPortalEnd.fragmentIdx = newPortalgon.fragments.length - 1;
@@ -72,30 +71,6 @@ function triangulate(portalgon) {
             }
         }
     }
-
-    /*
-    for (let p = 0; p < newPortals.length; p++) {
-        let end2 = newPortals[p].portalEnd2;
-        //newPortals[p].portalEnd2.vertex1 = newPortalgon.fragments[end2.fragmentIdx].vertices[end2.edge[0]];
-        //newPortals[p].portalEnd2.vertex2 = newPortalgon.fragments[end2.fragmentIdx].vertices[end2.edge[1]];
-
-        if (newPortals[p].portalEnd2 === null) {
-            if (end2.isReversed) {
-                newPortals[p].setSecondEnd(new PortalEnd(
-                    newPortalgon.fragments[end2.fragmentIdx].vertices[end2.edge[1]],
-                    newPortalgon.fragments[end2.fragmentIdx].vertices[end2.edge[0]],
-                    end2.fragmentIdx, end2.edge[1], end2.edge[0]));
-                newPortals[p].portalEnd2.reverse();
-            } else {
-                newPortals[p].setSecondEnd(new PortalEnd(
-                    newPortalgon.fragments[end2.fragmentIdx].vertices[end2.edge[0]],
-                    newPortalgon.fragments[end2.fragmentIdx].vertices[end2.edge[1]],
-                    end2.fragmentIdx, end2.edge[0], end2.edge[1]));
-            }
-        }
-    }*/
-
-    console.log(newPortalgon);
 
     return newPortalgon;
 }

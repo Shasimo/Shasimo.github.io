@@ -55,7 +55,10 @@ function drawInput(sketch) {
 
 
 function mousePressure(sketch) {
-    constructing_portalgon.click(new Point(previewPoint.x, previewPoint.y));
+    if (portalgon === null)
+        constructing_portalgon.click(new Point(previewPoint.x, previewPoint.y));
+    else
+        clickZone2();
 }
 
 //broken
