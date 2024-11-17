@@ -17,7 +17,7 @@ function generateEmbeddingFromSignature(portalgon, signature, destFragmentIdx, d
         let nbFragments = embeddedPortalgon.fragments.length - 1;
         if (signature.path[i] instanceof Portal) {
             let currentPortal = signature.path[i].copy();
-            if (i === lastPortalIdxInPath) {
+            if (i === lastPortalIdxInPath && destination !== null) {
                 portalgon.fragments[currentPortal.portalEnd2.fragmentIdx].attachedVertex = destination;
             }
             let newFragmentPortal = getFragmentsConnectedByPortal(portalgon, embeddedPortalgon.fragments[nbFragments], currentPortal);
@@ -31,10 +31,11 @@ function generateEmbeddingFromSignature(portalgon, signature, destFragmentIdx, d
             );
     }
 
-    if (lastOriginFragmentIdx !== destFragmentIdx)
+    if (destFragmentIdx !== null && lastOriginFragmentIdx !== destFragmentIdx)
         throw new Error(`Path does not end in fragment ${destFragmentIdx}.`);
 
-    points.push(embeddedPortalgon.fragments[embeddedPortalgon.fragments.length - 1].attachedVertex.add(embeddedPortalgon.fragments[embeddedPortalgon.fragments.length - 1].origin));
+    if (destination !== null)
+        points.push(embeddedPortalgon.fragments[embeddedPortalgon.fragments.length - 1].attachedVertex.add(embeddedPortalgon.fragments[embeddedPortalgon.fragments.length - 1].origin));
 
     return [embeddedPortalgon, points];
 }

@@ -38,11 +38,12 @@ class Signature {
         let ret = generateEmbeddingFromSignature(
             portalgon,
             newSig,
-            this.path[this.getLastPortalIdxInPath()].portalEnd2.fragmentIdx,
-            new Point(0, 0)
+            null,
+            null
         );
         let embedded = ret[0];
-        let visibilityInterval = this.computeVisibilityInterval(embedded);
+        let v = ret[1][ret[1].length - 1];
+        let visibilityInterval = newSig.computeVisibilityInterval(embedded, edge, v);
         return new DistanceFunction(
             this,
             visibilityInterval,
@@ -58,8 +59,58 @@ class Signature {
         return -1;
     }
 
-    computeVisibilityInterval(embeddedPortalgon, edge) {
+    getLastVertexIdxInPath() {
+        for (let i = this.path.length - 1; i >= 0; i--)
+            if (!(this.path[i] instanceof Portal))
+                return i;
+        return -1;
+    }
 
+    computeVisibilityInterval(embeddedPortalgon, edge, v) {
+        let interval = [0, 1];
+        let edgeFragment = embeddedPortalgon.fragments[edge.portalEnd1.fragmentIdx];
+        let edgeVert1 = edgeFragment.vertices[edge.portalEnd1.edge[0]].add(edgeFragment.origin);
+        let edgeVert2 = edgeFragment.vertices[edge.portalEnd1.edge[1]].add(edgeFragment.origin)
+        let edgeLine = toLine(edgeVert1, edgeVert2);
+        console.log(edgeVert1, edgeVert2);
+
+        for (let i = this.getLastVertexIdxInPath() + 1; i < this.path.length - 1; i++) {
+            let currentPortal = this.path[i];       // path[i] is a portal
+            let currentFragment = embeddedPortalgon.fragments[currentPortal.portalEnd1.fragmentIdx];
+            let portalVertices = [
+                currentFragment.vertices[currentPortal.portalEnd1.edge[0]].add(currentFragment.origin),
+                currentFragment.vertices[currentPortal.portalEnd1.edge[1]].add(currentFragment.origin)
+            ];
+
+            for (let j = 0; j < portalVertices.length; j++) {
+                let l1 = toLine(v, portalVertices[j]);
+
+                // vertical edge
+                if (edgeLine === null) {
+
+                }
+
+                // if the two lines are parallel, to restriction on the interval because either we see
+                // the whole edge or we see none of it: the interval is not touched
+                if (l1[0] === edgeLine[0]) continue;
+
+                let intersectionX = (edgeLine[1] - l1[1]) / (l1[0] - edgeLine[0]);
+                let alpha = 0;
+
+                if (edgeVert1.x !== edgeVert2.x) {
+                    alpha = (intersectionX - edgeVert1.x) / (edgeVert2.x - edgeVert1.x);
+                } else {
+                    let intersectionY = l1[0] * intersectionX + l1[1];
+                    alpha = (intersectionY - edgeVert1.y) / (edgeVert2.y - edgeVert1.y);
+                }
+
+                if (0 > alpha || 1 < alpha) continue;
+                // vision limited !
+                console.log(alpha);
+            }
+        }
+
+        return interval;
     }
 
     copy() {

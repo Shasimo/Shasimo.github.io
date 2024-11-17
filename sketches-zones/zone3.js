@@ -14,19 +14,28 @@ function draw_zone3(sketch) {
     sketch.text("Embedding of random path", 30, 50);
 
     if (triangulatedPortalgon !== null && portalTest === null && source !== null && destination !== null) {
+        /*
         let res = generateEmbeddingFromSignature(
             triangulatedPortalgon,
             new Signature(
                 source[1],
                 source[0].copy(),
-                [triangulatedPortalgon.portals[0], 0]
+                [triangulatedPortalgon.portals[0]]
             ),
             destination[1],
             destination[0].copy()
         );
         console.log(res);
-        portalTest = res[0];
-        portalTestPoints = res[1];
+        */
+
+        let sig = new Signature(
+            source[1],
+            source[0].copy(),
+            [triangulatedPortalgon.portals[0]]
+        );
+        //portalTest = res[0];
+        sig.toDistanceFunction(triangulatedPortalgon, triangulatedPortalgon.portals[1]);
+        //portalTestPoints = res[1];
     }
     if (portalTest !== null && portalTestPoints !== null) {
         portalTest.draw(sketch);

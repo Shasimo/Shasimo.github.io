@@ -93,6 +93,15 @@ function computeEuclideanDistance(p1, p2) {
     return Math.sqrt(((p2.x - p1.x)**2+(p2.y-p1.y)**2));
 }
 
+function toLine(p1, p2) {
+    if (p1.x === p2.x) return null;
+    let m = (p1.y - p2.y) / (p1.x - p2.x);
+    // y = mx + p
+    // p1.y = m * p1.x + p => p = p1.y - m * p1.x
+    let p = p1.y - m * p1.x;
+    return [m, p];
+}
+
 function binarySearch(a, b, f) {
     /**
      * Binary searches the index i in [a,b] such that

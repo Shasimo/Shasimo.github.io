@@ -26,10 +26,6 @@ class Point {
         return new Point(this.x - other.x, this.y - other.y);
     }
 
-    log() {
-        console.log("x: ", this.x, ", y: ", this.y);
-    }
-
     dot(other) {
         return this.x * other.x + this.y * other.y;
     }
