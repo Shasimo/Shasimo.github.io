@@ -71,4 +71,6 @@ function clickZone2() {
 function reset() {
     source = null;
     destination = null;
+    portalTest = null;
+    portalTestPoints = null;
 }

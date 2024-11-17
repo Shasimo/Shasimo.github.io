@@ -1,54 +1,37 @@
-function generateEmbeddingFromPath(portalgon, originFragmentIdx, destFragmentIdx, path, sourcePoint, endPoint) {
+function generateEmbeddingFromSignature(portalgon, signature, destFragmentIdx, destination) {
     /**
      * Generates an embedding of a certain path
      *
      * portalgon: the origin portalgon where the path is set
-     * originFragmentIdx: the idx of the first fragment of the path
-     * path: a list of Portals and ints:
-     *          if int: the index of the vertex that the path goes through in the last fragment up to that point
-     *          if Portal: the next portal that the path takes
-     * sourcePoint: the point the path starts from (relative to the origin of the first fragment
-     * endPoint: the point the path ends in (relative to the origin of the last fragment)
      */
-    let originFragment = portalgon.fragments[originFragmentIdx].copy();
-    let originFragmentIdxs = [originFragmentIdx];
-    let points = [sourcePoint.add(portalgon.fragments[originFragmentIdx].origin)];
+    let originFragment = portalgon.fragments[signature.originFragmentIdx].copy();
+    let points = [signature.source.add(portalgon.fragments[signature.originFragmentIdx].origin)];
     originFragment.fragmentIdx = 0;
 
     let embeddedPortalgon = new Portalgon([originFragment],  []);
 
-    let lastPortalIdxInPath = 0;
+    let lastPortalIdxInPath = signature.getLastPortalIdxInPath();
+    let lastOriginFragmentIdx = 0;
 
-    for (let i = 0; i < path.length; i++)
-        if (path[i] instanceof Portal)
-            lastPortalIdxInPath = i;
-
-    for (let i = 0; i < path.length; i++) {
+    for (let i = 0; i < signature.path.length; i++) {
         let nbFragments = embeddedPortalgon.fragments.length - 1;
-        if (path[i] instanceof Portal) {
-            let currentPortal = path[i].copy();
-            if (currentPortal.portalEnd2.fragmentIdx === originFragmentIdxs[nbFragments])
-                currentPortal.swapEnds();
-            else if (currentPortal.portalEnd1.fragmentIdx !== originFragmentIdxs[nbFragments]) {
-                console.log(originFragmentIdxs, currentPortal, nbFragments);
-                throw new Error("Invalid path");
-            }
-
+        if (signature.path[i] instanceof Portal) {
+            let currentPortal = signature.path[i].copy();
             if (i === lastPortalIdxInPath) {
-                portalgon.fragments[currentPortal.portalEnd2.fragmentIdx].attachedVertex = endPoint;
+                portalgon.fragments[currentPortal.portalEnd2.fragmentIdx].attachedVertex = destination;
             }
             let newFragmentPortal = getFragmentsConnectedByPortal(portalgon, embeddedPortalgon.fragments[nbFragments], currentPortal);
             embeddedPortalgon.fragments.push(newFragmentPortal[0]);
             embeddedPortalgon.portals.push(newFragmentPortal[1]);
-            originFragmentIdxs.push(currentPortal.portalEnd2.fragmentIdx);
+            lastOriginFragmentIdx = currentPortal.portalEnd2.fragmentIdx;
         } else
             points.push(
-                embeddedPortalgon.fragments[nbFragments].vertices[path[i]].add(
+                embeddedPortalgon.fragments[nbFragments].vertices[signature.path[i]].add(
                     embeddedPortalgon.fragments[nbFragments].origin)
             );
     }
 
-    if (originFragmentIdxs[originFragmentIdxs.length - 1] !== destFragmentIdx)
+    if (lastOriginFragmentIdx !== destFragmentIdx)
         throw new Error(`Path does not end in fragment ${destFragmentIdx}.`);
 
     points.push(embeddedPortalgon.fragments[embeddedPortalgon.fragments.length - 1].attachedVertex.add(embeddedPortalgon.fragments[embeddedPortalgon.fragments.length - 1].origin));

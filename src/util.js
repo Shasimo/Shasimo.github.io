@@ -81,3 +81,35 @@ function checkNoOverlappingEdges(polygon) {
     // no pair of edges is colliding
     return true;
 }
+
+function isInInterval(interval, p){
+    return (max(interval[0].x, interval[1].x) > p.x) &&
+        (min(interval[0].x, interval[1].x) < p.x) &&
+        (max(interval[0].y, interval[1].y) > p.y) &&
+        (min(interval[0].y, interval[1].y) < p.y)
+}
+
+function computeEuclideanDistance(p1, p2) {
+    return Math.sqrt(((p2.x - p1.x)**2+(p2.y-p1.y)**2));
+}
+
+function binarySearch(a, b, f) {
+    /**
+     * Binary searches the index i in [a,b] such that
+     * f(i) is true and f(i+1) is false
+     * f must be of the form true true ... true false ... false false on [a,b]
+     */
+    let low = a;
+    let high = b;
+    do {
+        let current = Math.floor((low + high) / 2);
+        // found the index !
+        if (f(current) && (current === high || !f(current + 1))) return current;
+        // current is true: new minimum
+        if (f(current)) {
+            low = current + 1;
+        } else high = current - 1;
+    } while (low <= high);
+    // f(x) is false for all x \in [a, b]
+    return a;
+}
