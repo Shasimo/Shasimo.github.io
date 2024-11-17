@@ -42,6 +42,14 @@ class Point {
         return new Point(this.x, this.y);
     }
 
+    draw(sketch, color, size) {
+        sketch.fill(color);
+        sketch.stroke(color);
+        sketch.ellipse(this.x, this.y, size, size);
+        sketch.fill("black");
+        sketch.stroke("black");
+    }
+
     rotate(angle, origin) {
         this.x -= origin.x;
         this.y -= origin.y;

@@ -2,13 +2,14 @@ class Fragment {
     constructor(vertices) {
         this.origin = this.getOrigin(vertices);
         this.vertices = this.polygonToFragment(vertices);
+        this.attachedVertex = null;
     }
 
     draw(sketch, origin, fragmentId=null) {
         sketch.textSize(smallTS);
         for (let i = 0; i < this.vertices.length; i++) {
             let current = this.vertices[i].add(origin);
-            sketch.ellipse(current.x, current.y, 4, 4);
+            current.draw(sketch, "black", 4);
             sketch.text(i, current.x, current.y);
         }
 
@@ -64,14 +65,20 @@ class Fragment {
 
     copy() {
         let ret = new Fragment([...this.vertices]);
-        ret.origin = this.origin;
+        ret.origin = this.origin.copy();
+        if (this.attachedVertex !== null)
+            ret.attachedVertex = this.attachedVertex.copy();
         return ret;
     }
 
     rotate(angle, origin) {
         let vert = this.vertices.map(x => x.rotate(angle, origin));
+        if (this.attachedVertex !== null)
+            this.attachedVertex.rotate(angle, origin);
         this.origin = this.getOrigin(vert);
         this.vertices = this.polygonToFragment(vert);
+        if (this.attachedVertex !== null)
+            this.attachedVertex = this.attachedVertex.sub(this.origin);
         this.origin = new Point(Math.max(10, this.origin.x), Math.max(10, this.origin.y));
     }
 
@@ -83,6 +90,11 @@ class Fragment {
 
             let angle = Math.abs(getAngleBetween(mainVec, this.vertices[i].sub(this.vertices[edgeIdx1])));
             this.vertices[i].rotate(2 * angle, this.vertices[edgeIdx1]);
+        }
+
+        if (this.attachedVertex !== null) {
+            let angle = Math.abs(getAngleBetween(mainVec, this.attachedVertex.sub(this.vertices[edgeIdx1])));
+            this.attachedVertex.rotate(2 * angle, this.vertices[edgeIdx1]);
         }
     }
 }

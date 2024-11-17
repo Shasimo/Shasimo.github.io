@@ -1,27 +1,59 @@
-function generatePortalgonFromPath(portalgon, originFragmentIdx, path) {
-    console.log(portalgon.copy());
+function generateEmbeddingFromPath(portalgon, originFragmentIdx, destFragmentIdx, path, sourcePoint, endPoint) {
+    /**
+     * Generates an embedding of a certain path
+     *
+     * portalgon: the origin portalgon where the path is set
+     * originFragmentIdx: the idx of the first fragment of the path
+     * path: a list of Portals and ints:
+     *          if int: the index of the vertex that the path goes through in the last fragment up to that point
+     *          if Portal: the next portal that the path takes
+     * sourcePoint: the point the path starts from (relative to the origin of the first fragment
+     * endPoint: the point the path ends in (relative to the origin of the last fragment)
+     */
     let originFragment = portalgon.fragments[originFragmentIdx].copy();
     let originFragmentIdxs = [originFragmentIdx];
+    let points = [sourcePoint.add(portalgon.fragments[originFragmentIdx].origin)];
     originFragment.fragmentIdx = 0;
 
     let embeddedPortalgon = new Portalgon([originFragment],  []);
 
-    for (let i = 0; i < path.length; i++) {
-        let currentPortal = path[i].copy();
-        if (currentPortal.portalEnd2.fragmentIdx === originFragmentIdxs[i])
-            currentPortal.swapEnds();
-        else if (currentPortal.portalEnd1.fragmentIdx !== originFragmentIdxs[i])
-            throw new Error("Invalid path");
+    let lastPortalIdxInPath = 0;
 
-        let newFragmentPortal = getFragmentsConnectedByPortal(portalgon, embeddedPortalgon.fragments[i], currentPortal);
-        embeddedPortalgon.fragments.push(newFragmentPortal[0]);
-        embeddedPortalgon.portals.push(newFragmentPortal[1]);
-        originFragmentIdxs.push(currentPortal.portalEnd2.fragmentIdx);
+    for (let i = 0; i < path.length; i++)
+        if (path[i] instanceof Portal)
+            lastPortalIdxInPath = i;
+
+    for (let i = 0; i < path.length; i++) {
+        let nbFragments = embeddedPortalgon.fragments.length - 1;
+        if (path[i] instanceof Portal) {
+            let currentPortal = path[i].copy();
+            if (currentPortal.portalEnd2.fragmentIdx === originFragmentIdxs[nbFragments])
+                currentPortal.swapEnds();
+            else if (currentPortal.portalEnd1.fragmentIdx !== originFragmentIdxs[nbFragments]) {
+                console.log(originFragmentIdxs, currentPortal, nbFragments);
+                throw new Error("Invalid path");
+            }
+
+            if (i === lastPortalIdxInPath) {
+                portalgon.fragments[currentPortal.portalEnd2.fragmentIdx].attachedVertex = endPoint;
+            }
+            let newFragmentPortal = getFragmentsConnectedByPortal(portalgon, embeddedPortalgon.fragments[nbFragments], currentPortal);
+            embeddedPortalgon.fragments.push(newFragmentPortal[0]);
+            embeddedPortalgon.portals.push(newFragmentPortal[1]);
+            originFragmentIdxs.push(currentPortal.portalEnd2.fragmentIdx);
+        } else
+            points.push(
+                embeddedPortalgon.fragments[nbFragments].vertices[path[i]].add(
+                    embeddedPortalgon.fragments[nbFragments].origin)
+            );
     }
 
-    console.log(embeddedPortalgon);
+    if (originFragmentIdxs[originFragmentIdxs.length - 1] !== destFragmentIdx)
+        throw new Error(`Path does not end in fragment ${destFragmentIdx}.`);
 
-    return embeddedPortalgon;
+    points.push(embeddedPortalgon.fragments[embeddedPortalgon.fragments.length - 1].attachedVertex.add(embeddedPortalgon.fragments[embeddedPortalgon.fragments.length - 1].origin));
+
+    return [embeddedPortalgon, points];
 }
 
 function getFragmentsConnectedByPortal(portalgon, fragment1, portal) {
@@ -29,9 +61,9 @@ function getFragmentsConnectedByPortal(portalgon, fragment1, portal) {
      * portalgon is the source portalgon
      * fragment1 is the fragment (already placed)
      * portal is the portal that must be linked: portal.portalEnd1 is in fragment1
-     *      and portal.portalEnd2 is in framgent2
+     *      and portal.portalEnd2 is in the fragment to be built
      *
-     * returns the
+     * returns the list [newFragment, newPortal]
      */
 
     let fragment2 = portalgon.fragments[portal.portalEnd2.fragmentIdx].copy();
@@ -46,8 +78,6 @@ function getFragmentsConnectedByPortal(portalgon, fragment1, portal) {
 
     let angle = getAngleBetween(v1, v2);
 
-    console.log(angle, v1, v2);
-
     fragment2.rotate(-angle, fragment2.getCenter());
 
     portalCopy.portalEnd2.fragmentIdx = fragment1.fragmentIdx + 1;
@@ -58,10 +88,8 @@ function getFragmentsConnectedByPortal(portalgon, fragment1, portal) {
     fragment2.origin = portalCopy.portalEnd1.vertex1.sub(portalCopy.portalEnd2.vertex1).add(fragment1.origin);
 
     if (isOverlapping(fragment1, fragment2, portalCopy.portalEnd1.getOrderedEdge(), portalCopy.portalEnd2.getOrderedEdge())) {
-        console.log("overlap");
         fragment2.flip(portalCopy.portalEnd2.edge[0], portalCopy.portalEnd2.edge[1]);
     }
-
 
     return [fragment2, portalCopy];
 }
@@ -86,6 +114,25 @@ function isOverlapping(fragment1, fragment2, exceptEdgeF1, exceptEdgeF2) {
                 return true;
         }
     }
+    for (let i = 0; i < 3; i++) {
+        if (i === exceptEdgeF2[0] || i === exceptEdgeF2[1]) continue;
+        if (isInTriangle(
+            fragment1.vertices[0].add(fragment1.origin),
+            fragment1.vertices[1].add(fragment1.origin),
+            fragment1.vertices[2].add(fragment1.origin),
+            fragment2.vertices[i].add(fragment2.origin)
+        )) return true;
+    }
+    for (let i = 0; i < 3; i++) {
+        if (i === exceptEdgeF1[0] || i === exceptEdgeF1[1]) continue;
+        if (isInTriangle(
+            fragment2.vertices[0].add(fragment2.origin),
+            fragment2.vertices[1].add(fragment2.origin),
+            fragment2.vertices[2].add(fragment2.origin),
+            fragment1.vertices[i].add(fragment1.origin)
+        )) return true;
+    }
+
     return false;
 }
 
