@@ -12,7 +12,6 @@ class FunSignatureEdge{
     computeDistance(p){ // p is supposed already on edge
         if(isInInterval(this.interval, p)) {
             return this.distanceLastVertexFromSource + computeEuclideanDistance(p, this.lastVertexPosition);
-
         }
         return Infinity;
     }

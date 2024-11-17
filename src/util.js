@@ -83,10 +83,10 @@ function checkNoOverlappingEdges(polygon) {
 }
 
 function isInInterval(interval, p){
-    return (max(interval[0].x, interval[1].x) > p.x) &&
-    (min(interval[0].x, interval[1].x) < p.x) &&
-    (max(interval[0].y, interval[1].y) > p.y) &&
-    (min(interval[0].y, interval[1].y) < p.y)
+    return (Math.max(interval[0].x, interval[1].x) >= p.x) &&
+    (Math.min(interval[0].x, interval[1].x) <= p.x) &&
+    (Math.max(interval[0].y, interval[1].y) >= p.y) &&
+    (Math.min(interval[0].y, interval[1].y) <= p.y)
 }
 
 function computeEuclideanDistance(p1, p2) {

@@ -1,6 +1,10 @@
 /* eslint-disable no-undef, no-unused-vars */
-
-
+/*
+const sketch_walk_animation = (sketch) => {
+    sketch.setup = () => setupAnim(sketch);
+    sketch.draw = () => drawAnim(sketch);
+}
+*/
 // Each block of sketch relates to one appearing canvas,
 //  link actions to their draw, setup and other functions to define behavior
 const sketch_input = (sketch) => {
@@ -22,7 +26,7 @@ const sketch_zone3 = (sketch) => {
     sketch.draw = () => draw_zone3(sketch);
 };
 
-
+//new p5(sketch_walk_animation)
 new p5(sketch_input);
 new p5(sketch_zone2);
 new p5(sketch_zone3);

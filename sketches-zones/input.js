@@ -61,8 +61,8 @@ function mousePressure(sketch) {
 function handleCanvasResize(sketch) {
     sketch.resizeCanvas(wW, wH);
     buttons.forEach(({ button, offsetY }) => {
-        console.log(button);
-        console.log(sketch.canvas.width)
-        button.position(sketch.position().x + 20, offsetY);
+        //console.log(button);
+        //console.log(sketch.canvas.width)
+        //button.position(sketch.position().x + 20, offsetY);
     });
 }
