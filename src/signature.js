@@ -41,15 +41,22 @@ class Signature {
             null,
             null
         );
+
         let embedded = ret[0];
         let v = ret[1][ret[1].length - 1];
         let visibilityInterval = newSig.computeVisibilityInterval(embedded, edge, v);
+
+        let edgeFragment = embedded.fragments[edge.portalEnd1.fragmentIdx];
         return new DistanceFunction(
             this,
             visibilityInterval,
             0,
-            ret[1][ret[1].length - 2],
-            );
+            v,
+            [
+                edgeFragment.vertices[edge.portalEnd1.edge[0]].add(edgeFragment.origin),
+                edgeFragment.vertices[edge.portalEnd1.edge[1]].add(edgeFragment.origin)
+            ]
+        );
     }
 
     getLastPortalIdxInPath() {
@@ -67,50 +74,65 @@ class Signature {
     }
 
     computeVisibilityInterval(embeddedPortalgon, edge, v) {
-        let interval = [0, 1];
         let edgeFragment = embeddedPortalgon.fragments[edge.portalEnd1.fragmentIdx];
         let edgeVert1 = edgeFragment.vertices[edge.portalEnd1.edge[0]].add(edgeFragment.origin);
         let edgeVert2 = edgeFragment.vertices[edge.portalEnd1.edge[1]].add(edgeFragment.origin)
-        let edgeLine = toLine(edgeVert1, edgeVert2);
-        console.log(edgeVert1, edgeVert2);
+        let resolution = 1000;
+        let interval = null;
 
-        for (let i = this.getLastVertexIdxInPath() + 1; i < this.path.length - 1; i++) {
-            let currentPortal = this.path[i];       // path[i] is a portal
-            let currentFragment = embeddedPortalgon.fragments[currentPortal.portalEnd1.fragmentIdx];
-            let portalVertices = [
-                currentFragment.vertices[currentPortal.portalEnd1.edge[0]].add(currentFragment.origin),
-                currentFragment.vertices[currentPortal.portalEnd1.edge[1]].add(currentFragment.origin)
-            ];
+        for (let lower = 0; lower <= resolution; lower++) {
+            let alpha = lower / resolution;
+            let current = new Point(
+                edgeVert1.x * (1 - alpha) + edgeVert2.x * alpha,
+                edgeVert1.y * (1 - alpha) + edgeVert2.y * alpha
+            );
 
-            for (let j = 0; j < portalVertices.length; j++) {
-                let l1 = toLine(v, portalVertices[j]);
-
-                // vertical edge
-                if (edgeLine === null) {
-
-                }
-
-                // if the two lines are parallel, to restriction on the interval because either we see
-                // the whole edge or we see none of it: the interval is not touched
-                if (l1[0] === edgeLine[0]) continue;
-
-                let intersectionX = (edgeLine[1] - l1[1]) / (l1[0] - edgeLine[0]);
-                let alpha = 0;
-
-                if (edgeVert1.x !== edgeVert2.x) {
-                    alpha = (intersectionX - edgeVert1.x) / (edgeVert2.x - edgeVert1.x);
-                } else {
-                    let intersectionY = l1[0] * intersectionX + l1[1];
-                    alpha = (intersectionY - edgeVert1.y) / (edgeVert2.y - edgeVert1.y);
-                }
-
-                if (0 > alpha || 1 < alpha) continue;
-                // vision limited !
-                console.log(alpha);
+            // check if the edge is really visible
+            if (this.canSourceSeeDestination(v, current, embeddedPortalgon)) {
+                interval = [alpha, null];
+                break;
             }
         }
 
+        if (interval === null) return null;
+
+        interval[1] = binarySearch(interval[0] * resolution, resolution, p => {
+            let alpha = p / resolution;
+            let current = new Point(
+                edgeVert1.x * (1 - alpha) + edgeVert2.x * alpha,
+                edgeVert1.y * (1 - alpha) + edgeVert2.y * alpha
+            );
+            return this.canSourceSeeDestination(v, current, embeddedPortalgon);
+        }) / resolution;
+
+        if (interval[1] === null) throw new Error("Upper end of the interval is null: this should NOT happen.");
+
         return interval;
+    }
+
+    canSourceSeeDestination(source, destination, embedding) {
+        let previousPortalV1 = null;
+        let previousPortalV2 = null;
+        for (let k = this.getLastVertexIdxInPath() + 1; k < this.path.length; k++) {
+            let fragmentToCheck = embedding.fragments[this.path[k].portalEnd1.fragmentIdx];
+            let currentPortalV1 = fragmentToCheck.vertices[this.path[k].portalEnd1.edge[0]].add(fragmentToCheck.origin);
+            let currentPortalV2 = fragmentToCheck.vertices[this.path[k].portalEnd1.edge[1]].add(fragmentToCheck.origin);
+            for (let l = 0; l < fragmentToCheck.vertices.length; l++) {
+                let p1 = fragmentToCheck.vertices[l].add(fragmentToCheck.origin);
+                let p2 = fragmentToCheck.vertices[(l + 1) % fragmentToCheck.vertices.length].add(fragmentToCheck.origin);
+                if (isPointInSegment(p1, p2, destination)) continue;
+
+                if ((currentPortalV1.equals(p1) && currentPortalV2.equals(p2)) || (currentPortalV1.equals(p2) && currentPortalV2.equals(p1))) continue;
+
+                if (previousPortalV1 !== null && previousPortalV2 !== null &&
+                    ((previousPortalV1.equals(p1) && previousPortalV2.equals(p2)) || (previousPortalV1.equals(p2) && previousPortalV2.equals(p1)))) continue;
+
+                if (segmentsIntersectNotStrict(source, destination, p1, p2)) return false;
+            }
+            previousPortalV1 = currentPortalV1;
+            previousPortalV2 = currentPortalV2;
+        }
+        return true;
     }
 
     copy() {

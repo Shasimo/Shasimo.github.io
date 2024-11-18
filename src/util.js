@@ -56,6 +56,31 @@ function segmentsIntersect(p1l1, p2l1, p1l2, p2l2) {
     );
 }
 
+function segmentsIntersectNotStrict(p1l1, p2l1, p1l2, p2l2) {
+    /**
+     * Returns true iff the segment ]p1l1 p2l1[ intersects the segment ]p1l2 p2L2[
+     */
+    if ((p1l1.equals(p1l2) && p2l1.equals(p2l2)) || (p1l1.equals(p2l2) && p2l1.equals(p1l2)))
+        return true;
+
+    if (p1l1.equals(p1l2) || p1l1.equals(p2l2) || p2l1.equals(p1l2) || p2l1.equals(p2l2))
+        return false;
+
+    // remove all cases where orient(i j k) = 0
+    if (
+        isPointInSegment(p1l1, p2l1, p1l2) ||
+        isPointInSegment(p1l1, p2l1, p2l2) ||
+        isPointInSegment(p1l2, p2l2, p1l1) ||
+        isPointInSegment(p1l2, p2l2, p2l1)
+    )
+        return false;
+    // simply do the test seen in class
+    return (
+        tertiaryOrient(p1l1, p2l1, p1l2) * tertiaryOrient(p1l1, p2l1, p2l2) < 0 &&
+        tertiaryOrient(p1l2, p2l2, p1l1) * tertiaryOrient(p1l2, p2l2, p2l1) < 0
+    );
+}
+
 function checkNoOverlappingEdges(polygon) {
     /**
      * Given a polygon (an array of points), return true if no pair

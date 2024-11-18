@@ -5,14 +5,16 @@ class Fragment {
         this.attachedVertex = null;
     }
 
-    draw(sketch, origin, fragmentId=null) {
+    draw(sketch, origin, fragmentId=null, color="black") {
         sketch.textSize(smallTS);
         for (let i = 0; i < this.vertices.length; i++) {
             let current = this.vertices[i].add(origin);
-            current.draw(sketch, "black", 4);
+            current.draw(sketch, color, 4);
             sketch.text(i, current.x, current.y);
         }
 
+        sketch.fill(color);
+        sketch.stroke(color);
         if (fragmentId != null) {
             let center = this.getCenter();
             sketch.text(fragmentId, center.x + origin.x, center.y + origin.y);
@@ -25,6 +27,8 @@ class Fragment {
             let coordj = this.vertices[j].add(origin);
             sketch.line(coordi.x, coordi.y, coordj.x, coordj.y);
         }
+        sketch.fill("black");
+        sketch.stroke("black");
     }
 
     getVertexIndex(point, origin) {

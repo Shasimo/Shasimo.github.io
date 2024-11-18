@@ -14,7 +14,6 @@ function draw_zone3(sketch) {
     sketch.text("Embedding of random path", 30, 50);
 
     if (triangulatedPortalgon !== null && portalTest === null && source !== null && destination !== null) {
-        /*
         let res = generateEmbeddingFromSignature(
             triangulatedPortalgon,
             new Signature(
@@ -25,8 +24,7 @@ function draw_zone3(sketch) {
             destination[1],
             destination[0].copy()
         );
-        console.log(res);
-        */
+        let emb = res[0];
 
         let sig = new Signature(
             source[1],
@@ -34,7 +32,21 @@ function draw_zone3(sketch) {
             [triangulatedPortalgon.portals[0]]
         );
         //portalTest = res[0];
-        sig.toDistanceFunction(triangulatedPortalgon, triangulatedPortalgon.portals[1]);
+        emb.draw(sketch);
+
+        let dist = sig.toDistanceFunction(triangulatedPortalgon, triangulatedPortalgon.portals[1]);
+
+        let minP = new Point((1 - dist.interval[0]) * dist.edgeDestination[0].x + dist.interval[0] * dist.edgeDestination[1].x,
+            (1 - dist.interval[0]) * dist.edgeDestination[0].y + dist.interval[0] * dist.edgeDestination[1].y);
+        let maxP = new Point((1 - dist.interval[1]) * dist.edgeDestination[0].x + dist.interval[1] * dist.edgeDestination[1].x,
+            (1 - dist.interval[1]) * dist.edgeDestination[0].y + dist.interval[1] * dist.edgeDestination[1].y);
+
+        let sourcePos = source[0].add(triangulatedPortalgon.fragments[source[1]].origin);
+        sourcePos.draw(sketch, "red", 4);
+        sketch.stroke("red");
+        sketch.line(minP.x, minP.y, sourcePos.x, sourcePos.y);
+        sketch.line(maxP.x, maxP.y, sourcePos.x, sourcePos.y);
+        sketch.stroke("black");
         //portalTestPoints = res[1];
     }
     if (portalTest !== null && portalTestPoints !== null) {
