@@ -1,6 +1,8 @@
 :root {
   --canvas-width: 700px;
   --text-width: calc(var(--canvas-width) - 5px);
+  --image-max-width: 100%; /* Maximum width of images */
+  --image-max-height: 400px; /* Optional max height for images */
 }
 
 body {
@@ -14,10 +16,12 @@ body {
   justify-content: flex-start;
   line-height: 1.6; /* Improved readability */
 }
+
 h2, h3, h4, h5, h6 {
   text-decoration: underline;
   text-decoration-color: #d3b9b9;
 }
+
 header, footer {
   width: var(--canvas-width);
   max-width: 1200px;
@@ -82,6 +86,18 @@ p {
   word-wrap: break-word; /* Prevent text from overflowing */
 }
 
+img {
+  max-width: var(--image-max-width); /* Images scale to fit container */
+  max-height: var(--image-max-height); /* Restrict height (optional) */
+  width: auto; /* Maintain aspect ratio */
+  height: auto; /* Maintain aspect ratio */
+  display: block; /* Center block images by default */
+  margin: 20px auto; /* Add space around images */
+  border: 2px solid #ccc; /* Optional border for images */
+  border-radius: 8px; /* Optional rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional shadow for images */
+}
+
 #zone-one, #zone-two, #zone-three {
   width: var(--canvas-width);
   margin: 20px auto;
@@ -106,5 +122,9 @@ p {
   h2 {
     font-size: 1.2em; /* Adjust heading sizes for smaller screens */
     text-align: left; /* Maintain left alignment for smaller screens */
+  }
+
+  img {
+    max-height: 300px; /* Adjust image height for smaller screens */
   }
 }

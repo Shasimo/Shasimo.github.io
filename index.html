@@ -48,12 +48,17 @@
         <ul>
           <li>Introduce the problem</li>
           <li>Restrict the polygons we talk about</li>
+          <li>explain restrictions</li>
+          <li>Tell the reader you present only intuitions</li>
+          <li>present the DataStructure</li>
+          <li>explain what an envelope is</li>
+          <li>image it</li>
           <li>show example pictures of talked (what are portals on a cut polygon?) constructions</li>
-          <li></li>
         </ul>
     </section>
 
     <section id="Introduction">
+      Explain it is a generalization of any shape from 2 to 3 D
       <h2>Introduction</h2>
         <p>
           What are Portalgons?<br>
@@ -61,29 +66,30 @@
         </p>
 
         <p>
-          Portalgons are essentially a collection of simple polygons or any shapes having an intrinsic polyhedral metric [1] and are represented as flattened on the 2D plane by a series of their constituting fragments where any edge of such decomposition can be part of a so called portal.<br>
-          A portal is a couple of oriented edges that define a communicating pair of fragments.<br>
-          A fragment is a collection of cuts constituting your initial polygon, where any cut
-          creates portals along the edges the cut created, a portal is thus sharing one side on the freshly cut piece, and the other on your cut base.
-          Meaning you can seemlessly walk through portal edges to end up in another fragment of your portalgon.
-
-      <div id="walking-animation"> </div>
+          Portalgons are essentially a collection of simple polygons called fragments, where any edge of such fragment can be part of a portal.<br>
+          A portal is a couple of oriented edges of equal length that define a communicating pair of fragments.<br>
+          Meaning we can access through portal edges another fragment from the one we seat in.
+          <img src="assets/images/shot.png" alt="cube" />
+          <img src="assets/images/cube.png" alt="cube" />
+          <img src="assets/images/cubeWithPortals.png" alt="cube" />
+          <img src="assets/images/cylinder.png" alt="cube" />
 
           We here limit ourselves to 1-happy portalgons whose fragments are simple polygons.
-          The happiness describes the number of times we allow ourselves to cross a portal.
+          The happiness describes the number of times we are allowed to cross a portal.
           We describe later on why such limitation is necessary.
         </p>
+
+      <h3>Generalization</h3>
       <p>
-        \[
-        n! \sim \sqrt{2 \pi n} \left( \frac{n}{e} \right)^n \quad \text{as} \quad n \to \infty
-        \]
+        We note portalgons are in fact the most general representation of any shape.
+        A polyhedron being a
       </p>
     </section>
 
     <section id="Inputs">
       <h2>Build your own</h2>
       <p>
-        Before going into specifics, we invite to design your own portalgon using the tool here under.
+        Before going into specifics, we invite to design a portalgon using the tool here under.
         This way, the created portalgon will become the subject of all further modifications and explanations.
       </p>
     </section>
@@ -91,9 +97,22 @@
 
     <section id="Applications">
       <h2>Applications</h2>
-        <p>
+      <h3>Are there any real examples of Portalgons?</h3>
 
-        </p>
+    </section>
+
+    <section id="Shortest Paths">
+      <h2>Shortest Paths</h2>
+      <p>
+        A shortest path in a portalgon is the shortest path between a pair of points lying within its surface (of any fragment), source and destination, such that this is the shortest distance path between the two points.
+        There can in fact be multiple shortest paths between the two points as we are allowed to cross through portals.
+        Being intrinsicly polyhedral, meaning that can take place in the third dimension, we need to think carefully about the procedures we will use in order to find such a path, as finding a shortest path now requires to handle more spaces or fragments that may lead to multiple crossings of the same portal which could lead to an unbounded amount of crossings on some cases.
+      </p>
+      <h3>Data Structure</h3>
+      <p>
+        We here present the data structure that maintains the informations in order to compute on such dimension.
+
+      </p>
     </section>
 
     <div id="zone-two" ></div>
@@ -102,10 +121,11 @@
 
     <section id="Authors">
       <h2>Authors</h2>
-      <p>
-      Authors details to add here
-
-      </p>
+      <ul>
+        <li>Schleusner Shan</li>
+        <li>Vannimmen Mathieu</li>
+        <li>Testaert Sacha</li>
+      </ul>
     </section>
 
     <section id="References">
