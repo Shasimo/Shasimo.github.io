@@ -57,4 +57,13 @@ class Point {
         this.y += origin.y;
         return this;
     }
+
+    //let pointOnInterval = new Point(this.edgeInterval[0].x * (1-percentage) + this.edgeInterval[1].x * percentage,
+    //    this.edgeInterval[0].y * (1-percentage) + this.edgeInterval[1].y * percentage);
+
+    toPercentage(edge) {
+        let edgeLength = computeEuclideanDistance(edge[0], edge[1]);
+        return computeEuclideanDistance(this, edge[0])/edgeLength;
+
+    }
 }

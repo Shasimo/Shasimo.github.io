@@ -36,10 +36,10 @@ function draw_zone3(sketch) {
 
         let dist = sig.toDistanceFunction(triangulatedPortalgon, triangulatedPortalgon.portals[1]);
 
-        let minP = new Point((1 - dist.interval[0]) * dist.edgeDestination[0].x + dist.interval[0] * dist.edgeDestination[1].x,
-            (1 - dist.interval[0]) * dist.edgeDestination[0].y + dist.interval[0] * dist.edgeDestination[1].y);
-        let maxP = new Point((1 - dist.interval[1]) * dist.edgeDestination[0].x + dist.interval[1] * dist.edgeDestination[1].x,
-            (1 - dist.interval[1]) * dist.edgeDestination[0].y + dist.interval[1] * dist.edgeDestination[1].y);
+        let minP = new Point((1 - dist.interval[0]) * dist.edgeInterval[0].x + dist.interval[0] * dist.edgeInterval[1].x,
+            (1 - dist.interval[0]) * dist.edgeInterval[0].y + dist.interval[0] * dist.edgeInterval[1].y);
+        let maxP = new Point((1 - dist.interval[1]) * dist.edgeInterval[0].x + dist.interval[1] * dist.edgeInterval[1].x,
+            (1 - dist.interval[1]) * dist.edgeInterval[0].y + dist.interval[1] * dist.edgeInterval[1].y);
 
         let sourcePos = source[0].add(triangulatedPortalgon.fragments[source[1]].origin);
         sourcePos.draw(sketch, "red", 4);

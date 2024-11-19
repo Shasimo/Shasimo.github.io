@@ -14,7 +14,6 @@ class mainDataStruct {
         return envelope;
     }
 
-
     nextLocalMinimum(delta) {
         for(let i = 0; i<this.listMiniEnvelope.localMinimumList.length; i++) {
             if(this.listMiniEnvelope.localMinimumList[i].y <= delta) {continue;}
@@ -22,68 +21,59 @@ class mainDataStruct {
         }
         return new Point(Infinity, Infinity); // no more candidate points
     }
-    /*
-    let potential = binarySearch(1, polygon.length - 2, (x) =>
-        isLT(polygon[0], polygon[x], p)
-      );
-    */
 
-    computeArray(p1Inter, p2Inter, precision) {
+    computeArray(interval, precision) {
         let array = [];
         let nb_points = 10**precision;
-        let new_x;
-        let new_y;
+        let new_percentage;
         for(let i = 1; i < nb_points; i++) {
-            new_x = p1Inter.x + i * (p2Inter.x - p1Inter.x)/(nb_points);
-            new_y = p1Inter.y + i * (p2Inter.y - p1Inter.y)/(nb_points);
-            array.push(new Point(new_x, new_y));
+            new_percentage = interval[0] + i * (interval[1] - interval[0])/nb_points;
+            array.push(new_percentage);
         }
         return array;
     }
 
-
-
-    nextVertex(f, q) { //take all functions , compute every intersection (just look on x axis (left AND right) by binary searching, retrieve the), take the minimum
-        //[f, f, f, f, f, f,f] (a, b, f'). a, b
-        //[faux, faux, | vrai, vrai, vrai, vrai, vrai, vrai, | faux, faux, ]
+    nextVertex(f, q) { //take all functions , compute every intersection (just look on x axis (left AND right) by binary searching), take the minimum
         let numberOfFunctions = this.listMiniEnvelope.sortedIntervalsOnX.length;
-        let idxFirstFunction = binarySearch(0, numberOfFunctions - 1, (c) => isInInterval(this.listMiniEnvelope.sortedIntervalsOnX[c].interval, q));
-        let functionFPrime = this.listMiniEnvelope.sortedIntervalsOnX[idxFirstFunction];
-        //est-ce que il y a une intersection
-        let candidatesOfNextPoints = [];
-
+        let idxFirstFunction = binarySearch(0, numberOfFunctions - 1, (c) => isInInterval(this.listMiniEnvelope.sortedIntervalsOnX[c].interval, q, this.listMiniEnvelope.sortedIntervalsOnX[c].edgeInterval));
         let precision = 5;
-        this.valueArray = this.computeArray(f.interval[0], f.interval[1], precision);
+        let valueArray = this.computeArray(f.interval, precision);
 
-        //let idxQx = binarySearch(0, this.valueArray.length - 1, c => this.valueArray[c] <= q.x);
-        let idxQx = Math.floor(((q.x-f.interval[0].x)/(f.interval[1].x-f.interval[0].x))*10**precision) //first look from q
-        let idxIntersection = binarySearch(idxQx, this.valueArray.length - 1, p => f.computeDistance(this.valueArray[p]) < functionFPrime.computeDistance(this.valueArray[p]));
+        let functionFPrime = this.listMiniEnvelope.sortedIntervalsOnX[idxFirstFunction];
+        let idxQx = binarySearch(0, valueArray.length - 1, c => valueArray[c] <= q.toPercentage(f.edgeInterval));
+        let v_j1 = binarySearch(0, valueArray.length - 1, c => valueArray[c] <= percentageToPoint(functionFPrime.interval[1], functionFPrime.edge));
+        let idxIntersection = binarySearch(idxQx, v_j1, p => f.computeDistance(valueArray[p]) <= functionFPrime.computeDistance(valueArray[p]));
 
-        //look functions on the right of q.x coordinate
-        // either idxQx is default value returned by binarySearch or actual answer we need to check
-        for (let functionIdx = idxFirstFunction; functionIdx <numberOfFunctions; functionIdx++) {
-            if (!(idxIntersection === idxQx)) {
-                candidatesOfNextPoints.push(this.valueArray[idxIntersection]);
-                return this.valueArray[idxIntersection];
+        if(!(idxIntersection === idxQx)) {return percentageToPoint(valueArray[idxIntersection], f.edgeInterval);}
+
+        //Case 2
+
+        let candidates = [];
+        for(let i = 0; i < numberOfFunctions; i++) {
+            functionFPrime = this.listMiniEnvelope.sortedIntervalsOnX[i];
+            let vj = binarySearch(0, valueArray.length - 1, c => valueArray[c] <= percentageToPoint(functionFPrime.interval[0], functionFPrime.edge));
+            let vk = binarySearch(0, valueArray.length - 1, c => valueArray[c] <= percentageToPoint(functionFPrime.interval[1], functionFPrime.edge));
+
+            let idxIntersection = binarySearch(vj, vk, p => f.computeDistance(valueArray[p]) <= functionFPrime.computeDistance(valueArray[p]));
+            if (!(idxIntersection === vj)) { //
+                candidates.push(percentageToPoint(valueArray[idxIntersection], f.edgeInterval));
             }
-            if (f.computeDistance(this.valueArray[idxQx]) === functionFPrime.computeDistance(this.valueArray[idxIntersection])) {
-                candidatesOfNextPoints.push(this.valueArray[idxIntersection]);
-                return new Point(q.x, q.y);
+            if (idxIntersection === vj && (f.computeDistance(valueArray[idxIntersection]) === functionFPrime.computeDistance(valueArray[vj]))) {
+                candidates.push(percentageToPoint(valueArray[idxIntersection], f.edgeInterval));
             }
         }
+        if (candidates.length === 0){
+            return new Point(Infinity, Infinity);
+        }
 
-
-
-
-        //////////
-        return new Point(Infinity, Infinity);// meaning we can delete this functionFPrime because dominated by f on entire interval
-
-
+        candidates.sort((a, b) => a.y - b.y);
+        return candidates.find(candidate => candidate.y > q.y);
 
     }
 
     insert(f) {//inserts a new function into the lower envelope env_f
-
+        let new_function_sets = this.listMiniEnvelope.functionsList.push(f);
+        this.listMiniEnvelope = new miniEnvelope((new_function_sets));
     }
 
 }
@@ -91,7 +81,7 @@ class mainDataStruct {
 class miniEnvelope {
     constructor(miniEnvelope) {
         this.sortedIntervalsOnX = this.sortFunctionByInterval(miniEnvelope);
-        this.miniEnvelope = miniEnvelope;
+        this.functionsList = miniEnvelope;
         this.localMinimumList = this.createLocalMinimaList(miniEnvelope);
     }
 
@@ -112,11 +102,11 @@ class miniEnvelope {
         let minima = [];
         for (let i = 0; i < miniEnvelope.length; i++) {
             let localMinimum = null;
-            let validInterval = [miniEnvelope[i].interval[0], miniEnvelope[i].interval[1]];
+            let validInterval = [percentageToPoint(miniEnvelope[i].interval[0], miniEnvelope[i].edgeInterval), percentageToPoint(miniEnvelope[i].interval[1], miniEnvelope[i].edgeInterval)];
             let vertex = miniEnvelope[i].lastVertexPosition;
             let projectedPoint = this.getOrthogonalProjection(vertex, validInterval[0], validInterval[1]);
-            if(isInInterval(validInterval, projectedPoint)) {
-                localMinimum = projectedPoint
+            if(isInInterval(validInterval, projectedPoint, miniEnvelope[i].edgeInterval)) {
+                localMinimum = projectedPoint;
                 console.log("localMinimum in interval = ", localMinimum)
             }
             else {
@@ -127,7 +117,6 @@ class miniEnvelope {
             minima.push(localMinimum);
         }
         minima.sort((a, b) => a.y - b.y);
-        //console.log("Minima=", minima);
         return minima;
     }
 

@@ -107,11 +107,9 @@ function checkNoOverlappingEdges(polygon) {
     return true;
 }
 
-function isInInterval(interval, p){
-    return (Math.max(interval[0].x, interval[1].x) >= p.x) &&
-    (Math.min(interval[0].x, interval[1].x) <= p.x) &&
-    (Math.max(interval[0].y, interval[1].y) >= p.y) &&
-    (Math.min(interval[0].y, interval[1].y) <= p.y)
+function isInInterval(interval, p, edge){
+    let percentage = p.toPercentage(edge);
+    return percentage >= interval[0] && percentage <= interval[1];
 }
 
 function computeEuclideanDistance(p1, p2) {
@@ -148,4 +146,9 @@ function binarySearch(a, b, f) {
 
     // f(x) is false for all x \in [a, b]
     return a;
+}
+
+function percentageToPoint(percentage, edge) {
+    return new Point(edge[0].x * (1-percentage) + edge[1].x * percentage,
+        edge[0].y * (1-percentage) + edge[1].y * percentage);
 }

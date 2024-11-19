@@ -6,7 +6,6 @@ class Signature {
         *          if int: the index of the vertex that the path goes through in the last fragment up to that point
         *          if Portal: the next portal that the path takes
         * sourcePoint: the point the path starts from (relative to the origin of the first fragment
-        * endPoint: the point the path ends in (relative to the origin of the last fragment)
         */
         this.originFragmentIdx = originFragmentIdx;
         this.source = sourcePoint;
