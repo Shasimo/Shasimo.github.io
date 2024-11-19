@@ -2,16 +2,19 @@ class Fragment {
     constructor(vertices) {
         this.origin = this.getOrigin(vertices);
         this.vertices = this.polygonToFragment(vertices);
+        this.attachedVertex = null;
     }
 
-    draw(sketch, origin, fragmentId=null) {
+    draw(sketch, origin, fragmentId=null, color="black") {
         sketch.textSize(smallTS);
         for (let i = 0; i < this.vertices.length; i++) {
             let current = this.vertices[i].add(origin);
-            sketch.ellipse(current.x, current.y, 4, 4);
+            current.draw(sketch, color, 4);
             sketch.text(i, current.x, current.y);
         }
 
+        sketch.fill(color);
+        sketch.stroke(color);
         if (fragmentId != null) {
             let center = this.getCenter();
             sketch.text(fragmentId, center.x + origin.x, center.y + origin.y);
@@ -24,6 +27,8 @@ class Fragment {
             let coordj = this.vertices[j].add(origin);
             sketch.line(coordi.x, coordi.y, coordj.x, coordj.y);
         }
+        sketch.fill("black");
+        sketch.stroke("black");
     }
 
     getVertexIndex(point, origin) {
@@ -64,14 +69,20 @@ class Fragment {
 
     copy() {
         let ret = new Fragment([...this.vertices]);
-        ret.origin = this.origin;
+        ret.origin = this.origin.copy();
+        if (this.attachedVertex !== null)
+            ret.attachedVertex = this.attachedVertex.copy();
         return ret;
     }
 
     rotate(angle, origin) {
         let vert = this.vertices.map(x => x.rotate(angle, origin));
+        if (this.attachedVertex !== null)
+            this.attachedVertex.rotate(angle, origin);
         this.origin = this.getOrigin(vert);
         this.vertices = this.polygonToFragment(vert);
+        if (this.attachedVertex !== null)
+            this.attachedVertex = this.attachedVertex.sub(this.origin);
         this.origin = new Point(Math.max(10, this.origin.x), Math.max(10, this.origin.y));
     }
 
@@ -83,6 +94,11 @@ class Fragment {
 
             let angle = Math.abs(getAngleBetween(mainVec, this.vertices[i].sub(this.vertices[edgeIdx1])));
             this.vertices[i].rotate(2 * angle, this.vertices[edgeIdx1]);
+        }
+
+        if (this.attachedVertex !== null) {
+            let angle = Math.abs(getAngleBetween(mainVec, this.attachedVertex.sub(this.vertices[edgeIdx1])));
+            this.attachedVertex.rotate(2 * angle, this.vertices[edgeIdx1]);
         }
     }
 }

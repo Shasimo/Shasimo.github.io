@@ -11,7 +11,7 @@ class PortalgonBuilder {
 
     click(point) {
         if (this.pickingPortalsPhase === false) this.addVertex(point);
-        else this.addPortalEnd(point)
+        else this.addPortalEnd(point);
     }
 
     togglePortal(fragmentIdx, vertexIdx) {
@@ -51,11 +51,10 @@ class PortalgonBuilder {
 
     drawPreviewPoint(previewPoint, sketch) {
         if (!this.pickingPortalsPhase) {
-            sketch.ellipse(previewPoint.x, previewPoint.y, 10, 10);
+            previewPoint.draw(sketch, "black", 10);
         } else {
             if (!this.isVertex(previewPoint)) return;
-            sketch.fill(previewPointPortalColor);
-            sketch.ellipse(previewPoint.x, previewPoint.y, 10, 10);
+            previewPoint.draw(sketch, previewPointPortalColor, 10);
         }
         sketch.fill(previewPointColor);
     }
@@ -104,13 +103,9 @@ class PortalgonBuilder {
     }
 
     draw(sketch) {
-        sketch.fill("gray");
-        sketch.stroke("gray");
         for (let i = 0; i < this.fragments.length; i++) {
-            this.fragments[i].draw(sketch, this.fragments[i].origin);
+            this.fragments[i].draw(sketch, this.fragments[i].origin, i, "grey");
         }
-        sketch.fill("black");
-        sketch.stroke("black");
 
         for (let i = 0; i < this.portals.length; i++) {
             this.portals[i].draw(sketch, this.fragments);
@@ -124,7 +119,7 @@ class PortalgonBuilder {
     drawBuildingFragment(sketch) {
         sketch.textSize(smallTS);
         for (let i in this.vertices) {
-            sketch.ellipse(this.vertices[i].x, this.vertices[i].y, 4, 4);
+            this.vertices[i].draw(sketch, "black", 4);
             sketch.text(i, this.vertices[i].x, this.vertices[i].y);
         }
         sketch.textSize(normalTS);
@@ -168,6 +163,8 @@ class PortalgonBuilder {
         this.portals = [];
         this.current_portal = new Portal();
         triangulatedPortalgon = null;
+        source = null;
+        destination = null;
         portalgon = null;
         portalTest = null;
     }

@@ -1,6 +1,6 @@
 // CANVAS
-const wW = 650;
-const wH = 500;
+const wW = 800;
+const wH = 800;
 
 // TEXT
 const normalTS = 50;

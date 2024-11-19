@@ -3,6 +3,7 @@ class Point {
         this.x = x;
         this.y = y;
 
+        /*
         // simulates bracket overload and keeps accessing '.x/y' available
         return new Proxy(this, {
             get(target, prop) {
@@ -10,7 +11,7 @@ class Point {
                 if (prop === "1") return target.y;
                 return target[prop]; // Allow normal property access
             },
-        });
+        });*/
     }
 
     equals(other) {
@@ -25,10 +26,6 @@ class Point {
         return new Point(this.x - other.x, this.y - other.y);
     }
 
-    log() {
-        console.log("x: ", this.x, ", y: ", this.y);
-    }
-
     dot(other) {
         return this.x * other.x + this.y * other.y;
     }
@@ -39,6 +36,14 @@ class Point {
 
     copy() {
         return new Point(this.x, this.y);
+    }
+
+    draw(sketch, color, size) {
+        sketch.fill(color);
+        sketch.stroke(color);
+        sketch.ellipse(this.x, this.y, size, size);
+        sketch.fill("black");
+        sketch.stroke("black");
     }
 
     rotate(angle, origin) {
