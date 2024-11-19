@@ -45,27 +45,38 @@ class mainDataStruct {
 
     nextVertex(f, q) { //take all functions , compute every intersection (just look on x axis (left AND right) by binary searching, retrieve the), take the minimum
         //[f, f, f, f, f, f,f] (a, b, f'). a, b
-
         //[faux, faux, | vrai, vrai, vrai, vrai, vrai, vrai, | faux, faux, ]
-
-        let idxFirstFunction = binarySearch(0, this.listMiniEnvelope.sortedIntervalsOnX.length - 1, (c) => isInInterval(this.listMiniEnvelope.sortedIntervalsOnX[c].interval, q));
+        let numberOfFunctions = this.listMiniEnvelope.sortedIntervalsOnX.length;
+        let idxFirstFunction = binarySearch(0, numberOfFunctions - 1, (c) => isInInterval(this.listMiniEnvelope.sortedIntervalsOnX[c].interval, q));
         let functionFPrime = this.listMiniEnvelope.sortedIntervalsOnX[idxFirstFunction];
         //est-ce que il y a une intersection
         let candidatesOfNextPoints = [];
+
         let precision = 5;
         this.valueArray = this.computeArray(f.interval[0], f.interval[1], precision);
 
         //let idxQx = binarySearch(0, this.valueArray.length - 1, c => this.valueArray[c] <= q.x);
-        let idxQx = Math.floor(((q.x-f.interval[0].x)/(f.interval[1].x-f.interval[0].x))*10**precision)
+        let idxQx = Math.floor(((q.x-f.interval[0].x)/(f.interval[1].x-f.interval[0].x))*10**precision) //first look from q
         let idxIntersection = binarySearch(idxQx, this.valueArray.length - 1, p => f.computeDistance(this.valueArray[p]) < functionFPrime.computeDistance(this.valueArray[p]));
-        if (!(idxIntersection === idxQx)) {
-            return this.valueArray[idxIntersection];
+
+        //look functions on the right of q.x coordinate
+        // either idxQx is default value returned by binarySearch or actual answer we need to check
+        for (let functionIdx = idxFirstFunction; functionIdx <numberOfFunctions; functionIdx++) {
+            if (!(idxIntersection === idxQx)) {
+                candidatesOfNextPoints.push(this.valueArray[idxIntersection]);
+                return this.valueArray[idxIntersection];
+            }
+            if (f.computeDistance(this.valueArray[idxQx]) === functionFPrime.computeDistance(this.valueArray[idxIntersection])) {
+                candidatesOfNextPoints.push(this.valueArray[idxIntersection]);
+                return new Point(q.x, q.y);
+            }
         }
-        if (f.computeDistance(this.valueArray[idxQx]) === functionFPrime.computeDistance(this.valueArray[idxIntersection])) {
-            return new Point(q.x, q.y);
-        }
+
+
+
+
         //////////
-        return new Point(Infinity, Infinity);
+        return new Point(Infinity, Infinity);// meaning we can delete this functionFPrime because dominated by f on entire interval
 
 
 
