@@ -33,9 +33,9 @@ class Envelope {
      * 
      *******/
     nextLocalMinimum(delta) {
-        for(let i = 0; i<this.envelope.localMinimumList.length; i++) {
-            if(this.envelope.localMinimumList[i].y <= delta) {continue;}
-            return new Point(this.envelope.localMinimumList[i].x, this.envelope.localMinimumList[i].y);
+        for (let i = 0; i<this.envelope.localMinimumList.length; i++) {
+            if (this.envelope.localMinimumList[i].y <= delta) continue;
+            return this.envelope.localMinimumList[i].copy();
         }
         return new Point(Infinity, Infinity); // no more candidate points
     }
@@ -124,16 +124,16 @@ class miniDataStruct {
             let validInterval = [percentageToPoint(miniEnvelope[i].interval[0], miniEnvelope[i].edgeInterval), percentageToPoint(miniEnvelope[i].interval[1], miniEnvelope[i].edgeInterval)];
             let vertex = miniEnvelope[i].lastVertexPosition;
             let projectedPoint = this._getOrthogonalProjection(vertex, validInterval[0], validInterval[1]);
-            console.log(projectedPoint);
+
             if (isInInterval(miniEnvelope[i].interval, projectedPoint, miniEnvelope[i].edgeInterval)) {
                 localMinimum = projectedPoint;
             }
             else {
                 let distanceP1Inter = computeEuclideanDistance(projectedPoint, validInterval[0]);
                 let distanceP2Inter = computeEuclideanDistance(projectedPoint, validInterval[1]);
-                localMinimum = distanceP1Inter > distanceP2Inter ? validInterval[0] : validInterval[1];
+                localMinimum = distanceP1Inter > distanceP2Inter ? validInterval[1] : validInterval[0];
             }
-            let localMinimumPercentage = localMinimum.toPercentage(validInterval);
+            let localMinimumPercentage = localMinimum.toPercentage(miniEnvelope[i].edgeInterval);
             minima.push(new Point(localMinimumPercentage, miniEnvelope[i].computeDistance(localMinimumPercentage)));
         }
         minima.sort((a, b) => a.y - b.y);

@@ -22,6 +22,7 @@ class Signature {
                     throw new Error("Invalid path");
                 }
                 this.path.push(currentPortal);
+                lastFragmentIdx = currentPortal.portalEnd2.fragmentIdx;
             } else
                 this.path.push(path[i]);
         }
@@ -44,7 +45,6 @@ class Signature {
         let lastEdge = embedded.portals[embedded.portals.length - 1];
         let v = ret[1][ret[1].length - 1];
         let visibilityInterval = embedded.computeVisibilityInterval(v, lastEdge);
-        console.log(visibilityInterval);
 
         let edgeFragment = embedded.fragments[lastEdge.portalEnd1.fragmentIdx];
         return new DistanceFunction(
