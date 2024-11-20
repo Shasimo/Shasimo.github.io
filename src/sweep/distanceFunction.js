@@ -1,9 +1,8 @@
 
 class DistanceFunction{
-    // f _sigma|e()
     constructor(signature, interval, distanceLastVertexFromSource, vertex, edge) {
         this.signature = signature;
-        this.interval = interval; // percentages limiting an interval on edgeInterval
+        this.interval = interval;
         this.distanceLastVertexFromSource = distanceLastVertexFromSource;
         this.lastVertexPosition = vertex;
         this.edgeInterval = edge;
@@ -15,6 +14,10 @@ class DistanceFunction{
             return this.distanceLastVertexFromSource + computeEuclideanDistance(this.lastVertexPosition, pointOnInterval);
         }
         return Infinity;
+    }
+
+    getPointsInterval() {
+        return [percentageToPoint(this.interval[0], this.edgeInterval), percentageToPoint(this.interval[1], this.edgeInterval)];
     }
 
 }
