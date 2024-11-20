@@ -64,6 +64,5 @@ class Point {
     toPercentage(edge) {
         let edgeLength = computeEuclideanDistance(edge[0], edge[1]);
         return computeEuclideanDistance(this, edge[0])/edgeLength;
-
     }
 }

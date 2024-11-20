@@ -124,7 +124,8 @@ class miniDataStruct {
             let validInterval = [percentageToPoint(miniEnvelope[i].interval[0], miniEnvelope[i].edgeInterval), percentageToPoint(miniEnvelope[i].interval[1], miniEnvelope[i].edgeInterval)];
             let vertex = miniEnvelope[i].lastVertexPosition;
             let projectedPoint = this._getOrthogonalProjection(vertex, validInterval[0], validInterval[1]);
-            if(isInInterval(validInterval, projectedPoint, miniEnvelope[i].edgeInterval)) {
+            console.log(projectedPoint);
+            if (isInInterval(miniEnvelope[i].interval, projectedPoint, miniEnvelope[i].edgeInterval)) {
                 localMinimum = projectedPoint;
             }
             else {
@@ -132,10 +133,10 @@ class miniDataStruct {
                 let distanceP2Inter = computeEuclideanDistance(projectedPoint, validInterval[1]);
                 localMinimum = distanceP1Inter > distanceP2Inter ? validInterval[0] : validInterval[1];
             }
-            minima.push(localMinimum);
+            let localMinimumPercentage = localMinimum.toPercentage(validInterval);
+            minima.push(new Point(localMinimumPercentage, miniEnvelope[i].computeDistance(localMinimumPercentage)));
         }
         minima.sort((a, b) => a.y - b.y);
         return minima;
     }
-
 }
