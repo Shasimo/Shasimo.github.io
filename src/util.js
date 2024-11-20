@@ -152,3 +152,9 @@ function percentageToPoint(percentage, edge) {
     return new Point(edge[0].x * (1-percentage) + edge[1].x * percentage,
         edge[0].y * (1-percentage) + edge[1].y * percentage);
 }
+
+function intersectionOfIntervals(int1, int2) {
+    if (int1[1] < int2[0] || int2[1] < int1[0]) return null;
+
+    return [Math.max(0, int1[0], int2[0]), Math.min(1, int1[1], int2[1])];
+}

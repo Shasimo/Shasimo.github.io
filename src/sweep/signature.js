@@ -47,6 +47,8 @@ class Signature {
         let visibilityInterval = embedded.computeVisibilityInterval(v, lastEdge);
 
         let edgeFragment = embedded.fragments[lastEdge.portalEnd1.fragmentIdx];
+        console.log(embedded.copy(), edgeFragment.copy());
+
         return new DistanceFunction(
             this,
             visibilityInterval,

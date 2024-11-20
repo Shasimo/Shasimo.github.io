@@ -9,12 +9,14 @@ class MapEntry {
     }
 
     insertSignatureA(signature, distanceFunction) {
+        if (!this.envA.insert(distanceFunction)) return false;
         this.sA.add(signature);
-        this.envA.insert(distanceFunction);
+        return true;
     }
 
     insertSignatureB(signature, distanceFunction) {
+        if (!this.envB.insert(distanceFunction)) return false;
         this.sB.add(signature);
-        this.envB.insert(distanceFunction);
+        return true;
     }
 }

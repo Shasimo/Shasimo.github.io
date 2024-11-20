@@ -29,11 +29,10 @@ class Portalgon {
         let edgeFragment = this.fragments[edge.portalEnd1.fragmentIdx];
         let edgeVert1 = edgeFragment.vertices[edge.portalEnd1.edge[0]].add(edgeFragment.origin);
         let edgeVert2 = edgeFragment.vertices[edge.portalEnd1.edge[1]].add(edgeFragment.origin)
-        let resolution = 1000;
         let interval = null;
 
-        for (let lower = 0; lower <= resolution; lower++) {
-            let alpha = lower / resolution;
+        for (let lower = 0; lower <= RESOLUTION; lower++) {
+            let alpha = lower / RESOLUTION;
             let current = new Point(
                 edgeVert1.x * (1 - alpha) + edgeVert2.x * alpha,
                 edgeVert1.y * (1 - alpha) + edgeVert2.y * alpha
@@ -47,14 +46,14 @@ class Portalgon {
 
         if (interval === null) return null;
 
-        interval[1] = binarySearch(interval[0] * resolution, resolution, p => {
-            let alpha = p / resolution;
+        interval[1] = binarySearch(interval[0] * RESOLUTION, RESOLUTION, p => {
+            let alpha = p / RESOLUTION;
             let current = new Point(
                 edgeVert1.x * (1 - alpha) + edgeVert2.x * alpha,
                 edgeVert1.y * (1 - alpha) + edgeVert2.y * alpha
             );
             return this.canSourceSeeDestination(v, current);
-        }) / resolution;
+        }) / RESOLUTION;
 
         if (interval[1] === null) throw new Error("Upper end of the interval is null: this should NOT happen.");
 

@@ -11,12 +11,11 @@ class Envelope {
         return new miniDataStruct(functionSet);
     }
 
-    _computeIntervalContinum(interval, precision) {
+    _computeIntervalContinum(interval) {
         let array = [];
-        let nb_points = 10**precision;
         let new_percentage;
-        for(let i = 1; i < nb_points; i++) {
-            new_percentage = interval[0] + i * (interval[1] - interval[0])/nb_points;
+        for (let i = 0; i <= RESOLUTION; i++) {
+            new_percentage = interval[0] + i * (interval[1] - interval[0]) / RESOLUTION;
             array.push(new_percentage);
         }
         return array;
@@ -33,16 +32,15 @@ class Envelope {
      * 
      *******/
     nextLocalMinimum(delta) {
-        for (let i = 0; i<this.envelope.localMinimumList.length; i++) {
-            if (this.envelope.localMinimumList[i].y <= delta) continue;
+        for (let i = 0; i < this.envelope.localMinimumList.length; i++) {
+            if (this.envelope.localMinimumList[i].y < delta) continue;
             return this.envelope.localMinimumList[i].copy();
         }
         return new Point(Infinity, Infinity); // no more candidate points
     }
 
     nextVertex(f, q) {
-        let precision = 5;
-        let valueArray = this._computeIntervalContinum(f.interval, precision);
+        let valueArray = this._computeIntervalContinum(f.interval);
 
         let idxFirstFunction = binarySearch(0, this.envelope.sortedIntervalsOnX.length - 1, (c) => isInInterval(this.envelope.sortedIntervalsOnX[c].interval, q, this.envelope.sortedIntervalsOnX[c].edgeInterval));
         let functionFPrime = this.envelope.sortedIntervalsOnX[idxFirstFunction];
@@ -51,13 +49,13 @@ class Envelope {
         let vk = binarySearch(0, valueArray.length - 1, c => valueArray[c] <= percentageToPoint(functionFPrime.interval[1], functionFPrime.edgeInterval));
         let idxIntersection = binarySearch(idxQx, vk, p => f.computeDistance(valueArray[p]) <= functionFPrime.computeDistance(valueArray[p]));
 
-        if(!(idxIntersection === idxQx)) {return percentageToPoint(valueArray[idxIntersection], f.edgeInterval);}
+        if (!(idxIntersection === idxQx)) { return percentageToPoint(valueArray[idxIntersection], f.edgeInterval); }
 
         let candidates = [];
         let left = this.envelope.sortedIntervalsOnX.filter(element => element.getPointsInterval()[0].x < q.x);
         let right = this.envelope.sortedIntervalsOnX.filter(element => element.getPointsInterval()[1].x > q.x);
         let functionToIterate = left.concat(right);
-        for(let i = 0; i < functionToIterate.length; i++) {
+        for (let i = 0; i < functionToIterate.length; i++) {
             functionFPrime = functionToIterate[i];
             let vj = binarySearch(0, valueArray.length - 1, c => valueArray[c] <= percentageToPoint(functionFPrime.interval[0], functionFPrime.edgeInterval));
             vk = binarySearch(0, valueArray.length - 1, c => valueArray[c] <= percentageToPoint(functionFPrime.interval[1], functionFPrime.edgeInterval));
@@ -76,17 +74,32 @@ class Envelope {
 
         candidates.sort((a, b) => a.y - b.y);
         return candidates.find(candidate => candidate.y > q.y);
+    }
 
+    _isFMinimalSomewhere(f) {
+        for (let i = f.interval[0]; i <= f.interval[1]; i += 1 / RESOLUTION) {
+            let minimal = true;
+            for (let fun of this.envelope.functionsList) {
+                if (f.computeDistance(i) >= fun.computeDistance(i)) {
+                    minimal = false;
+                    break;
+                }
+            }
+            if (minimal === true) return true
+        }
+        return false;
     }
 
     /**
      * Insert a new function 
      */
     insert(f) {
+        if (!this._isFMinimalSomewhere(f)) return false;
+
         this.envelope.functionsList.push(f);
         this.envelope = new miniDataStruct(this.envelope.functionsList);
+        return true;
     }
-
 }
 
 class miniDataStruct {
@@ -106,8 +119,8 @@ class miniDataStruct {
 
     _getOrthogonalProjection(p1, p2Inter, p3Inter) {
         let num = (p1.x - p2Inter.x) * (p3Inter.x - p2Inter.x) + (p1.y - p2Inter.y) * (p3Inter.y - p2Inter.y);
-        let dem = (p3Inter.x - p2Inter.x)**2 + (p3Inter.y - p2Inter.y)**2;
-        let middleTerm = num/dem;
+        let dem = (p3Inter.x - p2Inter.x) ** 2 + (p3Inter.y - p2Inter.y) ** 2;
+        let middleTerm = num / dem;
         let new_x = p2Inter.x + middleTerm * (p3Inter.x - p2Inter.x);
         let new_y = p2Inter.y + middleTerm * (p3Inter.y - p2Inter.y);
         return new Point(new_x, new_y);
@@ -124,16 +137,18 @@ class miniDataStruct {
             let validInterval = [percentageToPoint(miniEnvelope[i].interval[0], miniEnvelope[i].edgeInterval), percentageToPoint(miniEnvelope[i].interval[1], miniEnvelope[i].edgeInterval)];
             let vertex = miniEnvelope[i].lastVertexPosition;
             let projectedPoint = this._getOrthogonalProjection(vertex, validInterval[0], validInterval[1]);
+            let localMinimumPercentage;
 
             if (isInInterval(miniEnvelope[i].interval, projectedPoint, miniEnvelope[i].edgeInterval)) {
                 localMinimum = projectedPoint;
+                localMinimumPercentage = localMinimum.toPercentage(miniEnvelope[i].edgeInterval);
             }
             else {
                 let distanceP1Inter = computeEuclideanDistance(projectedPoint, validInterval[0]);
                 let distanceP2Inter = computeEuclideanDistance(projectedPoint, validInterval[1]);
-                localMinimum = distanceP1Inter > distanceP2Inter ? validInterval[1] : validInterval[0];
+                localMinimumPercentage = distanceP1Inter > distanceP2Inter ? miniEnvelope[i].interval[1] : miniEnvelope[i].interval[0];
             }
-            let localMinimumPercentage = localMinimum.toPercentage(miniEnvelope[i].edgeInterval);
+
             minima.push(new Point(localMinimumPercentage, miniEnvelope[i].computeDistance(localMinimumPercentage)));
         }
         minima.sort((a, b) => a.y - b.y);

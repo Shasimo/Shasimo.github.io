@@ -63,6 +63,6 @@ class Point {
 
     toPercentage(edge) {
         let edgeLength = computeEuclideanDistance(edge[0], edge[1]);
-        return computeEuclideanDistance(this, edge[0])/edgeLength;
+        return Math.round(computeEuclideanDistance(this, edge[0])/edgeLength * RESOLUTION) / RESOLUTION;
     }
 }

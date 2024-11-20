@@ -121,7 +121,9 @@ function isOverlapping(fragment1, fragment2, exceptEdgeF1, exceptEdgeF2) {
 }
 
 function getAngleBetween(v1, v2) {
-    let angle = Math.acos(v1.dot(v2) / (v1.norm() * v2.norm()));
+    // remove any weird float imprecision error
+    let arg = Math.max(Math.min(v1.dot(v2) / (v1.norm() * v2.norm()), 1), -1);
+    let angle = Math.acos(arg);
     if (tertiaryOrient(v1, new Point(0, 0), v2) > 0)
         angle = -angle;
     return angle;
