@@ -1,4 +1,4 @@
-class mainDataStruct {
+class Envelope {
     constructor(functionSet) {
         this.envelope = this._createMiniDataStruct(functionSet);
     }
@@ -83,8 +83,8 @@ class mainDataStruct {
      * Insert a new function 
      */
     insert(f) {
-        let new_function_sets = this.envelope.functionsList.push(f);
-        this.envelope = new miniDataStruct((new_function_sets));
+        this.envelope.functionsList.push(f);
+        this.envelope = new miniDataStruct(this.envelope.functionsList);
     }
 
 }

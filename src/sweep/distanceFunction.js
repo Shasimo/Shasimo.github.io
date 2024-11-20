@@ -1,6 +1,6 @@
 
 class DistanceFunction{
-    constructor(signature, interval, distanceLastVertexFromSource, vertex, edge) {
+    constructor(signature, interval, vertex, edge, distanceLastVertexFromSource=0) {
         this.signature = signature;
         this.interval = interval;
         this.distanceLastVertexFromSource = distanceLastVertexFromSource;

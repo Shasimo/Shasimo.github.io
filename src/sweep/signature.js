@@ -44,17 +44,18 @@ class Signature {
         let embedded = ret[0];
         let v = ret[1][ret[1].length - 1];
         let visibilityInterval = newSig.computeVisibilityInterval(embedded, edge, v);
+        console.log(visibilityInterval);
 
         let edgeFragment = embedded.fragments[edge.portalEnd1.fragmentIdx];
         return new DistanceFunction(
             this,
             visibilityInterval,
-            0,
             v,
             [
                 edgeFragment.vertices[edge.portalEnd1.edge[0]].add(edgeFragment.origin),
                 edgeFragment.vertices[edge.portalEnd1.edge[1]].add(edgeFragment.origin)
-            ]
+            ],
+            0
         );
     }
 
@@ -86,7 +87,6 @@ class Signature {
                 edgeVert1.y * (1 - alpha) + edgeVert2.y * alpha
             );
 
-            // check if the edge is really visible
             if (this.canSourceSeeDestination(v, current, embeddedPortalgon)) {
                 interval = [alpha, null];
                 break;
