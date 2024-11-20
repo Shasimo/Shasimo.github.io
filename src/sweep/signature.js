@@ -28,7 +28,7 @@ class Signature {
         }
     }
 
-    toDistanceFunction(portalgon, edge) {
+    toDistanceFunction(portalgon, edge, distV) {
         /**
          * Computes f_{\sigma|e}
          */
@@ -41,13 +41,18 @@ class Signature {
             null
         );
 
+        let verticesEmbed = ret[1];
         let embedded = ret[0];
+
+        for (let i = 0; i < verticesEmbed.length - 1; i++) {
+            if (!embedded.canSourceSeeDestination(verticesEmbed[i], verticesEmbed[i+1])) return null;
+        }
+
         let lastEdge = embedded.portals[embedded.portals.length - 1];
         let v = ret[1][ret[1].length - 1];
         let visibilityInterval = embedded.computeVisibilityInterval(v, lastEdge);
 
         let edgeFragment = embedded.fragments[lastEdge.portalEnd1.fragmentIdx];
-        console.log(embedded.copy(), edgeFragment.copy());
 
         return new DistanceFunction(
             this,
@@ -57,7 +62,7 @@ class Signature {
                 edgeFragment.vertices[lastEdge.portalEnd1.edge[0]].add(edgeFragment.origin),
                 edgeFragment.vertices[lastEdge.portalEnd1.edge[1]].add(edgeFragment.origin)
             ],
-            0
+            distV
         );
     }
 
@@ -83,7 +88,8 @@ class Signature {
             else
                 path.push(this.path[i]);
         }
-        path.push(newEdge);
+        if (newEdge !== null)
+            path.push(newEdge);
         return new Signature(this.originFragmentIdx, this.source.copy(), path);
     }
 }

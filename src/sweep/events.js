@@ -1,9 +1,8 @@
 class Type1Event {
-    constructor(edge, fragmentIdxOut, distanceFunction, minimumXCoord) {
+    constructor(edge, fragmentIdxOut, distanceFunction) {
         this.edge = edge;
         this.fragmentIdxOut = fragmentIdxOut;
         this.distanceFunction = distanceFunction;
-        this.minimumXCoord = minimumXCoord;
     }
 }
 
@@ -21,5 +20,14 @@ class Type3Event {
         this.distanceFunctionEnvA = distanceFunctionEnvA;
         this.distanceFunctionEnvB = distanceFunctionEnvB;
         this.intersectionXCoord = intersectionXCoord;
+    }
+}
+
+class Type4Event {
+    constructor(edge, fragmentIdxOut, distanceFunction, vertex) {
+        this.edge = edge;
+        this.fragmentIdxOut = fragmentIdxOut;
+        this.distanceFunction = distanceFunction;
+        this.touchedVertex = vertex;
     }
 }

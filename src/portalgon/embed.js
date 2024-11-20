@@ -24,11 +24,13 @@ function generateEmbeddingFromSignature(portalgon, signature, destFragmentIdx, d
             embeddedPortalgon.fragments.push(newFragmentPortal[0]);
             embeddedPortalgon.portals.push(newFragmentPortal[1]);
             lastOriginFragmentIdx = currentPortal.portalEnd2.fragmentIdx;
-        } else
+        } else　{
+            console.log(i, signature.path, embeddedPortalgon.fragments[nbFragments]);
             points.push(
                 embeddedPortalgon.fragments[nbFragments].vertices[signature.path[i]].add(
                     embeddedPortalgon.fragments[nbFragments].origin)
             );
+        }
     }
 
     if (destFragmentIdx !== null && lastOriginFragmentIdx !== destFragmentIdx)
