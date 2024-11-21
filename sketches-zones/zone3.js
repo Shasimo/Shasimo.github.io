@@ -20,7 +20,6 @@ function draw_zone3(sketch) {
         spm.construct();
         let sig = spm.query(destination[1], destination[0].copy());
 
-        console.log(sig);
         if (sig === null) {
             console.log("No signature found.");
             portalTestPoints = [];

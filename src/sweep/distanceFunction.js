@@ -19,15 +19,5 @@ class DistanceFunction{
     getPointsInterval() {
         return [percentageToPoint(this.interval[0], this.edgeInterval), percentageToPoint(this.interval[1], this.edgeInterval)];
     }
-
-    copy() {
-        return new DistanceFunction(
-            this.signature.copy(null),
-            [...this.interval],
-            this.lastVertexPosition.copy(),
-            [this.edgeInterval[0].copy(), this.edgeInterval[1].copy()],
-            this.distanceLastVertexFromSource
-        );
-    }
 }
 

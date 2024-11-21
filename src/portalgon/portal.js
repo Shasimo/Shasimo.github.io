@@ -70,6 +70,7 @@ class Portal {
         this.portalEnd1 = null;
         this.portalEnd2 = null;
         this.color = null;
+        this.id = -1;
     }
 
     setFirstEnd(portalEnd) {
@@ -109,11 +110,16 @@ class Portal {
         sketch.stroke("black");
     }
 
+    equals(other) {
+        return this.id === other.id;
+    }
+
     copy() {
         let ret = new Portal();
         ret.setFirstEnd(this.portalEnd1.copy());
         ret.setSecondEnd(this.portalEnd2.copy());
         ret.color = this.color;
+        ret.id = this.id;
         return ret;
     }
 }

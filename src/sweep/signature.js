@@ -1,5 +1,5 @@
 class Signature {
-    constructor(originFragmentIdx, sourcePoint, path) {
+    constructor(portalgon, originFragmentIdx, sourcePoint, path) {
         /*
         * originFragmentIdx: the idx of the first fragment of the path
         * path: a list of Portals and ints:
@@ -26,33 +26,30 @@ class Signature {
             } else
                 this.path.push(path[i]);
         }
+
+        let r = generateEmbeddingFromSignature(portalgon, this, lastFragmentIdx, null);
+        this.embedding = r[0];
+        this.embeddedPath = r[1];
     }
 
     toDistanceFunction(portalgon, edge, distV) {
         /**
          * Computes f_{\sigma|e}
          */
-        let newSig = this.copy(edge.copy());
 
-        let ret = generateEmbeddingFromSignature(
-            portalgon,
-            newSig,
-            null,
-            null
-        );
+        // create a new signature when we add the last edge at the end, in that way we know which edge we aim
+        // for in the last fragment of the embedding
+        let newSig = this.copy(portalgon.copy(), edge.copy());
 
-        let verticesEmbed = ret[1];
-        let embedded = ret[0];
-
-        for (let i = 0; i < verticesEmbed.length - 1; i++) {
-            if (!embedded.canSourceSeeDestination(verticesEmbed[i], verticesEmbed[i+1])) return null;
+        for (let i = 0; i < newSig.embeddedPath.length - 1; i++) {
+            if (!newSig.embedding.canSourceSeeDestination(newSig.embeddedPath[i], newSig.embeddedPath[i+1])) return null;
         }
 
-        let lastEdge = embedded.portals[embedded.portals.length - 1];
-        let v = ret[1][ret[1].length - 1];
-        let visibilityInterval = embedded.computeVisibilityInterval(v, lastEdge);
+        let lastEdge = newSig.embedding.portals[newSig.embedding.portals.length - 1];
+        let v = newSig.embeddedPath[newSig.embeddedPath.length - 1];
+        let visibilityInterval = newSig.embedding.computeVisibilityInterval(v, lastEdge);
 
-        let edgeFragment = embedded.fragments[lastEdge.portalEnd1.fragmentIdx];
+        let edgeFragment = newSig.embedding.fragments[lastEdge.portalEnd1.fragmentIdx];
 
         return new DistanceFunction(
             this,
@@ -80,7 +77,7 @@ class Signature {
         return -1;
     }
 
-    copy(newEdge) {
+    copy(portalgon, newEdge) {
         let path = [];
         for (let i = 0; i < this.path.length; i++) {
             if (this.path[i] instanceof Portal)
@@ -90,6 +87,7 @@ class Signature {
         }
         if (newEdge !== null)
             path.push(newEdge);
-        return new Signature(this.originFragmentIdx, this.source.copy(), path);
+
+        return new Signature(portalgon, this.originFragmentIdx, this.source.copy(), path);
     }
 }

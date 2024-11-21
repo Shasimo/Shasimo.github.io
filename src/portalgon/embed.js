@@ -4,14 +4,14 @@ function generateEmbeddingFromSignature(portalgon, signature, destFragmentIdx, d
      *
      * portalgon: the origin portalgon where the path is set
      */
-    let originFragment = portalgon.fragments[signature.originFragmentIdx].copy();
+    let originFragment = portalgon.fragments[signature.originFragmentIdx];
     let points = [signature.source.add(portalgon.fragments[signature.originFragmentIdx].origin)];
     originFragment.fragmentIdx = 0;
 
     let embeddedPortalgon = new Portalgon([originFragment],  []);
 
     let lastPortalIdxInPath = signature.getLastPortalIdxInPath();
-    let lastOriginFragmentIdx = 0;
+    let lastOriginFragmentIdx = destFragmentIdx;
 
     for (let i = 0; i < signature.path.length; i++) {
         let nbFragments = embeddedPortalgon.fragments.length - 1;
@@ -31,6 +31,10 @@ function generateEmbeddingFromSignature(portalgon, signature, destFragmentIdx, d
                     embeddedPortalgon.fragments[nbFragments].origin)
             );
         }
+    }
+
+    if (signature.getLastPortalIdxInPath() === -1) {
+        originFragment.attachedVertex = destination;
     }
 
     if (destFragmentIdx !== null && lastOriginFragmentIdx !== destFragmentIdx)
