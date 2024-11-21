@@ -13,11 +13,20 @@ function draw_zone3(sketch) {
     sketch.background(200);
     sketch.text("Embedding of random path", 30, 50);
 
-    if (triangulatedPortalgon !== null && portalTest === null && source !== null && destination !== null) {
-        let spm = new ShortestPathMap(triangulatedPortalgon, source[0].copy(), source[1]);
+    if (triangulatedPortalgon !== null && portalTest === null && portalTestPoints === null && destination !== null && source !== null) {
+        let originalPortalgon = triangulatedPortalgon.copy();
+        let spm = new ShortestPathMap(originalPortalgon, source[0].copy(), source[1]);
+
         spm.construct();
         let sig = spm.query(destination[1], destination[0].copy());
-        let ret = generateEmbeddingFromSignature(triangulatedPortalgon, sig, destination[1], destination[0].copy());
+
+        console.log(sig);
+        if (sig === null) {
+            console.log("No signature found.");
+            portalTestPoints = [];
+            return;
+        }
+        let ret = generateEmbeddingFromSignature(originalPortalgon, sig, destination[1], destination[0].copy());
         portalTest = ret[0];
         portalTestPoints = ret[1];
     }

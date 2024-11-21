@@ -53,10 +53,17 @@ class ShortestPathMap {
     query(destinationFragmentIdx, destinationPos) {
         let bestSignature = null;
         let bestDistance = Infinity;
+        if (destinationFragmentIdx === this.sourceFragmentIdx)
+            return new Signature(this.sourceFragmentIdx, this.s, []);
+
         for (let portal of this.portalFragmentIdxMap.get(destinationFragmentIdx)) {
-            for (let distanceFunction of this.edgeMap.get(portal).envA.envelope.functionsList) {
-                if (distanceFunction.signature.path[distanceFunction.signature.getLastPortalIdxInPath()].portalEnd2.fragmentIdx !== destinationFragmentIdx)
+            for (let distanceFunction of this.edgeMap.get(portal).env.envelope.functionsList) {
+                let lastPortalIdx = distanceFunction.signature.getLastPortalIdxInPath();
+                if ((lastPortalIdx === -1 && destinationFragmentIdx !== this.sourceFragmentIdx) ||
+                    (lastPortalIdx !== -1 && distanceFunction.signature.path[lastPortalIdx].portalEnd2.fragmentIdx !== destinationFragmentIdx))
                     continue;
+
+                console.log(distanceFunction);
 
                 let ret = generateEmbeddingFromSignature(
                     this.portalgon,
@@ -64,31 +71,7 @@ class ShortestPathMap {
                     destinationFragmentIdx,
                     destinationPos
                 );
-                let verticesOfPath = ret[1];
-                let lastVertexEmbedPos = verticesOfPath[verticesOfPath.length - 2];
-                let destinationEmbedPos = verticesOfPath[verticesOfPath.length - 1];
-                let embed = ret[0];
-                if (embed.canSourceSeeDestination(lastVertexEmbedPos, destinationEmbedPos)) {
-                    let totalDist = 0;
-                    for (let i = 0; i < verticesOfPath.length - 1; i++)
-                        totalDist += computeEuclideanDistance(verticesOfPath[i], verticesOfPath[i+1]);
 
-                    if (bestDistance > totalDist) {
-                        bestDistance = totalDist;
-                        bestSignature = distanceFunction.signature;
-                    }
-                }
-            }
-            for (let distanceFunction of this.edgeMap.get(portal).envB.envelope.functionsList) {
-                if (distanceFunction.signature.path[distanceFunction.signature.getLastPortalIdxInPath()].portalEnd2.fragmentIdx !== destinationFragmentIdx)
-                    continue;
-
-                let ret = generateEmbeddingFromSignature(
-                    this.portalgon,
-                    distanceFunction.signature,
-                    destinationFragmentIdx,
-                    destinationPos
-                );
                 let verticesOfPath = ret[1];
                 let lastVertexEmbedPos = verticesOfPath[verticesOfPath.length - 2];
                 let destinationEmbedPos = verticesOfPath[verticesOfPath.length - 1];
@@ -120,6 +103,8 @@ class ShortestPathMap {
     }
 
     insertNewSignatures(fragmentIdx, edge, distanceFunction, delta) {
+        if (!this.portalFragmentIdxMap.has(fragmentIdx)) return;
+
         // insert new signatures into adjacent edges
         for (let portal of this.portalFragmentIdxMap.get(fragmentIdx)) {
 
@@ -144,20 +129,14 @@ class ShortestPathMap {
 
                 if (df.interval === null) continue; // unreachable portal
 
-                let nextLocMin;
-                let fragmentIdxOut;
-                if (portalEnd === portal.portalEnd1) {
-                    fragmentIdxOut = portal.portalEnd2.fragmentIdx;
-                    if (!currentMapEntry.insertSignatureA(sig, df)) continue;
-                    nextLocMin = currentMapEntry.envA.nextLocalMinimum(delta);
-                } else {
-                    fragmentIdxOut = portal.portalEnd1.fragmentIdx;
-                    if (!currentMapEntry.insertSignatureB(sig, df)) continue;
-                    nextLocMin = currentMapEntry.envB.nextLocalMinimum(delta);
-                }
+                let fragmentIdxOut = portalEnd === portal.portalEnd1 ? portal.portalEnd2.fragmentIdx : portal.portalEnd1.fragmentIdx;
+
+                if (!currentMapEntry.insertSignature(sig, df)) continue;
+                let nextLocMin = currentMapEntry.env.nextLocalMinimum(delta);
 
                 let fragmentOut = this.portalgon.fragments[fragmentIdxOut];
                 this.eventHeap.add([nextLocMin.y, new Type1Event(portal, fragmentIdxOut, df)]);
+
                 if (0 === df.interval[0]) {
                     let dist = df.computeDistance(0);
 
@@ -166,7 +145,8 @@ class ShortestPathMap {
                     for (idx = 0; idx < fragmentOut.vertices.length; idx++)
                         if (fragmentOut.vertices[idx].add(fragmentOut.origin).equals(df.edgeInterval[0])) break;
 
-                    this.eventHeap.add([dist, new Type4Event(portal, fragmentIdxOut, df, idx)]);
+                    if (idx !== 3)
+                        this.eventHeap.add([dist, new Type4Event(portal, fragmentIdxOut, df, idx)]);
                 }
                 if (1 === df.interval[1]) {
                     let dist = df.computeDistance(1);
@@ -175,7 +155,8 @@ class ShortestPathMap {
                     for (idx = 0; idx < fragmentOut.vertices.length; idx++)
                         if (fragmentOut.vertices[idx].add(fragmentOut.origin).equals(df.edgeInterval[1])) break;
 
-                    this.eventHeap.add([dist, new Type4Event(portal, fragmentIdxOut, df, idx)]);
+                    if (idx !== 3)
+                        this.eventHeap.add([dist, new Type4Event(portal, fragmentIdxOut, df, idx)]);
                 }
             }
         }

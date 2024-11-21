@@ -40,17 +40,13 @@ function draw_zone2(sketch) {
         sketch.text("d", embeddedDestination.x, embeddedDestination.y);
         embeddedDestination.draw(sketch, "red", 8);
     }
-    if (source === null || destination === null) {
-        previewPointZone2 = new Point(sketch.mouseX, sketch.mouseY);
-        let color = source === null ? "blue" : "red";
-        previewPointZone2.draw(sketch, color, 8);
-    } else
-        previewPointZone2 = null;
+
+    previewPointZone2 = new Point(sketch.mouseX, sketch.mouseY);
+    let color = source === null ? "blue" : "red";
+    previewPointZone2.draw(sketch, color, 8);
 }
 
 function clickZone2() {
-    if (previewPointZone2 === null) return;
-
     for (let i = 0; i < triangulatedPortalgon.fragments.length; i++) {
         let currentVert = triangulatedPortalgon.fragments[i].vertices;
         if (isInTriangle(
@@ -62,8 +58,13 @@ function clickZone2() {
         ) {
             if (source === null)
                 source = [previewPointZone2.sub(triangulatedPortalgon.fragments[i].origin), i];
-            else
+            else {
                 destination = [previewPointZone2.sub(triangulatedPortalgon.fragments[i].origin), i];
+                portalTest = null;
+                portalTestPoints = null;
+            }
+
+            break;
         }
     }
 }

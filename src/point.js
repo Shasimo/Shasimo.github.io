@@ -15,7 +15,7 @@ class Point {
     }
 
     equals(other) {
-        return this.x === other.x && this.y === other.y;
+        return Math.abs(this.x - other.x) < 1 / RESOLUTION && Math.abs(this.y - other.y) < 1 / RESOLUTION;
     }
 
     add(other) {
