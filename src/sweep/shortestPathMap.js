@@ -61,13 +61,13 @@ class ShortestPathMap {
         for (let portal of this.portalFragmentIdxMap.get(destinationFragmentIdx)) {
             for (let distanceFunction of this.edgeMap.get(portal).env.envelope.functionsList) {
 
-                console.log(distanceFunction);
+                // console.log(distanceFunction);
+                // has to exist because we are not in the original source fragment
                 let lastPortalIdx = distanceFunction.signature.getLastPortalIdxInPath();
-                if ((lastPortalIdx === -1 && this.sourceFragmentIdx !== destinationFragmentIdx) ||
-                    (lastPortalIdx !== -1 && distanceFunction.signature.path[lastPortalIdx].portalEnd2.fragmentIdx !== destinationFragmentIdx))
+                if (distanceFunction.signature.path[lastPortalIdx].portalEnd2.fragmentIdx !== destinationFragmentIdx)
                     continue;
 
-                console.log(distanceFunction);
+                // console.log(distanceFunction);
 
                 let ret = generateEmbeddingFromSignature(
                     this.portalgon.copy(),
@@ -96,7 +96,6 @@ class ShortestPathMap {
     }
 
     runType1Event(event, delta) {
-        console.log(event, delta);
         this.insertNewSignatures(event.fragmentIdxOut, event.edge, event.distanceFunction, delta);
     }
 
@@ -106,7 +105,7 @@ class ShortestPathMap {
 
         let newPath = [];
         if (distanceFunction !== null) {
-            newPath = [...distanceFunction.signature.path, edge];
+            newPath = [...distanceFunction.signature.path];
         }
 
         let sig = new Signature(this.portalgon.copy(), this.sourceFragmentIdx, this.s, newPath);
@@ -124,23 +123,24 @@ class ShortestPathMap {
             let currentMapEntry = this.edgeMap.get(portal);
 
             for (let portalEnd of [portal.portalEnd1, portal.portalEnd2]) {
+                // only care about the end of the portal we are touching first
                 if (portalEnd.fragmentIdx !== fragmentIdx) continue;
+
+                console.log(edge, fragmentIdx, sig, portal, distV);
 
                 let df = sig.toDistanceFunction(this.portalgon.copy(), portal, distV);
 
                 if (df.interval === null) continue; // unreachable portal
 
+                // idx of the fragment that we are coming TO
                 let fragmentIdxOut = portalEnd === portal.portalEnd1 ? portal.portalEnd2.fragmentIdx : portal.portalEnd1.fragmentIdx;
 
-                console.log(df);
-                if (!currentMapEntry.insertSignature(sig, df)) continue;
+                if (!currentMapEntry.insertSignature(df)) continue;
                 let nextLocMin = currentMapEntry.env.nextLocalMinimum(delta);
 
-                console.log(df);
-                // todo here obviously wrong, we need to pick the fragment in the portalgon associated with df
-                let fragmentOut = this.portalgon.fragments[fragmentIdxOut].copy();
-
                 this.eventHeap.add([nextLocMin.y, new Type1Event(portal, fragmentIdxOut, df)]);
+
+                let fragmentOut = df.signature.getLastFragmentInEmbedding().copy();
 
                 if (0 === df.interval[0]) {
                     let dist = df.computeDistance(0);
@@ -150,8 +150,20 @@ class ShortestPathMap {
                     for (idx = 0; idx < fragmentOut.vertices.length; idx++)
                         if (fragmentOut.vertices[idx].add(fragmentOut.origin).equals(df.edgeInterval[0])) break;
 
-                    if (idx !== 3)
-                        this.eventHeap.add([dist, new Type4Event(portal, fragmentIdxOut, df, idx)]);
+                    if (idx !== 3) {
+                        let sig = new Signature(
+                            this.portalgon.copy(),
+                            this.sourceFragmentIdx,
+                            this.s,
+                            [...newPath, idx],
+                        );
+                        let distf = sig.toDistanceFunction(this.portalgon.copy(), portal, dist);
+                        if (distf === null) return;
+
+                        if (currentMapEntry.insertSignature(distf)) {
+                            this.eventHeap.add([dist, new Type1Event(portal, fragmentIdxOut, distf)]);
+                        }
+                    }
                 }
                 if (1 === df.interval[1]) {
                     let dist = df.computeDistance(1);
@@ -160,8 +172,20 @@ class ShortestPathMap {
                     for (idx = 0; idx < fragmentOut.vertices.length; idx++)
                         if (fragmentOut.vertices[idx].add(fragmentOut.origin).equals(df.edgeInterval[1])) break;
 
-                    if (idx !== 3)
-                        this.eventHeap.add([dist, new Type4Event(portal, fragmentIdxOut, df, idx)]);
+                    if (idx !== 3) {
+                        let sig = new Signature(
+                            this.portalgon.copy(),
+                            this.sourceFragmentIdx,
+                            this.s,
+                            [...newPath, idx],
+                        );
+                        let distf = sig.toDistanceFunction(this.portalgon.copy(), portal, dist);
+                        if (distf === null) return;
+
+                        if (currentMapEntry.insertSignature(distf)) {
+                            this.eventHeap.add([dist, new Type1Event(portal, fragmentIdxOut, distf)]);
+                        }
+                    }
                 }
             }
         }

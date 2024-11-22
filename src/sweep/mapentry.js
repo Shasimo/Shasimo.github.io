@@ -3,7 +3,7 @@ class MapEntry {
         this.env = new Envelope([]);
     }
 
-    insertSignature(signature, distanceFunction) {
+    insertSignature(distanceFunction) {
         return this.env.insert(distanceFunction);
     }
 }

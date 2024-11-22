@@ -52,7 +52,7 @@ class Signature {
         let edgeFragment = newSig.embedding.fragments[lastEdge.portalEnd1.fragmentIdx];
 
         return new DistanceFunction(
-            this,
+            newSig,
             visibilityInterval,
             v,
             [
@@ -61,6 +61,10 @@ class Signature {
             ],
             distV
         );
+    }
+
+    getLastFragmentInEmbedding() {
+        return this.embedding.fragments[this.embedding.fragments.length - 1];
     }
 
     getLastPortalIdxInPath() {

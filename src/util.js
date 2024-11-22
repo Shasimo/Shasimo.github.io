@@ -60,6 +60,10 @@ function segmentsIntersectNotStrict(p1l1, p2l1, p1l2, p2l2) {
     /**
      * Returns true iff the segment ]p1l1 p2l1[ intersects the segment ]p1l2 p2L2[
      */
+    if ((isPointInSegment(p1l1, p2l1, p1l2) && isPointInSegment(p1l1, p2l1, p2l2)) ||
+        (isPointInSegment(p1l2, p2l2, p1l1) && isPointInSegment(p1l2, p2l2, p2l1)))
+        return false;
+
     if ((p1l1.equals(p1l2) && p2l1.equals(p2l2)) || (p1l1.equals(p2l2) && p2l1.equals(p1l2)))
         return true;
 
