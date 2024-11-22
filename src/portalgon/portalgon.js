@@ -46,6 +46,20 @@ class Portalgon {
 
         if (interval === null) return null;
 
+        for (let upper = RESOLUTION; upper >= interval[0] * RESOLUTION; upper--) {
+            let alpha = upper / RESOLUTION;
+            let current = new Point(
+                edgeVert1.x * (1 - alpha) + edgeVert2.x * alpha,
+                edgeVert1.y * (1 - alpha) + edgeVert2.y * alpha
+            );
+
+            if (this.canSourceSeeDestination(v, current, vertexFragmentIdx, edge.portalEnd1.fragmentIdx)) {
+                interval[1] = alpha;
+                break;
+            }
+        }
+
+        /*
         interval[1] = binarySearch(interval[0] * RESOLUTION, RESOLUTION, p => {
             let alpha = p / RESOLUTION;
             let current = new Point(
@@ -54,6 +68,7 @@ class Portalgon {
             );
             return this.canSourceSeeDestination(v, current, vertexFragmentIdx, edge.portalEnd1.fragmentIdx);
         }) / RESOLUTION;
+         */
 
         if (interval[1] === null) throw new Error("Upper end of the interval is null: this should NOT happen.");
 
@@ -79,7 +94,7 @@ class Portalgon {
         // we CANNOT check every fragment because the embedding could be self-intersecting.
         // because we are checking for a straight-line visibility, there cannot be any self-intersections going on
         // between the fragments of the source and the destination
-        for (let f = sourceFragmentIdx; f < destinationFragmentIdx; f++) {
+        for (let f = sourceFragmentIdx; f <= destinationFragmentIdx; f++) {
             let currentFragment = this.fragments[f];
             for (let l = 0; l < currentFragment.vertices.length; l++) {
                 let p1 = currentFragment.vertices[l].add(currentFragment.origin);
@@ -95,9 +110,9 @@ class Portalgon {
             // this means that we can pick any point in between and check whether some point on the line is in one
             // of the fragments
             if (isInTriangle(
-                currentFragment.vertices[0],
-                currentFragment.vertices[1],
-                currentFragment.vertices[2],
+                currentFragment.vertices[0].add(currentFragment.origin),
+                currentFragment.vertices[1].add(currentFragment.origin),
+                currentFragment.vertices[2].add(currentFragment.origin),
                 midPoint)
             )
                 isPathInSomeTriangle = true;

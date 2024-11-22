@@ -9,7 +9,7 @@ class DistanceFunction{
     }
 
     computeDistance(percentage) {
-        if(percentage >= this.interval[0] && percentage <= this.interval[1]) {
+        if (percentage >= this.interval[0] && percentage <= this.interval[1]) {
             let pointOnInterval = percentageToPoint(percentage, this.edgeInterval);
             return this.distanceLastVertexFromSource + computeEuclideanDistance(this.lastVertexPosition, pointOnInterval);
         }

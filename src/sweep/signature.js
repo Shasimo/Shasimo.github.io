@@ -81,10 +81,13 @@ class Signature {
         for (let i = 0; i < this.path.length; i++) {
             if (nbVertices === vertexIdx) break;
             if (this.path[i] instanceof Portal)
-                fragmentIdx = this.path[i].portalEnd2.fragmentIdx;
+                fragmentIdx++;
             else
                 nbVertices++;
         }
+
+        // we have not encountered any vertex, return the fragmentidx of the source
+        if (nbVertices === 0) return 0;
 
         return fragmentIdx;
     }
