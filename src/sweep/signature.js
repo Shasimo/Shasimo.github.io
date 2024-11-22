@@ -42,12 +42,14 @@ class Signature {
         let newSig = this.copy(portalgon.copy(), edge.copy());
 
         for (let i = 0; i < newSig.embeddedPath.length - 1; i++) {
-            if (!newSig.embedding.canSourceSeeDestination(newSig.embeddedPath[i], newSig.embeddedPath[i+1])) return null;
+            if (!newSig.embedding.canSourceSeeDestination(newSig.embeddedPath[i], newSig.embeddedPath[i+1],
+                newSig.getFragmentIdxOfVertex(i), newSig.getFragmentIdxOfVertex(i+1)))
+                return null;
         }
 
         let lastEdge = newSig.embedding.portals[newSig.embedding.portals.length - 1];
         let v = newSig.embeddedPath[newSig.embeddedPath.length - 1];
-        let visibilityInterval = newSig.embedding.computeVisibilityInterval(v, lastEdge);
+        let visibilityInterval = newSig.embedding.computeVisibilityInterval(v, newSig.getFragmentIdxOfVertex(newSig.embeddedPath.length - 1), lastEdge);
 
         let edgeFragment = newSig.embedding.fragments[lastEdge.portalEnd1.fragmentIdx];
 
@@ -69,6 +71,22 @@ class Signature {
 
     getLastFragmentInEmbedding() {
         return this.embedding.fragments[this.embedding.fragments.length - 1];
+    }
+
+    getFragmentIdxOfVertex(vertexIdx) {
+        if (vertexIdx === -1) return 0;
+
+        let nbVertices = 0;
+        let fragmentIdx = 0;
+        for (let i = 0; i < this.path.length; i++) {
+            if (nbVertices === vertexIdx) break;
+            if (this.path[i] instanceof Portal)
+                fragmentIdx = this.path[i].portalEnd2.fragmentIdx;
+            else
+                nbVertices++;
+        }
+
+        return fragmentIdx;
     }
 
     getLastPortalIdxInPath() {

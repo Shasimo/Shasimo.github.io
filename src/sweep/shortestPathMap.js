@@ -79,7 +79,8 @@ class ShortestPathMap {
                 let lastVertexEmbedPos = verticesOfPath[verticesOfPath.length - 2];
                 let destinationEmbedPos = verticesOfPath[verticesOfPath.length - 1];
                 let embed = ret[0];
-                if (embed.canSourceSeeDestination(lastVertexEmbedPos, destinationEmbedPos)) {
+                if (embed.canSourceSeeDestination(lastVertexEmbedPos, destinationEmbedPos,
+                    distanceFunction.signature.getFragmentIdxOfVertex(verticesOfPath.length - 1), destinationFragmentIdx)) {
                     let totalDist = 0;
                     for (let i = 0; i < verticesOfPath.length - 1; i++)
                         totalDist += computeEuclideanDistance(verticesOfPath[i], verticesOfPath[i+1]);
