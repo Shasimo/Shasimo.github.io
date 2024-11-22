@@ -61,7 +61,6 @@ class ShortestPathMap {
         for (let portal of this.portalFragmentIdxMap.get(destinationFragmentIdx)) {
             for (let distanceFunction of this.edgeMap.get(portal).env.envelope.functionsList) {
 
-                // console.log(distanceFunction);
                 // has to exist because we are not in the original source fragment
                 let lastPortalIdx = distanceFunction.signature.getLastPortalIdxInPath();
                 if (distanceFunction.signature.path[lastPortalIdx].portalEnd2.fragmentIdx !== destinationFragmentIdx)
@@ -126,21 +125,14 @@ class ShortestPathMap {
                 // only care about the end of the portal we are touching first
                 if (portalEnd.fragmentIdx !== fragmentIdx) continue;
 
-                console.log(edge, fragmentIdx, sig, portal, distV);
-
                 let df = sig.toDistanceFunction(this.portalgon.copy(), portal, distV);
 
-                if (df.interval === null) continue; // unreachable portal
+                if (df === null || df.interval === null) continue; // unreachable portal
 
                 // idx of the fragment that we are coming TO
                 let fragmentIdxOut = portalEnd === portal.portalEnd1 ? portal.portalEnd2.fragmentIdx : portal.portalEnd1.fragmentIdx;
 
-                if (!currentMapEntry.insertSignature(df)) continue;
-                let nextLocMin = currentMapEntry.env.nextLocalMinimum(delta);
-
-                this.eventHeap.add([nextLocMin.y, new Type1Event(portal, fragmentIdxOut, df)]);
-
-                let fragmentOut = df.signature.getLastFragmentInEmbedding().copy();
+                let fragmentOut = df.signature.getSecondToLastFragmentInEmbedding().copy();
 
                 if (0 === df.interval[0]) {
                     let dist = df.computeDistance(0);
@@ -186,6 +178,11 @@ class ShortestPathMap {
                             this.eventHeap.add([dist, new Type1Event(portal, fragmentIdxOut, distf)]);
                         }
                     }
+                }
+
+                if (currentMapEntry.insertSignature(df)) {
+                    let nextLocMin = currentMapEntry.env.nextLocalMinimum(delta);
+                    this.eventHeap.add([nextLocMin.y, new Type1Event(portal, fragmentIdxOut, df)]);
                 }
             }
         }

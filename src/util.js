@@ -65,7 +65,7 @@ function segmentsIntersectNotStrict(p1l1, p2l1, p1l2, p2l2) {
         return false;
 
     if ((p1l1.equals(p1l2) && p2l1.equals(p2l2)) || (p1l1.equals(p2l2) && p2l1.equals(p1l2)))
-        return true;
+        return false;
 
     if (p1l1.equals(p1l2) || p1l1.equals(p2l2) || p2l1.equals(p1l2) || p2l1.equals(p2l2))
         return false;

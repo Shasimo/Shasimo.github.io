@@ -63,6 +63,10 @@ class Signature {
         );
     }
 
+    getSecondToLastFragmentInEmbedding() {
+        return this.embedding.fragments[this.embedding.fragments.length - 2];
+    }
+
     getLastFragmentInEmbedding() {
         return this.embedding.fragments[this.embedding.fragments.length - 1];
     }
