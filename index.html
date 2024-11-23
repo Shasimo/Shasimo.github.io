@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <link href="css/screen.css" rel="stylesheet" />
-    <title>P5.js Sketch</title>
+    <link rel="icon" type="image/png" href="assets/images/shot.png">
+    <title>Portalgons</title>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.10.0/p5.js"></script>
     <script src="src/constants.js"></script>
@@ -43,10 +44,14 @@
     <section id="Abstract">
       <h2>Abstract</h2>
       <p>
-        This page is the gathering of our effort put in the understanding of the "shortest paths in portalgons" problem following the lecture of the paper written by Löffler,Ophelders, Staals, I.Silveira [1] in the scope of the "Computational Geometry INFO-F420" ULB course given by Mr. Stefan Langerman.
-        We here present after a brief introduction what data structure suits the problem best and the complexity brought with it.
-        We vividly encourage any interested reader to pursue the lecture of this page by reading the referenced paper [1] for further details.
-      </p>
+        This page is the gathering of our effort put in the understanding of the "Shortest Paths in Portalgons" problem
+        following the reading of the paper written by Löffler, Ophelders, Staals, I.Silveira [1] in the scope of the
+        "Computational Geometry INFO-F420" ULB course given by Mr. Stefan Langerman.
+        We present after a brief introduction the description of a shortest path map output by an algorithm taking a
+        source point allowing fast queries on the pre-processed portalgon.
+        We vividly encourage any interested reader to pursue the reading of this page with the reading the referenced
+        paper [1] for further details.
+
     </section>
 
 
@@ -54,51 +59,73 @@
       <h2>Introduction</h2>
         <p>
           What are Portalgons?<br>
-        </p>
 
         <p>
-          A portalgon is a fragment collection with identified portals.<br>
-          While fragments are simple polygons, portals are each a pair of edge of same length across any fragments.
-          A particularity of these portal edges is that they can designate either the same direction or the opposite.
+          A portalgon is a pair \((\mathcal{F},\mathcal{P})\) where \(\mathcal{F}\) is a set of <i>fragments</i> and
+          \(\mathcal{P}\) is a set of <i>portals</i>.<br>
+          A fragment is a simple polygon.
+          A portal is a pair of directed edges of same length across any fragments.
 
-      <h3>Generalization</h3>
+      <h3>Motivation</h3>
       <p>
-        Portalgons are in fact the most general representation of any polyhedral surface as you can see in the example of the unfolding of a cube (note we can still represent a not unfoldable polyhedron).<br>
-        Meaning we also have a 2D plane representation of our shape which is helpful as each face is now clearly visible. It eases the understanding of what is going on on our portalgon as we want to decide which path is the shortest within its underlying space. <br>
-        The shortest path problem in 3D thus reduces to a shortest path in a polygon.
-        Which is still not obvious of course, since multiple routes might lead to our destination.<br>
-        Where we would consider a path to be the number of vertices and the number of portal jumps.
-        We might not be able to bound the number of crossings that happen as a function of the input because of the portals.
-      </p>
-          Shortest paths between two points thus taking place on sometimes intricate or curious shapes such as the Mœbius strip.
-          The biggest challenge with the computation of the shortest path within a portalgon is when we encounter parallel portals having an offset between them in a portalgon.
-          Indeed, if we have such structure elongated to the infinity we might not be able to bound the number of crossings by a function of the input.
-          The last criteria of a portalgon is its 'happiness', a criteria which describes the maximum number of times we will cross a portal.
-          Which will come handy as explained above, to fix bounds about the complexity induced by the portal jumps.
+        Portalgons are a generalization of any polyhedral surface.<br>
+        Any polyhedron can be converted into an equivalent portalgon taking \(\mathcal{F}\) to be the set of (polygonal)
+        faces of the polyhedron and placing a portal between two fragments wherever the two corresponding faces in the
+        original polyhedron met.
+      <figure>
+        <img src="assets/images/cubeWithPortals.png" alt="Portalgon representing a cube" />
+        <figcaption>Figure 1. A portalgon equivalent to a cube and a shortest path on its surface.</figcaption>
+      </figure>
+        The shortest path problem on the surface of a polyhedron thus reduces to a shortest path problem in a portalgon.
+        Since multiple routes might lead to our destination, this problem remains tedious.<br>
 
-          <img src="assets/images/shot.png" alt="cube" />
-          <img src="assets/images/cube.png" alt="cube" />
-          <img src="assets/images/cubeWithPortals.png" alt="cube" />
-          <img src="assets/images/cylinder.png" alt="cube" />
-        </p>
+      <p>
+          Pushing the idea further, portalgons allow us to represent any shape we would be able to build by gluing and folding
+        polygons made out of paper (note that this enables us to build more than just polyhedra).
+        For instance, this means that we are able to construct a portalgon that is equivalent to a Möbius strip or the
+          curved surface of a cylinder.
 
+      <figure>
+        <img src="assets/images/möbiusStrip.png" alt="Portalgon representing a Möbius strip"/>
+      <figcaption>Figure 2. A portalgon equivalent to a Möbius strip.</figcaption>
+    </figure>
 
+      <figure>
+          <img src="assets/images/cylinder.png" alt="Portalgon representing a cylinder"/>
+          <figcaption>Figure 3. A portalgon equivalent to the curved surface of a cylinder.</figcaption>
+        </figure>
+
+        When gluing the different fragments of a portalgon \(\mathcal{P}\) together, we obtain a surface \(\Sigma\).
+        It turns out that \(\Sigma\) may not be embeddable in \(\mathbb{R}^2\) or \(\mathbb{R}^3\) without
+      self-intersections (or, as we have seen, with flat faces).
+      We say that \(\mathcal{P}\) is a <i>representation</i> of \(\Sigma\).
+      A surface can have multiple representations.
+
+      <p>
+        Crucially, this last fact enables us to compute shortest paths on some curved surfaces and self-intersecting
+        surfaces.
     </section>
 
     <section id="Inputs">
       <h2>Build your own</h2>
       <p>
-        Before going into specifics, we invite to design a portalgon using our tool here under.
+        Before going into specifics, we invite the reader to design a portalgon using our tool here under.
         This way, the created portalgon will become the subject of all further modifications and explanations.
-      </p>
+      <p>
+        <i>Usage of the tool:</i>
+        <ol>
+        <li>Click on the grid and create a fragment (must be a simple polygon).</li>
+      <li>When the current fragment is done, press <i>Next Fragment</i> and repeat until you have finished creating
+      your fragments (two fragments cannot overlap).</li>
+      <li>When every fragment is created, press <i>Next Fragment</i> one last time and press <i>Pick Portals</i>.</li>
+      <li>To place a portal, click on the dominant vertex of the edge you want to select to be an end of the portal and
+      then select another edge <i>(remember that the two edges of a portal must be of the same length!)</i>.
+      Clicking again of the dominant vertex of one of the ends of a portal toggles its direction.</li>
+      <li>When the current portal is done, click <i>Next Portal</i> and repeat until you are done placing portals.</li>
+      <li>When everything is done, press <i>Next Portal</i> one last time and click <i>Finish</i>. You are done!</li>
+      </ol>
     </section>
     <div id="zone-one"> </div>
-
-    <section id="Applications">
-      <h2>Applications</h2>
-      <h3>Are there any real examples of Portalgons?</h3>
-
-    </section>
 
     <section id="Shortest Paths">
       <h2>Shortest Paths</h2>
