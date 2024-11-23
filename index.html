@@ -46,7 +46,7 @@
       <p>
         This page is the gathering of our effort put in the understanding of the "Shortest Paths in Portalgons" problem
         following the reading of the paper written by Löffler, Ophelders, Staals, I.Silveira [1] in the scope of the
-        "Computational Geometry INFO-F420" ULB course given by Mr. Stefan Langerman.
+        "Computational Geometry INFO-F420" ULB course given by Pr. Stefan Langerman.
         We present after a brief introduction the description of a shortest path map output by an algorithm taking a
         source point allowing fast queries on the pre-processed portalgon.
         We vividly encourage any interested reader to pursue the reading of this page with the reading the referenced
@@ -57,14 +57,10 @@
 
     <section id="Introduction">
       <h2>Introduction</h2>
-        <p>
-          What are Portalgons?<br>
-
-        <p>
-          A portalgon is a pair \((\mathcal{F},\mathcal{P})\) where \(\mathcal{F}\) is a set of <i>fragments</i> and
-          \(\mathcal{P}\) is a set of <i>portals</i>.<br>
+          A portalgon is a pair \(\mathcal{P}=(\mathcal{F},\mathcal{E})\) where \(\mathcal{F}\) is a set of
+      <i>fragments</i> and \(\mathcal{E}\) is a set of <i>portals</i>.<br>
           A fragment is a simple polygon.
-          A portal is a pair of directed edges of same length across any fragments.
+          A portal is an unordered pair \(e=(e^-,e^+)\) of (distinct) directed edges of same length across any fragments.
 
       <h3>Motivation</h3>
       <p>
@@ -130,15 +126,69 @@
     <section id="Shortest Paths">
       <h2>Shortest Paths</h2>
       <p>
-        A shortest path in a portalgon is the shortest path between a pair of points lying within its underlying surface, source and destination, such that this is the shortest distance path between the two points.
+        A shortest path in a portalgon is the shortest path between a pair of points lying within its underlying surface,
+        source and destination, such that this is the shortest distance between the two points.
         There can in fact be multiple shortest paths between the two points as we are allowed to cross through portals.
-        Being intrinsicly polyhedral, meaning that can take place in the third dimension, we need to think carefully about the procedures we will use in order to find such a path, as finding a shortest path now requires to handle more spaces or fragments that may lead to multiple crossings of the same portal which could lead to an unbounded amount of crossings on some cases.
+        Being intrinsicly polyhedral, meaning that can take place in the third dimension, we need to think carefully about
+        the procedures we will use in order to find such a path, as finding a shortest path now requires to handle more
+        spaces or fragments that may lead to multiple crossings of the same portal which could lead to an unbounded
+        amount of crossings on some cases.
       </p>
-      <h3>Data Structure</h3>
-      <p>
-        We here present the data structure that maintains the informations in order to compute on such dimension.
 
-      </p>
+    </section>
+
+    <section id="Signatures">
+      <h2>Paths and Signatures</h2>
+      We define a path \(\pi:[0,1]\rightarrow \Sigma\) to be a function representing the path from a source point
+      \(s\in\Sigma\) to a destination point \(d\in\Sigma\) such that \(\pi(0)=s\) and \(\pi(1)=d\).
+      Note that the definition of a path is independent of the representation of the surface
+      \(\Sigma\) the path is located in (i.e. a portalgon).
+      For clarity, we will see paths as a collection of disconnected segments of lines from \(s\) to \(d\) in the input
+      portalgon.
+      In a portalgon \(\mathcal{P}\), a path is split into a set of maximal subpaths \(\pi_1,\ldots,\pi_k\) such that
+      every \(\pi_i\) is fully contained into a single fragment of \(\mathcal{P}\).
+      The length of a path \(\pi\) is defined to be the sum of the length of every \(\pi_i\).
+
+      <p>
+        This formal definition is not practical to work with programmatically.
+        Note that a path \(\pi\) may be fully described as the sequence of vertices and portals
+        \(s=v_1,~e_1,\ldots,~e_k,~v_{k+1}=t\) it passes through.
+        Observe that in the context of shortest paths, the vertices \(v_i\neq s,t\) have to be vertices of the fragments.
+
+      <p>
+      We define the <i>signature</i> of a path, denoted \(\sigma(\pi)\) to be this sequence (without the destination).
+
+      <h2>EXAMPLE OF A PORTALGON, A SHORTEST PATH FROM S TO D AND ITS SIGNATURE</h2>
+    </section>
+
+    <section id="Embedding of a signature">
+      <h2>Embedding of a signature</h2>
+      Let \(\mathcal{P}=(\mathcal{F},\mathcal{E})\) be an input portalgon.
+      To embed a signature \(\sigma(\pi)\) in \(\mathbb{R}^2\), take the ordered sequence of portals
+      \(E=(e_1,e_2,\ldots e_k)\subseteq \mathcal{E}\) it contains.
+      Let \(F_0\) be the fragment that contains the source point.
+      For each portal \(e_i=(e_i^-, e_i^+)\in E\), assume that \(e_i^-\) is an edge of \(F_{i-1}\) and \(e_i^+\)
+      is an edge of \(F_{i}\) with \(\{F_0,\ldots,F_k\}\subseteq \mathcal{F}\).
+      For each edge \(e_i\in E\), we will stitch \(F_{i-1}\) with \(F_{i}\) by gluing \(e_i^-\) with \(e_i^+\) according to their direction.
+
+      <p>
+        This way, to embed \(F_i\), rotate it and translate it in order to align the starts of \(e_i^-\) and \(e_i^+\).
+        In some cases, \(F_{i-1}\) and \(F_i\) might overlap after such transformations.
+        If that it the case, take the reflection of \(F_i\) with \(e_i\) as the axis of symmetry.
+        Note that rotation, translation and refection are all isometries.
+
+      <h2>EXAMPLE OF AN EMBEDDING OF A SIGNATURE (AN ORIGINAL PORTALGON + SIGNATURE + EMBEDDING)</h2>
+      <figure>
+        <img src="assets/images/embedding.png" alt="Portalgon embedding"/>
+        <figcaption>Figure 4. An embedding in a portalgon.</figcaption>
+      </figure>
+
+    </section>
+
+    <section id="Distance">
+      <h2>Distance</h2>
+
+
     </section>
 
     <div id="zone-two" ></div>

@@ -1,8 +1,41 @@
 :root {
-  --canvas-width: 700px;
+  --canvas-width: 1200px;
   --text-width: calc(var(--canvas-width) - 5px);
   --image-max-width: 100%; /* Maximum width of images */
   --image-max-height: 400px; /* Optional max height for images */
+}
+
+button{
+  align-items: center;
+  appearance: none;
+  background-color: #fff;
+  border: 1px solid #dbdbdb;
+  border-radius: .375em;
+  box-shadow: none;
+  box-sizing: border-box;
+  color: #363636;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: BlinkMacSystemFont,-apple-system,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 1rem;
+  height: 2.5em;
+  justify-content: center;
+  line-height: 1.5;
+  padding: calc(.5em - 1px) 1em;
+  position: relative;
+  text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: top;
+  white-space: nowrap;
+
+
+}
+
+button:hover {
+  background-color: #3a4146;
+  color: #fff;
 }
 
 body {
@@ -98,6 +131,14 @@ img {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional shadow for images */
 }
 
+figcaption {
+  background-color: white;
+  color: black;
+  font-style: italic;
+  padding: 2px;
+  text-align: center;
+}
+
 #zone-one, #zone-two, #zone-three {
   width: var(--canvas-width);
   margin: 20px auto;
@@ -137,7 +178,7 @@ img {
 }
 
 /* Emphasize the first line of the paragraph */
-#Abstract p::first-line {
+#Abstract p:first-child {
   font-weight: bold;
 }
 
@@ -165,4 +206,10 @@ img {
   img {
     max-height: 300px; /* Adjust image height for smaller screens */
   }
+
+  button {
+    font-size: 1.125rem;
+    padding: 1rem 2rem;
+  }
+
 }

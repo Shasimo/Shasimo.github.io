@@ -1,6 +1,7 @@
 
 let constructing_portalgon = null;
 let portalgon = null;
+let margin = 20;
 
 let buttons = []; // used for dynamic positioning on window resize
 function setupInput(sketch) {
@@ -15,23 +16,23 @@ function setupInput(sketch) {
         e.stopPropagation();
         constructing_portalgon.resetBuild();
     }));
-    buttons.push(createCustomButton(sketch, "Reset fragment", width, height +110, (e) => {
+    buttons.push(createCustomButton(sketch, "Reset fragment", width, height +110+margin, (e) => {
         e.stopPropagation();
         constructing_portalgon.resetFragment();
     }));
-    buttons.push(createCustomButton(sketch, "Next Fragment", width,height +140, (e) => {
+    buttons.push(createCustomButton(sketch, "Next Fragment", width,height +140+2*margin, (e) => {
         e.stopPropagation();
         constructing_portalgon.validate_fragment();
     }));
-    buttons.push(createCustomButton(sketch,"Pick Portals", width,height +170, (e) => {
+    buttons.push(createCustomButton(sketch,"Pick Portals", width,height +170+3*margin, (e) => {
         e.stopPropagation();
         constructing_portalgon.pick_portals();
     }));
-    buttons.push(createCustomButton(sketch, "Next Portal", width, height +200, (e) => {
+    buttons.push(createCustomButton(sketch, "Next Portal", width, height +200+4*margin, (e) => {
         e.stopPropagation();
         constructing_portalgon.next_portal();
     }));
-    buttons.push(createCustomButton(sketch, "Finish", width,height +230, (e) => {
+    buttons.push(createCustomButton(sketch, "Finish", width,height +230+5*margin, (e) => {
         e.stopPropagation();
         portalgon = constructing_portalgon.finish();
     }));
@@ -40,7 +41,7 @@ function setupInput(sketch) {
 
 function createCustomButton(sketch, label, offsetX, offsetY, callback) {
     let button = sketch.createButton(label);
-    button.position(offsetX+ 20, offsetY); // Initial positioning
+    button.position(offsetX - 175, offsetY); // Initial positioning
     button.mousePressed(callback);
     return { button, offsetY }; // Store the button and its offset
 }
