@@ -43,57 +43,52 @@
     <section id="Abstract">
       <h2>Abstract</h2>
       <p>
-
+        This page is the gathering of our effort put in the understanding of the "shortest paths in portalgons" problem following the lecture of the paper written by Löffler,Ophelders, Staals, I.Silveira [1] in the scope of the "Computational Geometry INFO-F420" ULB course given by Mr. Stefan Langerman.
+        We here present after a brief introduction what data structure suits the problem best and the complexity brought with it.
+        We vividly encourage any interested reader to pursue the lecture of this page by reading the referenced paper [1] for further details.
       </p>
     </section>
 
-    <section id="TODO">
-      <h2>TODO</h2>
-        <ul>
-          <li>Introduce the problem</li>
-          <li>Restrict the polygons we talk about</li>
-          <li>explain restrictions</li>
-          <li>Tell the reader you present only intuitions</li>
-          <li>present the DataStructure</li>
-          <li>explain what an envelope is</li>
-          <li>image it</li>
-          <li>show example pictures of talked (what are portals on a cut polygon?) constructions</li>
-        </ul>
-    </section>
 
     <section id="Introduction">
-      Explain it is a generalization of any shape from 2 to 3 D
       <h2>Introduction</h2>
         <p>
           What are Portalgons?<br>
-          First let us define some basic notions of Portalgons.<br>
         </p>
 
         <p>
-          Portalgons are essentially a collection of simple polygons called fragments, where any edge of such fragment can be part of a portal.<br>
-          A portal is a couple of oriented edges of equal length that define a communicating pair of fragments.<br>
-          Meaning we can access through portal edges another fragment from the one we seat in.
+          A portalgon is a fragment collection with identified portals.<br>
+          While fragments are simple polygons, portals are each a pair of edge of same length across any fragments.
+          A particularity of these portal edges is that they can designate either the same direction or the opposite.
+
+      <h3>Generalization</h3>
+      <p>
+        Portalgons are in fact the most general representation of any polyhedral surface as you can see in the example of the unfolding of a cube (note we can still represent a not unfoldable polyhedron).<br>
+        Meaning we also have a 2D plane representation of our shape which is helpful as each face is now clearly visible. It eases the understanding of what is going on on our portalgon as we want to decide which path is the shortest within its underlying space. <br>
+        The shortest path problem in 3D thus reduces to a shortest path in a polygon.
+        Which is still not obvious of course, since multiple routes might lead to our destination.<br>
+        Where we would consider a path to be the number of vertices and the number of portal jumps.
+        We might not be able to bound the number of crossings that happen as a function of the input because of the portals.
+      </p>
+          Shortest paths between two points thus taking place on sometimes intricate or curious shapes such as the Mœbius strip.
+          The biggest challenge with the computation of the shortest path within a portalgon is when we encounter parallel portals having an offset between them in a portalgon.
+          Indeed, if we have such structure elongated to the infinity we might not be able to bound the number of crossings by a function of the input.
+          The last criteria of a portalgon is its 'happiness', a criteria which describes the maximum number of times we will cross a portal.
+          Which will come handy as explained above, to fix bounds about the complexity induced by the portal jumps.
+
           <img src="assets/images/shot.png" alt="cube" />
           <img src="assets/images/cube.png" alt="cube" />
           <img src="assets/images/cubeWithPortals.png" alt="cube" />
           <img src="assets/images/cylinder.png" alt="cube" />
-
-          We here limit ourselves to 1-happy portalgons whose fragments are simple polygons.
-          The happiness describes the number of times we are allowed to cross a portal.
-          We describe later on why such limitation is necessary.
         </p>
 
-      <h3>Generalization</h3>
-      <p>
-        We note portalgons are in fact the most general representation of any shape.
-        A polyhedron being a
-      </p>
+
     </section>
 
     <section id="Inputs">
       <h2>Build your own</h2>
       <p>
-        Before going into specifics, we invite to design a portalgon using the tool here under.
+        Before going into specifics, we invite to design a portalgon using our tool here under.
         This way, the created portalgon will become the subject of all further modifications and explanations.
       </p>
     </section>
@@ -108,7 +103,7 @@
     <section id="Shortest Paths">
       <h2>Shortest Paths</h2>
       <p>
-        A shortest path in a portalgon is the shortest path between a pair of points lying within its surface (of any fragment), source and destination, such that this is the shortest distance path between the two points.
+        A shortest path in a portalgon is the shortest path between a pair of points lying within its underlying surface, source and destination, such that this is the shortest distance path between the two points.
         There can in fact be multiple shortest paths between the two points as we are allowed to cross through portals.
         Being intrinsicly polyhedral, meaning that can take place in the third dimension, we need to think carefully about the procedures we will use in order to find such a path, as finding a shortest path now requires to handle more spaces or fragments that may lead to multiple crossings of the same portal which could lead to an unbounded amount of crossings on some cases.
       </p>

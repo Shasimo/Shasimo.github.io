@@ -103,6 +103,44 @@ img {
   margin: 20px auto;
 }
 
+
+#Abstract {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 12px;
+  margin: 20px auto;
+  padding: 20px;
+  max-width: var(--canvas-width); /* Limit width for readability */
+  background-color: #f9f9f9; /* Light background for emphasis */
+  border: 1px solid #cccccc; /* Subtle border */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  border-radius: 8px; /* Rounded corners */
+}
+
+/* Title styling */
+#Abstract h2 {
+  font-size: 1.8em;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 10px;
+  text-transform: uppercase; /* Make the title uppercase */
+  color: #333333; /* Darker text for contrast */
+}
+
+/* Paragraph styling */
+#Abstract p {
+  font-size: 1.2em;
+  line-height: 1.6;
+  text-align: justify;
+  margin: 0;
+  padding: 10px 0;
+  color: #555555; /* Softer text color for readability */
+}
+
+/* Emphasize the first line of the paragraph */
+#Abstract p::first-line {
+  font-weight: bold;
+}
+
 @media (max-width: 600px) {
   :root {
     --canvas-width: 95%; /* Reduce width for smaller screens */
