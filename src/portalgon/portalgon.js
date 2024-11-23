@@ -25,7 +25,6 @@ class Portalgon {
         return new Portalgon(fragmentsCopy, portalsCopy);
     }
 
-    /*
     doesPathGoThroughEveryFragment(embeddedPath) {
         let fragmentsToCheck = [...Array(this.fragments.length).keys()];
 
@@ -52,7 +51,6 @@ class Portalgon {
 
         return fragmentsToCheck.length === 0;
     }
-     */
 
     computeVisibilityInterval(v, vertexFragmentIdx, edge) {
         let edgeFragment = this.fragments[edge.portalEnd1.fragmentIdx];
