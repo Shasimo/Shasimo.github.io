@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css">
+    <style>
+      body {
+        font-family: "Computer Modern Serif", serif;
+      }
+    </style>
     <link href="css/screen.css" rel="stylesheet" />
     <link rel="icon" type="image/png" href="assets/images/shot.png">
     <title>Portalgons</title>
@@ -62,9 +68,10 @@
           A fragment is a simple polygon.
           A portal is an unordered pair \(e=(e^-,e^+)\) of (distinct) directed edges of same length across any fragments.
 
+      <h2>SIMPLE EXAMPLE OF A PORTALGON</h2>
       <h3>Motivation</h3>
       <p>
-        Portalgons are a generalization of any polyhedral surface.<br>
+        Portalgons are a generalization of polyhedral surfaces.<br>
         Any polyhedron can be converted into an equivalent portalgon taking \(\mathcal{F}\) to be the set of (polygonal)
         faces of the polyhedron and placing a portal between two fragments wherever the two corresponding faces in the
         original polyhedron met.
@@ -103,7 +110,7 @@
     </section>
 
     <section id="Inputs">
-      <h2>Build your own</h2>
+      <h2>Build your own portalgon</h2>
       <p>
         Before going into specifics, we invite the reader to design a portalgon using our tool here under.
         This way, the created portalgon will become the subject of all further modifications and explanations.
@@ -151,7 +158,7 @@
 
       <p>
         This formal definition is not practical to work with programmatically.
-        Note that a path \(\pi\) may be fully described as the sequence of vertices and portals
+        To solve this issue, we note that a path \(\pi\) may be fully described as the sequence of vertices and portals
         \(s=v_1,~e_1,\ldots,~e_k,~v_{k+1}=t\) it passes through.
         Observe that in the context of shortest paths, the vertices \(v_i\neq s,t\) have to be vertices of the fragments.
 

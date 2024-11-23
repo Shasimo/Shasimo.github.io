@@ -1,6 +1,8 @@
 // demonstration zone
 let portalTest = null;
 let portalTestPoints = null;
+let spm = null;
+let refreshPath = false;
 
 function setup_zone3(sketch) {
     sketch.createCanvas(wW, wH).parent('zone-three');
@@ -13,11 +15,12 @@ function draw_zone3(sketch) {
     sketch.background(BACKGROUND_COLOR);
     sketch.text("Embedding of the shortest path:", 30, 50);
 
-    if (triangulatedPortalgon !== null && portalTest === null && portalTestPoints === null && destination !== null && source !== null) {
-        let originalPortalgon = triangulatedPortalgon.copy();
-        let spm = new ShortestPathMap(originalPortalgon, source[0].copy(), source[1]);
-
+    if (triangulatedPortalgon !== null && portalTest === null && portalTestPoints === null && destination !== null && source !== null && spm === null) {
+        spm = new ShortestPathMap(triangulatedPortalgon.copy(), source[0].copy(), source[1]);
         spm.construct();
+    }
+
+    if (refreshPath === true) {
         let sig = spm.query(destination[1], destination[0].copy());
 
         if (sig === null) {
@@ -25,9 +28,10 @@ function draw_zone3(sketch) {
             portalTestPoints = [];
             return;
         }
-        let ret = generateEmbeddingFromSignature(originalPortalgon, sig, destination[1], destination[0].copy());
+        let ret = generateEmbeddingFromSignature(triangulatedPortalgon.copy(), sig, destination[1], destination[0].copy());
         portalTest = ret[0];
         portalTestPoints = ret[1];
+        refreshPath = false;
     }
 
     if (portalTestPoints === []) {

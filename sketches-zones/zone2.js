@@ -60,6 +60,7 @@ function clickZone2() {
                 source = [previewPointZone2.sub(triangulatedPortalgon.fragments[i].origin), i];
             else {
                 destination = [previewPointZone2.sub(triangulatedPortalgon.fragments[i].origin), i];
+                refreshPath = true;
                 portalTest = null;
                 portalTestPoints = null;
             }
