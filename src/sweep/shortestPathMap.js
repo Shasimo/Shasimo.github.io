@@ -56,7 +56,11 @@ class ShortestPathMap {
         if (destinationFragmentIdx === this.sourceFragmentIdx)
             return new Signature(this.portalgon.copy(), this.sourceFragmentIdx, this.s, []);
 
+        if (!this.portalFragmentIdxMap.has(destinationFragmentIdx)) return null;    // unreachable fragment
+
         for (let portal of this.portalFragmentIdxMap.get(destinationFragmentIdx)) {
+            if (!this.edgeMap.has(portal)) continue;    // unreachable portal
+
             for (let distanceFunction of this.edgeMap.get(portal).env.envelope.functionsList) {
 
                 console.log(distanceFunction);
