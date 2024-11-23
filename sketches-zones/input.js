@@ -46,7 +46,7 @@ function createCustomButton(sketch, label, offsetX, offsetY, callback) {
 }
 
 function drawInput(sketch) {
-    sketch.background(200);
+    sketch.background(BACKGROUND_COLOR);
     drawGrid(gridToggle, sketch);
     constructing_portalgon.draw(sketch);
     constructing_portalgon.drawPreviewPoint(previewPoint, sketch);

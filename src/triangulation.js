@@ -42,7 +42,9 @@ function triangulate(portalgon) {
             }
         }
 
+        fragment = new Fragment(fragment.vertices.map(p => p.add(fragment.origin)));
         newPortalgon.fragments.push(fragment);
+
         if (portalMap.has(f)) {
             for (let p = 0; p < portalMap.get(f).length; p++) {
                 let currentPortalEnd = portalMap.get(f)[p];

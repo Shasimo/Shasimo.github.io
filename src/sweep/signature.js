@@ -47,6 +47,8 @@ class Signature {
                 return null;
         }
 
+        if (!newSig.doesPathGoThroughEveryFragment()) return null;
+
         let lastEdge = newSig.embedding.portals[newSig.embedding.portals.length - 1];
         let v = newSig.embeddedPath[newSig.embeddedPath.length - 1];
         let visibilityInterval = newSig.embedding.computeVisibilityInterval(v, newSig.getFragmentIdxOfVertex(newSig.embeddedPath.length - 1), lastEdge);
@@ -63,6 +65,34 @@ class Signature {
             ],
             distV
         );
+    }
+
+    doesPathGoThroughEveryFragment() {
+        let fragmentsToCheck = [...Array(this.getLastFragmentInEmbedding()).keys()];
+        fragmentsToCheck = removeIthElementOfArray(fragmentsToCheck, 0);
+
+        for (let i = 0; i < this.embeddedPath.length - 1; i++) {
+            for (let p = 0; p <= RESOLUTION; p++) {
+                let alpha = p / RESOLUTION;
+                let current = new Point(
+                    this.embeddedPath[i].x * (1 - alpha) + this.embeddedPath[i + 1].x * alpha,
+                    this.embeddedPath[i].y * (1 - alpha) + this.embeddedPath[i + 1].y * alpha
+                );
+
+                for (let f = fragmentsToCheck.length - 1; f >= 0; f--) {
+                    let currentFragment = this.embedding[fragmentsToCheck[f]];
+                    if (isInTriangle(
+                        currentFragment.vertices[0].add(currentFragment.origin),
+                        currentFragment.vertices[1].add(currentFragment.origin),
+                        currentFragment.vertices[2].add(currentFragment.origin),
+                        current)
+                    )
+                        fragmentsToCheck = removeIthElementOfArray(fragmentsToCheck, f);
+                }
+            }
+        }
+
+        return fragmentsToCheck.length === 0;
     }
 
     getSecondToLastFragmentInEmbedding() {

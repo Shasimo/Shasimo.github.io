@@ -25,6 +25,35 @@ class Portalgon {
         return new Portalgon(fragmentsCopy, portalsCopy);
     }
 
+    /*
+    doesPathGoThroughEveryFragment(embeddedPath) {
+        let fragmentsToCheck = [...Array(this.fragments.length).keys()];
+
+        for (let i = 0; i < embeddedPath.length - 1; i++) {
+            for (let p = 0; p <= RESOLUTION; p++) {
+                let alpha = p / RESOLUTION;
+                let current = new Point(
+                    embeddedPath[i].x * (1 - alpha) + embeddedPath[i + 1].x * alpha,
+                    embeddedPath[i].y * (1 - alpha) + embeddedPath[i + 1].y * alpha
+                );
+
+                for (let f = fragmentsToCheck.length - 1; f >= 0; f--) {
+                    let currentFragment = this.fragments[fragmentsToCheck[f]];
+                    if (isInTriangle(
+                        currentFragment.vertices[0].add(currentFragment.origin),
+                        currentFragment.vertices[1].add(currentFragment.origin),
+                        currentFragment.vertices[2].add(currentFragment.origin),
+                        current)
+                    )
+                        fragmentsToCheck = removeIthElementOfArray(fragmentsToCheck, f);
+                }
+            }
+        }
+
+        return fragmentsToCheck.length === 0;
+    }
+     */
+
     computeVisibilityInterval(v, vertexFragmentIdx, edge) {
         let edgeFragment = this.fragments[edge.portalEnd1.fragmentIdx];
         let edgeVert1 = edgeFragment.vertices[edge.portalEnd1.edge[0]].add(edgeFragment.origin);
