@@ -59,6 +59,8 @@ class ShortestPathMap {
         for (let portal of this.portalFragmentIdxMap.get(destinationFragmentIdx)) {
             for (let distanceFunction of this.edgeMap.get(portal).env.envelope.functionsList) {
 
+                console.log(distanceFunction);
+
                 // has to exist because we are not in the original source fragment
                 let lastPortalIdx = distanceFunction.signature.getLastPortalIdxInPath();
                 if (distanceFunction.signature.path[lastPortalIdx].portalEnd2.fragmentIdx !== destinationFragmentIdx)
@@ -91,7 +93,9 @@ class ShortestPathMap {
                 }
             }
         }
-        
+
+        console.log("-----");
+
         return bestSignature;
     }
 
@@ -180,6 +184,14 @@ class ShortestPathMap {
                         }
                     }
                 }
+
+                // we have to make sure that if the previous interval was of size 0, we force the valid signatures to
+                // be the one where we go through a vertex. This is made to prevent the algorithms of building
+                // self-intersecting paths where the destination lands miraculously next to the source,
+                // enabling a signature without any vertices except s that should turn but should'nt
+                if (distanceFunction !== null && distanceFunction.interval !== null &&
+                    Math.abs(distanceFunction.interval[0] - distanceFunction.interval[1]) < 1 / RESOLUTION)
+                    continue;
 
                 if (currentMapEntry.insertSignature(df)) {
                     let nextLocMin = currentMapEntry.env.nextLocalMinimum(delta);
