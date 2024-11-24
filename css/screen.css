@@ -58,7 +58,7 @@ h2, h3, h4, h5, h6 {
 header, footer {
   width: var(--canvas-width);
   max-width: 1200px;
-  text-align: justify;
+  text-align: center;
   padding: 10px;
   background-color: #f4f4f4;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for separation */

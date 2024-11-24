@@ -68,7 +68,10 @@
           A fragment is a simple polygon.
           A portal is an unordered pair \(e=(e^-,e^+)\) of (distinct) directed edges of same length across any fragments.
 
-      <h2>SIMPLE EXAMPLE OF A PORTALGON</h2>
+      <figure>
+        <img src="assets/images/exampleportalgon.png" width="300" height="356" alt="signatureExample"/>
+        <figcaption>Figure 1. A simple example of a portalgon \(\mathcal{P}\).</figcaption>
+      </figure>
       <h3>Motivation</h3>
       <p>
         Portalgons are a generalization of polyhedral surfaces.<br>
@@ -219,10 +222,10 @@
         If that it the case, take the reflection of \(F_i\) with \(e_i\) as the axis of symmetry.
         Note that rotation, translation and refection are all isometries.
 
-      <h2>EXAMPLE OF AN EMBEDDING OF A SIGNATURE (AN ORIGINAL PORTALGON + SIGNATURE + EMBEDDING)</h2>
       <figure>
         <img src="assets/images/embedding.png" alt="Portalgon embedding"/>
-        <figcaption>Figure 5. An embedding in a portalgon.</figcaption>
+        <figcaption>Figure 5. The embedding of a the signature \(\sigma(\pi)=s,e_1,e_2,e_3,e_4\) of a path
+          \(\pi\) from \(s\) to \(d\).</figcaption>
       </figure>
 
     </section>
@@ -270,25 +273,61 @@
       The two cases are justified by the fact that, clearly, if \(q\notin I_{\sigma(\pi),e}\), \(q\) is unreachable
       using the signature \(\sigma(\pi)\).
 
+      <p>
+      In the actual implementation of the algorithm, the distance functions \(f_{\sigma(\pi),e}\) are objects
+        that have access to:
+      <ol>
+      <li>The signature \(\sigma(\pi)\) it is linked to.</li>
+      <li>The position of \(v\) in the embedding of the signature.</li>
+      <li>The position of both ends of \(e\) in the embedding of the signature.</li>
+      <li>\(d(s,v)\)</li>
+      <li>The interval \(I_{\sigma(\pi),e}\) it is defined on.</li>
+    </ol>
+
+      In particular, this means that finding the embedding of the signature \(\sigma(\pi)\) is necessary to compute
+      \(f_{\sigma(\pi),e}\).
+      Given this information, a distance function may be queried for any input \(q\in e\) in \(\mathcal{O}(1)\), which
+      is enough to perform the operations described later on them.
+
       </section>
 
       <section id="Envelopes">
         <h3>Envelopes</h3>
 
         Clearly, \(f_{\sigma(\pi),e}\) is a symmetric function, increasing as the distance to its minimum increases.
-        Except these facts, the exact shape of a distance function \(f_{\sigma(\pi),e}\) is of no importance.
+        Except these facts, the exact shape of a distance function \(f_{\sigma(\pi),e}\) is of
+        no importance.
         <p>
           Let \(e\) be some portal.
           Take every path \(\pi\) from \(s\) with a signature \(\sigma(\pi)\) that ends in \(e\).
           For all of these signatures, we can plot \(f_{\sigma(\pi),e}\).
-          The very important fact to notice is that the lower <i>envelope</i> of this set of functions is \(SPM_e\)!
+          The very important fact to notice is that the lower <i>envelope</i> of this set of functions is the \(SPM_e\)!
         Indeed, the interval of \(e\) in which some signature \(\sigma\) gives a minimal distance function is an
         interval where the signature \(\sigma\) is optimal.
 
         <figure>
-          <img src="assets/images/distaancefunction.png" alt="intervalExample"/>
-          <figcaption>Figure 7. Plot of \(f_{\sigma,e}\) and \(f_{\sigma',e}\).</figcaption>
+          <img src="assets/images/envelopeportalgonexample.png" alt="envelopeportalgon"/>
+          <figcaption>Figure 7. A portalgon and a collection of paths from \(s\) to \(e\) (in red) with signature
+            \(\sigma=s\) and a collection of paths (in blue) with a signature \(\sigma'=s,e_1\).</figcaption>
         </figure>
+        <figure>
+          <img src="assets/images/distaancefunction.png" alt="intervalExample"/>
+          <figcaption>Figure 8. Plot of \(f_{\sigma,e}\) and \(f_{\sigma',e}\), using the previous example as
+            a basis.</figcaption>
+        </figure>
+
+        This gives a direct bruteforce algorithm to compute the \(SPM\) restricted to the edges: given a portal \(e\),
+        compute every possible signature that goes from \(s\) to \(e\) and compute the lower envelope of the
+        distance functions \(f_{\sigma(\pi),e}\).
+        To find the shortest path from \(s\) to a point \(q\in e\), find which distance function realizes the envelope
+        at point \(q\) and retrieve its signature.
+
+      </section>
+
+      <section id="dsEnvelope">
+        <h3>A data structure to maintain a lower envelope</h3>
+
+        The authors of [1]　
       </section>
 
       <section id="Delaunay">
@@ -320,7 +359,6 @@
     
         </section>
     </section>
-
 
 
     <div id="zone-two" ></div>
