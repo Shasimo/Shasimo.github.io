@@ -107,10 +107,9 @@
       <p>
         Crucially, this last fact enables us to compute shortest paths on some curved surfaces and self-intersecting
         surfaces.
-    </section>
 
     <section id="Inputs">
-      <h2>Build your own portalgon</h2>
+      <h3>Build your own portalgon</h3>
       <p>
         Before going into specifics, we invite the reader to design a portalgon using our tool here under.
         This way, the created portalgon will become the subject of all further modifications and explanations.
@@ -131,7 +130,10 @@
     <div id="zone-one"> </div>
 
     <section id="Shortest Paths">
-      <h2>Shortest Paths</h2>
+      <h3>Shortest Paths</h3>
+      <figure>
+
+      </figure>
       <p>
         A shortest path in a portalgon is the shortest path between a pair of points lying within its underlying surface,
         source and destination, such that this is the shortest distance between the two points.
@@ -145,7 +147,7 @@
     </section>
 
     <section id="Signatures">
-      <h2>Paths and Signatures</h2>
+      <h3>Paths and Signatures</h3>
       We define a path \(\pi:[0,1]\rightarrow \Sigma\) to be a function representing the path from a source point
       \(s\in\Sigma\) to a destination point \(d\in\Sigma\) such that \(\pi(0)=s\) and \(\pi(1)=d\).
       Note that the definition of a path is independent of the representation of the surface
@@ -165,11 +167,15 @@
       <p>
       We define the <i>signature</i> of a path, denoted \(\sigma(\pi)\) to be this sequence (without the destination).
 
-      <h2>EXAMPLE OF A PORTALGON, A SHORTEST PATH FROM S TO D AND ITS SIGNATURE</h2>
+      <figure>
+        <img src="assets/images/exampleSignature.png" alt="signatureExample"/>
+        <figcaption>Figure 4. An example of a path \(\pi\) from \(s\) to \(d\) with signature
+          \(\sigma(\pi)=v,e_1,e_2,e_3\).</figcaption>
+      </figure>
     </section>
 
     <section id="Embedding of a signature">
-      <h2>Embedding of a signature</h2>
+      <h3>Embedding of a signature</h3>
       Let \(\mathcal{P}=(\mathcal{F},\mathcal{E})\) be an input portalgon.
       To embed a signature \(\sigma(\pi)\) in \(\mathbb{R}^2\), take the ordered sequence of portals
       \(E=(e_1,e_2,\ldots e_k)\subseteq \mathcal{E}\) it contains.
@@ -187,16 +193,75 @@
       <h2>EXAMPLE OF AN EMBEDDING OF A SIGNATURE (AN ORIGINAL PORTALGON + SIGNATURE + EMBEDDING)</h2>
       <figure>
         <img src="assets/images/embedding.png" alt="Portalgon embedding"/>
-        <figcaption>Figure 4. An embedding in a portalgon.</figcaption>
+        <figcaption>Figure 5. An embedding in a portalgon.</figcaption>
       </figure>
 
     </section>
-
-    <section id="Distance">
-      <h2>Distance</h2>
-
-
     </section>
+
+    <section id="SPMtoEdges">
+      <h2>Shortest Path Map to the portals</h2>
+
+      The goal of the algorithm that we are building is to compute the shortest path map from a source point
+      \(s\in\Sigma\) (denoted \(SPM:=SPM(s)\)).
+      A \(SPM\) is a subdivision of \(\Sigma\) into maximally connected regions such that in all regions
+      \(R\in\textit{SPM}(s)\), the signature of the shortest path from \(s\) to \(p\) is the same for all \(p\in R\).
+
+      <p>
+      To compute the whole \(SPM\), we must start by computing \(SPM_e\) for every portal \(e\in\mathcal{E}\).
+      We define \(SPM_e\) to be a subdivision of \(e\) into maximally connected segments \(S\subseteq e\) where the
+      signature of the shortest path from \(s\) to \(p\) is the same for all \(p\in S\).
+      This way, \(SPM_e\) gives the shortest path from \(s\) to any point of \(e\).
+
+      <section id="Distance">
+        <h3>Distance</h3>
+        Let us say that we would like to find \(SPM_e\) for some portal \(e\).
+        Let \(\pi\) be a shortest path from \(s\) to some point where \(e\) is the last portal in \(\sigma(\pi)\).
+        Let \(v\) be the last vertex in \(\sigma(\pi)\).
+        We define \(I_{\sigma(\pi),e}\) to be the interval of points on \(e\) that can be reached in a straight line
+      from \(v\) (i.e. the interval of points that are visible from \(v\)).
+
+        <figure>
+          <img src="assets/images/intervalExample.png" alt="intervalExample"/>
+          <figcaption>Figure 6. Example of \(I_{\sigma(\pi), e_5}\) (the interval of points between \(L\) and \(W\))
+            for a signature \(\sigma(\pi)=s,\ldots, v, e_1, e_2, e_3, e_4, e_5\).</figcaption>
+        </figure>
+
+        We can now define the length of a shortest path of signature \(\sigma(\pi)\) from a source \(s\) to some point
+      \(q\in e\), given the distance from \(s\) to \(v\) (\(d(s,v)\)), as following:
+
+        \[f_{\sigma(\pi)\mid e}:e\rightarrow \mathbb{R}\cup\{\infty\}:q\mapsto
+        \begin{cases}
+        d(s,v)+\left\|\overline{vq}\right\| & \text{if \(q\in I_{\sigma(\pi),e}\)}\\
+        \infty                              & \text{otherwise}
+        \end{cases}\]
+
+      The two cases are justified by the fact that, clearly, if \(q\notin I_{\sigma(\pi),e}\), \(q\) is unreachable
+      using the signature \(\sigma(\pi)\).
+
+      </section>
+
+      <section id="Envelopes">
+        <h3>Envelopes</h3>
+
+        Clearly, \(f_{\sigma(\pi),e}\) is a symmetric function, increasing as the distance to its minimum increases.
+        Except these facts, the exact shape of a distance function \(f_{\sigma(\pi),e}\) is of no importance.
+        <p>
+          Let \(e\) be some portal.
+          Take every path \(\pi\) from \(s\) with a signature \(\sigma(\pi)\) that ends in \(e\).
+          For all of these signatures, we can plot \(f_{\sigma(\pi),e}\).
+          The very important fact to notice is that the lower <i>envelope</i> of this set of functions is \(SPM_e\)!
+        Indeed, the interval of \(e\) in which some signature \(\sigma\) gives a minimal distance function is an
+        interval where the signature \(\sigma\) is optimal.
+
+        <figure>
+          <img src="assets/images/distaancefunction.png" alt="intervalExample"/>
+          <figcaption>Figure 7. Plot of \(f_{\sigma,e}\) and \(f_{\sigma',e}\).</figcaption>
+        </figure>
+      </section>
+    </section>
+
+
 
     <div id="zone-two" ></div>
     <div id="zone-three"> </div>

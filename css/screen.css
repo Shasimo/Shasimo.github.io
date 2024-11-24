@@ -7,6 +7,8 @@
 
 button{
   align-items: center;
+  text-align: justify;
+  text-justify: inter-word;
   appearance: none;
   background-color: #fff;
   border: 1px solid #dbdbdb;
@@ -23,7 +25,6 @@ button{
   line-height: 1.5;
   padding: calc(.5em - 1px) 1em;
   position: relative;
-  text-align: center;
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
@@ -57,7 +58,7 @@ h2, h3, h4, h5, h6 {
 header, footer {
   width: var(--canvas-width);
   max-width: 1200px;
-  text-align: center;
+  text-align: justify;
   padding: 10px;
   background-color: #f4f4f4;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for separation */
