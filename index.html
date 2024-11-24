@@ -146,6 +146,8 @@
 
     </section>
 
+
+
     <section id="Signatures">
       <h3>Paths and Signatures</h3>
       We define a path \(\pi:[0,1]\rightarrow \Sigma\) to be a function representing the path from a source point
@@ -174,6 +176,33 @@
       </figure>
     </section>
 
+    <section id="Happiness">
+      <h3>Happiness</h3>
+      A natural question that arises when studying portalgons is to analyze the computational complexity of finding the shortest paths inside these structures.
+      We define the complexity \(\mathcal{C(\pi)}\) as the number of vertices and portals we cross.<br><br>
+
+      An approach to compute \(\mathcal{\pi}\) is to adapt algorithms designed for shortest paths in polygons. 
+      The Continuous Dijkstra Algorithm is the general method for continuous domain used for polygons.
+      When applied to portalgons, each intersection of a path with \(e^-\) triggers an extension of the search in the fragment on the side of \(e^+\). 
+      For portalgons, the number of portal crossings cannot necessarily be bounded. Therefore, 
+      finding the shortest path in the general case for any portalgon may result in unbounded computational complexity in the worst-case scenario.
+      <img src="assets/images/house.png" alt="cube" />
+
+      The example above showcases how with a single path, we already have to cross the portal multiple times before being able to reach the destination. We can 
+      imagine pathological cases where we tend to cross the same portal an infinite number of times.
+      However for a certain type of fragment, we can bound every shortest path by a constant number of times.
+      <img src="assets/images/square.png" alt="cube" />
+      Let \(\mathcal{F_k}\) denote a fragment of a portalgon. A fragment \(\mathcal{F_k}\) is defined as <i>happy</i> 
+      if every shortest path intersects \(\mathcal{F}_k\) at most a constant number of times. 
+      If all fragments of a portalgon are happy, it becomes possible to compute the shortest path in polynomial time.
+
+      We define the <i>happiness</i> \(h\) of a portalgon as the maximum number of times any fragment \(\mathcal{F_k}\) 
+      can be intersected by a shortest path. We sometimes refer to the happiness of a portalgon \(\mathcal{P}\) by \(\mathcal{H(P)}\).
+      A portalgon is \(h\)-happy when this maximum is at most \(h\).
+      For a happy portalgon, the complexity a shortest path can reach is \( \mathcal{O}(n + mh) \), 
+      regarding respectively its the number of vertices <i>n</i>, the number of portals <i>m</i> and its happiness.
+    </section>
+
     <section id="Embedding of a signature">
       <h3>Embedding of a signature</h3>
       Let \(\mathcal{P}=(\mathcal{F},\mathcal{E})\) be an input portalgon.
@@ -197,6 +226,8 @@
       </figure>
 
     </section>
+
+    
     </section>
 
     <section id="SPMtoEdges">
@@ -259,6 +290,35 @@
           <figcaption>Figure 7. Plot of \(f_{\sigma,e}\) and \(f_{\sigma',e}\).</figcaption>
         </figure>
       </section>
+
+      <section id="Delaunay">
+        <h4>Intrinsic Delaunay Triangulation</h4>
+    
+        Let \(\mathcal{∑}\) represent a surface and let \(\mathcal{P}\) denote a portalgon defined on \(\mathcal{∑}\). 
+        The unhappiness of \(\mathcal{P}\), depends on its representation. An example below is showed where a transformation reduces 
+        the unbounded complexity to compute \(\pi\).
+        Once this transformation is defined, we ask whether for any \(\mathcal{∑}\) there exists a portalgon \(\mathcal{P}\) with \(\mathcal{H(P)}\) being a  constant. 
+        This result is demonstrated using the Intrinsic Delaunay Triangulation.
+        <br><br>
+        <img src="assets/images/house2.png" alt="cube" />
+    
+        <br><br>
+        A Delaunay Triangulation of a set of points in \(\mathbb{R}^2\) is defined as a triangulation where no vertex lies inside the circumcircle of any triangle 
+        in the triangulation. An Intrinsic Delaunay Triangulation (sometimes refers as IDT) generalizes this concept to manifolds, allowing for domains outside of 
+        the Euclidean plane. In such domains, the geometry may be globally curved. Since Euclidean straight-line paths lose their 
+        meaning as the minimum distance in these domains, the shortest path is instead defined by the geodesic distance.
+    
+        <br><br>
+        An Intrinsic Delaunay Triangulation is applied on the surface of the portalgon. It is demonstrated that the IDT on
+        the portalgon's surface constructs paths that cross a portal a constant number of times.
+        This implies that if the process reached the end, for any \(\mathcal{P}\), an equivalent portalgon exists with \(\mathcal{H(P)}\) being constant. 
+        Shortest path in this case have thus a linear complexity in  \( \mathcal{O}(n) \).
+        The proof is therefore essentially algorithmic but difficult to compute. 
+        Although constant happiness is guaranteed at the end of the process, the execution of the algorithm itself is unbounded.
+    
+    
+    
+        </section>
     </section>
 
 
