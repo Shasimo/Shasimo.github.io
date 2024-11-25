@@ -21,7 +21,6 @@ function setup_zone2(sketch) {
 function draw_zone2(sketch) {
     sketch.background(BACKGROUND_COLOR);
     sketch.textSize(normalTS);
-    sketch.text("Triangulation", 30, 50);
     sketch.textSize(10);
 
     if (portalgon === null) return;

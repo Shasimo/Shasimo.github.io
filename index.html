@@ -51,12 +51,13 @@
       <h2>Abstract</h2>
       <p>
         This page is the gathering of our effort put in the understanding of the "Shortest Paths in Portalgons" problem
-        following the reading of the paper written by Löffler, Ophelders, Staals, I.Silveira [1] in the scope of the
+        following the reading of the paper written by Löffler, Ophelders, Staals, I.Silveira <a href="#References">[1]</a>
+        in the scope of the
         "Computational Geometry INFO-F420" ULB course given by Pr. Stefan Langerman.
         We present after a brief introduction the description of a shortest path map output by an algorithm taking a
         source point allowing fast queries on the pre-processed portalgon.
         We vividly encourage any interested reader to pursue the reading of this page with the reading the referenced
-        paper [1] for further details.
+        paper <a href="#References">[1]</a> for further details.
 
     </section>
 
@@ -78,12 +79,16 @@
         Any polyhedron can be converted into an equivalent portalgon taking \(\mathcal{F}\) to be the set of (polygonal)
         faces of the polyhedron and placing a portal between two fragments wherever the two corresponding faces in the
         original polyhedron met.
+
       <figure>
         <img src="assets/images/cubeWithPortals.png" alt="Portalgon representing a cube" />
-        <figcaption>Figure 1. A portalgon equivalent to a cube and a shortest path on its surface.</figcaption>
+        <figcaption>Figure 2. A portalgon equivalent to a cube and a shortest path on its surface.</figcaption>
       </figure>
         The shortest path problem on the surface of a polyhedron thus reduces to a shortest path problem in a portalgon.
-        Since multiple routes might lead to our destination, this problem remains tedious.<br>
+        Since multiple routes might lead to our destination, this problem remains tedious.
+        However, the algorithm presented in "The Discrete Geodesic Problem"<a href="#References">[2]</a> remains
+      a viable option in the case the portalgon is equivalent to a polyhedron.
+      For more general portalgons, the number of portal crossings are not necessarily bounded, as we will see later.
 
       <p>
           Pushing the idea further, portalgons allow us to represent any shape we would be able to build by gluing and folding
@@ -93,12 +98,13 @@
 
       <figure>
         <img src="assets/images/möbiusStrip.png" alt="Portalgon representing a Möbius strip"/>
-      <figcaption>Figure 2. A portalgon equivalent to a Möbius strip.</figcaption>
+      <figcaption>Figure 3. A portalgon equivalent to a Möbius strip
+        (<a href="https://www.geogebra.org/m/NPmZwBc6">https://www.geogebra.org/m/NPmZwBc6</a>).</figcaption>
     </figure>
 
       <figure>
           <img src="assets/images/cylinder.png" alt="Portalgon representing a cylinder"/>
-          <figcaption>Figure 3. A portalgon equivalent to the curved surface of a cylinder.</figcaption>
+          <figcaption>Figure 4. A portalgon equivalent to the curved surface of a cylinder.</figcaption>
         </figure>
 
         When gluing the different fragments of a portalgon \(\mathcal{P}\) together, we obtain a surface \(\Sigma\).
@@ -110,46 +116,6 @@
       <p>
         Crucially, this last fact enables us to compute shortest paths on some curved surfaces and self-intersecting
         surfaces.
-
-    <section id="Inputs">
-      <h3>Build your own portalgon</h3>
-      <p>
-        Before going into specifics, we invite the reader to design a portalgon using our tool here under.
-        This way, the created portalgon will become the subject of all further modifications and explanations.
-      <p>
-        <i>Usage of the tool:</i>
-        <ol>
-        <li>Click on the grid and create a fragment (must be a simple polygon).</li>
-      <li>When the current fragment is done, press <i>Next Fragment</i> and repeat until you have finished creating
-      your fragments (two fragments cannot overlap).</li>
-      <li>When every fragment is created, press <i>Next Fragment</i> one last time and press <i>Pick Portals</i>.</li>
-      <li>To place a portal, click on the dominant vertex of the edge you want to select to be an end of the portal and
-      then select another edge <i>(remember that the two edges of a portal must be of the same length!)</i>.
-      Clicking again of the dominant vertex of one of the ends of a portal toggles its direction.</li>
-      <li>When the current portal is done, click <i>Next Portal</i> and repeat until you are done placing portals.</li>
-      <li>When everything is done, press <i>Next Portal</i> one last time and click <i>Finish</i>. You are done!</li>
-      </ol>
-    </section>
-    <div id="zone-one"> </div>
-
-    <section id="Shortest Paths">
-      <h3>Shortest Paths</h3>
-      <figure>
-
-      </figure>
-      <p>
-        A shortest path in a portalgon is the shortest path between a pair of points lying within its underlying surface,
-        source and destination, such that this is the shortest distance between the two points.
-        There can in fact be multiple shortest paths between the two points as we are allowed to cross through portals.
-        Being intrinsicly polyhedral, meaning that can take place in the third dimension, we need to think carefully about
-        the procedures we will use in order to find such a path, as finding a shortest path now requires to handle more
-        spaces or fragments that may lead to multiple crossings of the same portal which could lead to an unbounded
-        amount of crossings on some cases.
-      </p>
-
-    </section>
-
-
 
     <section id="Signatures">
       <h3>Paths and Signatures</h3>
@@ -174,7 +140,7 @@
 
       <figure>
         <img src="assets/images/exampleSignature.png" alt="signatureExample"/>
-        <figcaption>Figure 4. An example of a path \(\pi\) from \(s\) to \(d\) with signature
+        <figcaption>Figure 5. An example of a path \(\pi\) from \(s\) to \(d\) with signature
           \(\sigma(\pi)=v,e_1,e_2,e_3\).</figcaption>
       </figure>
     </section>
@@ -182,29 +148,81 @@
     <section id="Happiness">
       <h3>Happiness</h3>
       A natural question that arises when studying portalgons is to analyze the computational complexity of finding the shortest paths inside these structures.
-      We define the complexity \(\mathcal{C(\pi)}\) as the number of vertices and portals we cross.<br><br>
+      We define the <i>complexity</i> of a path \(\pi\) (in a portalgon \(\mathcal{P}\)) to be the length of its signature
+      \(\sigma(\pi)\).
+      <p>
 
-      An approach to compute \(\mathcal{\pi}\) is to adapt algorithms designed for shortest paths in polygons. 
-      The Continuous Dijkstra Algorithm is the general method for continuous domain used for polygons.
-      When applied to portalgons, each intersection of a path with \(e^-\) triggers an extension of the search in the fragment on the side of \(e^+\). 
-      For portalgons, the number of portal crossings cannot necessarily be bounded. Therefore, 
-      finding the shortest path in the general case for any portalgon may result in unbounded computational complexity in the worst-case scenario.
-      <img src="assets/images/house.png" alt="cube" />
+      <figure id="housePortalgon">
+      <img src="assets/images/house.png" alt="house" />
+        <figcaption>Figure 6. An example of a shortest path that goes 4 times through the same fragment before reaching its
+          destination.</figcaption>
+      </figure>
 
-      The example above showcases how with a single path, we already have to cross the portal multiple times before being able to reach the destination. We can 
-      imagine pathological cases where we tend to cross the same portal an infinite number of times.
-      However for a certain type of fragment, we can bound every shortest path by a constant number of times.
-      <img src="assets/images/square.png" alt="cube" />
-      Let \(\mathcal{F_k}\) denote a fragment of a portalgon. A fragment \(\mathcal{F_k}\) is defined as <i>happy</i> 
-      if every shortest path intersects \(\mathcal{F}_k\) at most a constant number of times. 
-      If all fragments of a portalgon are happy, it becomes possible to compute the shortest path in polynomial time.
+      The example above showcases how, with a single shortests path, we might have to cross a portal multiple times before
+        being able to reach the destination.
+      In particular, since we can make the chimney of the house arbitrarily long, it shows that, in general, the
+      number of times that a shortest path goes through a fragment is unbounded.
+        We can imagine pathological cases where we tend to cross the same portal an unbounded number of times.
 
-      We define the <i>happiness</i> \(h\) of a portalgon as the maximum number of times any fragment \(\mathcal{F_k}\) 
-      can be intersected by a shortest path. We sometimes refer to the happiness of a portalgon \(\mathcal{P}\) by \(\mathcal{H(P)}\).
-      A portalgon is \(h\)-happy when this maximum is at most \(h\).
-      For a happy portalgon, the complexity a shortest path can reach is \( \mathcal{O}(n + mh) \), 
-      regarding respectively its the number of vertices <i>n</i>, the number of portals <i>m</i> and its happiness.
+        <p>
+        This leads us to the definition of the <i>happiness</i> \(\mathcal{H}(F)\) of a fragment \(F\in\mathcal{F}\).
+      \(\mathcal{H}(F)\) is defined to be the maximal number of times that a shortest path between any pair of points
+          \(p,q\in\Sigma\) crosses \(F\) (maximized over the choice of \(p\) and \(q\)).
+
+        <p>
+      We define the <i>happiness</i> \(\mathcal{H}(\mathcal{P})\) of a portalgon \(\mathcal{P}\) to be the highest
+      happiness over all fragments of \(\mathcal{P}\) (\(\max_{F\in\mathcal{F}}\mathcal{H}(F)\)).
+      A portalgon is \(h\)-happy when its happiness is a most \(h\).
+      We say that a portalgon is <i>happy</i> if it is \(\mathcal{O}(1)\)-<i>happy</i>.
+      Note that in these definitions, the happiness depends on a <i>portalgon</i> and not on a surface \(\Sigma\).
+      Indeed, as we will see in the next section, different representations of the same surface can have different
+      happiness.
+
+      <p>
+      Let \(\mathcal{P}\) be a \(h\)-happy portalgon with \(n\) vertices and \(m\) portals (\(2m\) portal edges).
+      At most, the complexity of a shortest path is \( \mathcal{O}(n + hm) \) (indeed, a shortest path may go through
+      each vertex only once and go through each portal exactly \(h\) times).
+
+      <p>
+      The notion of happiness has repercussions on the possible algorithms that can solve the shortest path problem:
+      if \(h\) is unbounded, the total number of signatures is too and simple bruteforce algorithm might not work.
+
     </section>
+
+      <section id="Delaunay">
+        <h4>Intrinsic Delaunay Triangulation</h4>
+
+        Let \(\Sigma\) be a surface and let \(\mathcal{P}\) be a portalgon representing \(\Sigma\).
+        As we have mentionned, the happiness depends only on a portalgon and not on \(\Sigma\).
+        Figure <a href="#housePortalgonTransformed">7</a> shows how we can find a portalgon equivalent to the one
+        presented in figure <a href="#housePortalgon">6</a> but with constant happiness.
+
+        <figure id="housePortalgonTransformed">
+          <img src="assets/images/house2.png" alt="House transformation" />
+          <figcaption>Figure 7. A portalgon equivalent to the one of figure <a href="#housePortalgon">6</a> but
+            with constant happiness.</figcaption>
+        </figure>
+
+        A result of <a href="#References">[1]</a> is that for any portalgon \(\mathcal{P}\), there exists a portalgon
+        \(\mathcal{P}'\) equivalent to \(\mathcal{P}\) but with constant happiness.
+
+        <br><br>
+        A Delaunay Triangulation of a set of points in \(\mathbb{R}^2\) is defined as a triangulation where no vertex lies inside the circumcircle of any triangle
+        in the triangulation. An Intrinsic Delaunay Triangulation (sometimes refers as IDT) generalizes this concept to manifolds, allowing for domains outside of
+        the Euclidean plane. In such domains, the geometry may be globally curved. Since Euclidean straight-line paths lose their
+        meaning as the minimum distance in these domains, the shortest path is instead defined by the geodesic distance.
+
+        <br><br>
+        An Intrinsic Delaunay Triangulation is applied on the surface of the portalgon. It is demonstrated that the IDT on
+        the portalgon's surface constructs paths that cross a portal a constant number of times.
+        This implies that if the process reached the end, for any \(\mathcal{P}\), an equivalent portalgon exists with \(\mathcal{H(P)}\) being constant.
+        Shortest path in this case have thus a linear complexity in  \( \mathcal{O}(n) \).
+        The proof is therefore essentially algorithmic but difficult to compute.
+        Although constant happiness is guaranteed at the end of the process, the execution of the algorithm itself is unbounded.
+
+
+
+      </section>
 
     <section id="Embedding of a signature">
       <h3>Embedding of a signature</h3>
@@ -224,13 +242,50 @@
 
       <figure>
         <img src="assets/images/embedding.png" alt="Portalgon embedding"/>
-        <figcaption>Figure 5. The embedding of a the signature \(\sigma(\pi)=s,e_1,e_2,e_3,e_4\) of a path
+        <figcaption>Figure 8. The embedding of a the signature \(\sigma(\pi)=s,e_1,e_2,e_3,e_4\) of a path
           \(\pi\) from \(s\) to \(d\).</figcaption>
       </figure>
 
     </section>
+    </section>
 
-    
+    <section id="Interactive Example">
+      <h2>Interactive example</h2>
+      <p>
+        Before going into the specifics of how the shortest path algorithm is implemented, we invite the reader to
+        design a portalgon using our tool here under.
+      This enables the reader to then find a shortest path between two arbitrarily chosen point in their portalgon.
+
+      <section id="buildyourownZone">
+      <h3>Build your own portalgon</h3>
+        <i>Usage of the tool:</i>
+      <ol>
+        <li>Click on the grid and create a fragment (must be a simple polygon).</li>
+        <li>When the current fragment is done, press <i>Next Fragment</i> and repeat until you have finished creating
+          your fragments (two fragments cannot overlap).</li>
+        <li>When every fragment is created, press <i>Next Fragment</i> one last time and press <i>Pick Portals</i>.</li>
+        <li>To place a portal, click on the dominant vertex of the edge you want to select to be an end of the portal and
+          then select another edge <i>(remember that the two edges of a portal must be of the same length!)</i>.
+          Clicking again of the dominant vertex of one of the ends of a portal toggles its direction.</li>
+        <li>When the current portal is done, click <i>Next Portal</i> and repeat until you are done placing portals.</li>
+        <li>When everything is done, press <i>Next Portal</i> one last time and click <i>Finish</i>. You are done!</li>
+      </ol>
+
+      <div id="zone-one"> </div>
+    </section>
+
+      <section id="TriangulationZone">
+        <h3>Triangulation of your portalgon</h3>
+        The following zone shows a triangulated version of your portalgon (if you did not forget to validate it!).
+        You are now able to place two points: a source point (blue) and a destination point (red).
+        Note that you can change the position of the destination point at any point by simply clicking on the new
+        desired position.
+        <div id="zone-two" ></div>
+      </section>
+      <section id="shortestPathZone">
+        <h3>Shortest Path</h3>
+        <div id="zone-three"> </div>
+      </section>
     </section>
 
     <section id="SPMtoEdges">
@@ -257,7 +312,7 @@
 
         <figure>
           <img src="assets/images/intervalExample.png" alt="intervalExample"/>
-          <figcaption>Figure 6. Example of \(I_{\sigma(\pi), e_5}\) (the interval of points between \(L\) and \(W\))
+          <figcaption>Figure 9. Example of \(I_{\sigma(\pi), e_5}\) (the interval of points between \(L\) and \(W\))
             for a signature \(\sigma(\pi)=s,\ldots, v, e_1, e_2, e_3, e_4, e_5\).</figcaption>
         </figure>
 
@@ -306,14 +361,10 @@
         interval where the signature \(\sigma\) is optimal.
 
         <figure>
-          <img src="assets/images/envelopeportalgonexample.png" alt="envelopeportalgon"/>
-          <figcaption>Figure 7. A portalgon and a collection of paths from \(s\) to \(e\) (in red) with signature
-            \(\sigma=s\) and a collection of paths (in blue) with a signature \(\sigma'=s,e_1\).</figcaption>
-        </figure>
-        <figure>
-          <img src="assets/images/distaancefunction.png" alt="intervalExample"/>
-          <figcaption>Figure 8. Plot of \(f_{\sigma,e}\) and \(f_{\sigma',e}\), using the previous example as
-            a basis.</figcaption>
+          <img src="assets/images/distancefunctionfused.png" alt="envelopeportalgonanddistances"/>
+          <figcaption>Figure 10. A portalgon and a collection of paths from \(s\) to \(e\) (in red) with signature
+            \(\sigma=s\) and a collection of paths (in blue) with a signature \(\sigma'=s,e_1\) alongside
+            the plot of \(f_{\sigma,e}\) and \(f_{\sigma',e}\).</figcaption>
         </figure>
 
         This gives a direct bruteforce algorithm to compute the \(SPM\) restricted to the edges: given a portal \(e\),
@@ -329,40 +380,7 @@
 
         The authors of [1]　
       </section>
-
-      <section id="Delaunay">
-        <h4>Intrinsic Delaunay Triangulation</h4>
-    
-        Let \(\mathcal{∑}\) represent a surface and let \(\mathcal{P}\) denote a portalgon defined on \(\mathcal{∑}\). 
-        The unhappiness of \(\mathcal{P}\), depends on its representation. An example below is showed where a transformation reduces 
-        the unbounded complexity to compute \(\pi\).
-        Once this transformation is defined, we ask whether for any \(\mathcal{∑}\) there exists a portalgon \(\mathcal{P}\) with \(\mathcal{H(P)}\) being a  constant. 
-        This result is demonstrated using the Intrinsic Delaunay Triangulation.
-        <br><br>
-        <img src="assets/images/house2.png" alt="cube" />
-    
-        <br><br>
-        A Delaunay Triangulation of a set of points in \(\mathbb{R}^2\) is defined as a triangulation where no vertex lies inside the circumcircle of any triangle 
-        in the triangulation. An Intrinsic Delaunay Triangulation (sometimes refers as IDT) generalizes this concept to manifolds, allowing for domains outside of 
-        the Euclidean plane. In such domains, the geometry may be globally curved. Since Euclidean straight-line paths lose their 
-        meaning as the minimum distance in these domains, the shortest path is instead defined by the geodesic distance.
-    
-        <br><br>
-        An Intrinsic Delaunay Triangulation is applied on the surface of the portalgon. It is demonstrated that the IDT on
-        the portalgon's surface constructs paths that cross a portal a constant number of times.
-        This implies that if the process reached the end, for any \(\mathcal{P}\), an equivalent portalgon exists with \(\mathcal{H(P)}\) being constant. 
-        Shortest path in this case have thus a linear complexity in  \( \mathcal{O}(n) \).
-        The proof is therefore essentially algorithmic but difficult to compute. 
-        Although constant happiness is guaranteed at the end of the process, the execution of the algorithm itself is unbounded.
-    
-    
-    
-        </section>
     </section>
-
-
-    <div id="zone-two" ></div>
-    <div id="zone-three"> </div>
 
 
     <section id="Authors">
@@ -378,8 +396,13 @@
       <h2>References</h2>
       <ul>
         <li>[1] M.Löffler, T.Ophelders, F.Staals, R.I.Silveira, "Shortest Paths in Portalgons", arXiv:2303.08937v1 [cs.CG] 15 Mar 2023</li>
-        <li>[2] Wolfgang Muzler, "Shortest Paths in Polygons", Frei Universität Berlin, 22 april 2021</li>
-        <li>[3] JOSEPH S. B. MITCHELLt, DAVID M. MOUNT AND CHRISTOS H. PAPADIMITRIOU, "THE DISCRETE GEODESIC PROBLEM", Vol. 16, No. 4, Society for Industrial and Applied Mathematics, pp. 647-668, Aug. 1987</li>
+        <li>[2] JOSEPH S. B. MITCHELL, DAVID M. MOUNT AND CHRISTOS H. PAPADIMITRIOU, "THE DISCRETE GEODESIC PROBLEM", Vol. 16, No. 4, Society for Industrial and Applied Mathematics, pp. 647-668, Aug. 1987</li>
+      </ul>
+
+      <h3>Additional resources</h3>
+
+      <ul>
+        <li>[A] Wolfgang Muzler, "Shortest Paths in Polygons", Frei Universität Berlin, 22 april 2021</li>
       </ul>
     </section>
 

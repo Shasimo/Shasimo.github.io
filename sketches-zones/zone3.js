@@ -13,7 +13,6 @@ function setup_zone3(sketch) {
 
 function draw_zone3(sketch) {
     sketch.background(BACKGROUND_COLOR);
-    sketch.text("Embedding of the shortest path:", 30, 50);
 
     if (triangulatedPortalgon !== null && portalTest === null && portalTestPoints === null && destination !== null && source !== null && spm === null) {
         spm = new ShortestPathMap(triangulatedPortalgon.copy(), source[0].copy(), source[1]);
