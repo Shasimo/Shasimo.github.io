@@ -15,9 +15,5 @@ class DistanceFunction{
         }
         return Infinity;
     }
-
-    getPointsInterval() {
-        return [percentageToPoint(this.interval[0], this.edgeInterval), percentageToPoint(this.interval[1], this.edgeInterval)];
-    }
 }
 

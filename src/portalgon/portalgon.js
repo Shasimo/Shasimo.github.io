@@ -26,7 +26,10 @@ class Portalgon {
     }
 
     doesPathGoThroughEveryFragment(embeddedPath) {
-        let fragmentsToCheck = [...Array(this.fragments.length).keys()];
+        let maxFragmentIdx = this.fragments.length - 1;
+        let currentFragmentIdx = 0;
+
+        if (embeddedPath.length === 1) return true;
 
         for (let i = 0; i < embeddedPath.length - 1; i++) {
             for (let p = 0; p <= RESOLUTION; p++) {
@@ -36,20 +39,21 @@ class Portalgon {
                     embeddedPath[i].y * (1 - alpha) + embeddedPath[i + 1].y * alpha
                 );
 
-                for (let f = fragmentsToCheck.length - 1; f >= 0; f--) {
-                    let currentFragment = this.fragments[fragmentsToCheck[f]];
-                    if (isInTriangle(
+                let currentFragment = this.fragments[currentFragmentIdx];
+                while (isInTriangle(
                         currentFragment.vertices[0].add(currentFragment.origin),
                         currentFragment.vertices[1].add(currentFragment.origin),
                         currentFragment.vertices[2].add(currentFragment.origin),
                         current)
-                    )
-                        fragmentsToCheck = removeIthElementOfArray(fragmentsToCheck, f);
+                    ) {
+                    currentFragmentIdx++;
+                    if (currentFragmentIdx > maxFragmentIdx) return true;
+                    currentFragment = this.fragments[currentFragmentIdx];
                 }
             }
         }
 
-        return fragmentsToCheck.length === 0;
+        return false;
     }
 
     computeVisibilityInterval(v, vertexFragmentIdx, edge) {

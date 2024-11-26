@@ -42,8 +42,8 @@ class Signature {
         let newSig = this.copy(portalgon.copy(), edge.copy());
 
         for (let i = 0; i < newSig.embeddedPath.length - 1; i++) {
-            if (!newSig.embedding.canSourceSeeDestination(newSig.embeddedPath[i], newSig.embeddedPath[i+1],
-                newSig.getFragmentIdxOfVertex(i), newSig.getFragmentIdxOfVertex(i+1)))
+            if (!newSig.embedding.canSourceSeeDestination(newSig.embeddedPath[i], newSig.embeddedPath[i + 1],
+                newSig.getFragmentIdxOfVertex(i), newSig.getFragmentIdxOfVertex(i + 1)))
                 return null;
         }
 
@@ -51,7 +51,8 @@ class Signature {
 
         let lastEdge = newSig.embedding.portals[newSig.embedding.portals.length - 1];
         let v = newSig.embeddedPath[newSig.embeddedPath.length - 1];
-        let visibilityInterval = newSig.embedding.computeVisibilityInterval(v, newSig.getFragmentIdxOfVertex(newSig.embeddedPath.length - 1), lastEdge);
+        let visibilityInterval = newSig.embedding.computeVisibilityInterval(v,
+            newSig.getFragmentIdxOfVertex(newSig.embeddedPath.length - 1), lastEdge);
 
         let edgeFragment = newSig.embedding.fragments[lastEdge.portalEnd1.fragmentIdx];
 
@@ -68,8 +69,10 @@ class Signature {
     }
 
     doesPathGoThroughEveryFragment() {
-        let fragmentsToCheck = [...Array(this.getLastFragmentInEmbedding()).keys()];
-        fragmentsToCheck = removeIthElementOfArray(fragmentsToCheck, 0);
+        let maxFragmentIdx = this.getFragmentIdxOfVertex(this.embeddedPath.length - 1);
+        let currentFragmentIdx = 0;
+
+        if (this.embeddedPath.length === 1) return true;
 
         for (let i = 0; i < this.embeddedPath.length - 1; i++) {
             for (let p = 0; p <= RESOLUTION; p++) {
@@ -79,20 +82,22 @@ class Signature {
                     this.embeddedPath[i].y * (1 - alpha) + this.embeddedPath[i + 1].y * alpha
                 );
 
-                for (let f = fragmentsToCheck.length - 1; f >= 0; f--) {
-                    let currentFragment = this.embedding[fragmentsToCheck[f]];
-                    if (isInTriangle(
-                        currentFragment.vertices[0].add(currentFragment.origin),
-                        currentFragment.vertices[1].add(currentFragment.origin),
-                        currentFragment.vertices[2].add(currentFragment.origin),
-                        current)
-                    )
-                        fragmentsToCheck = removeIthElementOfArray(fragmentsToCheck, f);
+                let currentFragment = this.embedding.fragments[currentFragmentIdx];
+                while (
+                    isInTriangle(
+                    currentFragment.vertices[0].add(currentFragment.origin),
+                    currentFragment.vertices[1].add(currentFragment.origin),
+                    currentFragment.vertices[2].add(currentFragment.origin),
+                    current)
+                ) {
+                    currentFragmentIdx++;
+                    if (currentFragmentIdx > maxFragmentIdx) return true;
+                    currentFragment = this.embedding.fragments[currentFragmentIdx];
                 }
             }
         }
 
-        return fragmentsToCheck.length === 0;
+        return false;
     }
 
     getSecondToLastFragmentInEmbedding() {
@@ -104,7 +109,8 @@ class Signature {
     }
 
     getFragmentIdxOfVertex(vertexIdx) {
-        if (vertexIdx === -1) return 0;
+        if (vertexIdx < 0) throw new Error("Invalid argument");
+        // vertexIdx must be 0 if we talk about the source, 1 for the first in the path...
 
         let nbVertices = 0;
         let fragmentIdx = 0;
@@ -115,9 +121,6 @@ class Signature {
             else
                 nbVertices++;
         }
-
-        // we have not encountered any vertex, return the fragmentidx of the source
-        if (nbVertices === 0) return 0;
 
         return fragmentIdx;
     }

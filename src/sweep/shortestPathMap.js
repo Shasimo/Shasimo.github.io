@@ -72,14 +72,10 @@ class ShortestPathMap {
 
             for (let distanceFunction of this.edgeMap.get(portal).env.envelope.functionsList) {
 
-                console.log(distanceFunction);
-
                 // has to exist because we are not in the original source fragment
                 let lastPortalIdx = distanceFunction.signature.getLastPortalIdxInPath();
                 if (distanceFunction.signature.path[lastPortalIdx].portalEnd2.fragmentIdx !== destinationFragmentIdx)
                     continue;
-
-                console.log("passed");
 
                 let ret = generateEmbeddingFromSignature(
                     this.portalgon.copy(),
@@ -93,9 +89,17 @@ class ShortestPathMap {
                 let destinationEmbedPos = verticesOfPath[verticesOfPath.length - 1];
                 let embed = ret[0];
 
+                console.log(distanceFunction);
+
+                console.log(embed.canSourceSeeDestination(lastVertexEmbedPos, destinationEmbedPos,
+                    distanceFunction.signature.getFragmentIdxOfVertex(verticesOfPath.length - 2), embed.fragments.length - 1),
+                    embed.doesPathGoThroughEveryFragment(verticesOfPath));
+
                 if (embed.canSourceSeeDestination(lastVertexEmbedPos, destinationEmbedPos,
                     distanceFunction.signature.getFragmentIdxOfVertex(verticesOfPath.length - 2), embed.fragments.length - 1)
                     && embed.doesPathGoThroughEveryFragment(verticesOfPath)) {
+
+                    console.log("passed");
                     let totalDist = 0;
                     for (let i = 0; i < verticesOfPath.length - 1; i++)
                         totalDist += computeEuclideanDistance(verticesOfPath[i], verticesOfPath[i + 1]);
@@ -203,9 +207,9 @@ class ShortestPathMap {
                 // be the one where we go through a vertex. This is made to prevent the algorithms of building
                 // self-intersecting paths where the destination lands miraculously next to the source,
                 // enabling a signature without any vertices except s that should turn but should'nt
-                /*if (distanceFunction !== null && distanceFunction.interval !== null &&
+                if (distanceFunction !== null && distanceFunction.interval !== null &&
                     Math.abs(distanceFunction.interval[0] - distanceFunction.interval[1]) < 1 / RESOLUTION)
-                    continue;*/
+                    continue;
 
                 if (currentMapEntry.insertSignature(df)) {
                     let nextLocMin = currentMapEntry.env.nextLocalMinimum(delta);
@@ -213,17 +217,5 @@ class ShortestPathMap {
                 }
             }
         }
-    }
-
-    runType4Event(event, delta) {
-        let sig = new Signature(
-            this.portalgon.copy(),
-            this.sourceFragmentIdx,
-            this.s,
-            [...event.distanceFunction.signature.path, event.touchedVertex],
-        );
-        let distf = sig.toDistanceFunction(this.portalgon.copy(), event.edge, delta);
-        if (distf === null) return;
-        this.insertNewSignatures(event.fragmentIdxOut, event.edge, distf, delta);
     }
 }
