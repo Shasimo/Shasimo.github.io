@@ -25,6 +25,7 @@ function draw_zone3(sketch) {
         if (sig === null) {
             console.log("No signature found.");
             portalTestPoints = [];
+            refreshPath = false;
             return;
         }
         let ret = generateEmbeddingFromSignature(triangulatedPortalgon.copy(), sig, destination[1], destination[0].copy());

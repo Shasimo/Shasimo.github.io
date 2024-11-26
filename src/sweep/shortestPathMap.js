@@ -53,13 +53,22 @@ class ShortestPathMap {
     query(destinationFragmentIdx, destinationPos) {
         let bestSignature = null;
         let bestDistance = Infinity;
-        if (destinationFragmentIdx === this.sourceFragmentIdx)
-            return new Signature(this.portalgon.copy(), this.sourceFragmentIdx, this.s, []);
 
-        if (!this.portalFragmentIdxMap.has(destinationFragmentIdx)) return null;    // unreachable fragment
+        if (!this.portalFragmentIdxMap.has(destinationFragmentIdx)) {
+            if (destinationFragmentIdx === this.sourceFragmentIdx)
+                return new Signature(this.portalgon.copy(), this.sourceFragmentIdx, this.s, []);
+            return null;    // unreachable fragment
+        }
+
+        // with the way the algorithm is setup, the signature [s] is in no envelope.
+        // we need to account for it if the destination fragment is the same as the source fragment
+        if (destinationFragmentIdx === this.sourceFragmentIdx) {
+            bestSignature = new Signature(this.portalgon.copy(), this.sourceFragmentIdx, this.s, []);
+            bestDistance = computeEuclideanDistance(destinationPos, this.s);
+        }
 
         for (let portal of this.portalFragmentIdxMap.get(destinationFragmentIdx)) {
-            if (!this.edgeMap.has(portal)) continue;    // unreachable portal
+            if (!this.edgeMap.has(portal)) continue;    // portal unreachable from the source
 
             for (let distanceFunction of this.edgeMap.get(portal).env.envelope.functionsList) {
 
@@ -70,7 +79,7 @@ class ShortestPathMap {
                 if (distanceFunction.signature.path[lastPortalIdx].portalEnd2.fragmentIdx !== destinationFragmentIdx)
                     continue;
 
-                // console.log(distanceFunction);
+                console.log("passed");
 
                 let ret = generateEmbeddingFromSignature(
                     this.portalgon.copy(),

@@ -74,4 +74,6 @@ function reset() {
     destination = null;
     portalTest = null;
     portalTestPoints = null;
+    spm = null;
+    refreshPath = false;
 }

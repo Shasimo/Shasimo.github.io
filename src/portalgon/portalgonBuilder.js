@@ -162,11 +162,9 @@ class PortalgonBuilder {
         this.pickingPortalsPhase = false;
         this.portals = [];
         this.current_portal = new Portal();
-        triangulatedPortalgon = null;
-        source = null;
-        destination = null;
         portalgon = null;
-        portalTest = null;
+        triangulatedPortalgon = null;
+        reset();
     }
 
     resetFragment() {
