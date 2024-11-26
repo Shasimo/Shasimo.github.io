@@ -354,7 +354,45 @@
       </section>
 
       <section id="dsEnvelope">
-        <h3>A data structure to maintain a lower envelope</h3>
+        <h3>Data structure to maintain a lower envelope</h3>
+          We compute a function \(f_{\sigma|e}\) from the path of a signature \(f_{\sigma(\pi),e}\). 
+          We take as input the interval of the signature (\(I\)), the last vertex of the signature 
+          and the distance from the source to this last vertex (\(d(v,s)\)).
+          <p>
+          We maintain a data structure that represents the lower envelope of a set of functions \( \{f_1, f_2, \dots, f_m\} \). 
+          This data structure supports the insertion of a new function,
+          finding the smallest local minimum larget than \( \delta \)' and determining the next vertex in finding the lowest endpoint 
+          of the segment on the envelope containing \((q, f(q))\) for given \(q\) and \(f(q)\), with \(f(q) > \delta'\).
+        </p>
+          For \(m\) functions, the lower envelope is stored in \(O(\log m)\) data structures. These data structures contain
+          a binary search tree which maintains the intervals of the functions ordered by their \(x\)-coordinates and a
+          a list of local minima, ordered by their \(y\)-coordinates.
+      </section>
+
+      <section id="Event">
+        <h3>Events</h3>
+        <p>
+          Different events can be triggered when crossing an edge \(e\). These events are stored in a 
+          priority queue for an edge \(e\) where the \(\delta\)' value the type of function associated with the events are saved.
+          The events take the form of a minimum of a function, a vertex from an endpoint of the edge or an intersection between functions from 
+          the lower envelope.
+      </p>
+      </section>
+
+      <section id="Algorithm">
+        <h3>Sweepline Algorithm</h3>
+        We use a sweepline algorithm to progressively compute the shortest path map. The objective is to increase the height 
+        of the sweepline \( \delta \) while maintaining the shortest path map below it. By doing so, we can identify the relevant 
+        breakpoints that construct the shortest path \(\pi\).
+        <p>
+        Initially, the height of the sweepline is set to \( \delta = 0 \), and the set of signatures \(S_{k(e, 0)}\) for all edges \(e\) that do not 
+        contain the source \( s \) is empty. The only possible event at this stage is moving from the source \( s \) to a portal, 
+        provided that \( s \) lies inside the triangle. At any event, new signatures of a path \(\pi\) may appear, and we generate functions based on 
+        these signatures. Functions that lie below the sweepline and do not contribute to the lower envelope are removed. 
+        Additionally, we check for new available events.
+        </p>
+        This process continues until no further events can be added to the priority queue. At this point, the algorithm terminates
+        and we found the shortest path map from the source \( s \) to a destination located on the edge of the portalgon.
 
       </section>
     </section>
