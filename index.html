@@ -86,7 +86,7 @@
       </figure>
         The shortest path problem on the surface of a polyhedron thus reduces to a shortest path problem in a portalgon.
         Since multiple routes might lead to our destination, this problem remains tedious.
-        However, the algorithm presented in "The Discrete Geodesic Problem"<a href="#References">[2]</a> remains
+        However, the algorithm presented in "The Discrete Geodesic Problem"<a href="#References">[3]</a> remains
       a viable option in the case the portalgon is equivalent to a polyhedron.
       For more general portalgons, the number of portal crossings are not necessarily bounded, as we will see later.
 
@@ -94,13 +94,8 @@
           Pushing the idea further, portalgons allow us to represent any shape we would be able to build by gluing and folding
         polygons made out of paper (note that this enables us to build more than just polyhedra).
         For instance, this means that we are able to construct a portalgon that is equivalent to a Möbius strip or the
-          curved surface of a cylinder.
-
-      <figure>
-        <img src="assets/images/möbiusStrip.png" alt="Portalgon representing a Möbius strip"/>
-      <figcaption>Figure 3. A portalgon equivalent to a Möbius strip
-        (<a href="https://www.geogebra.org/m/NPmZwBc6">https://www.geogebra.org/m/NPmZwBc6</a>).</figcaption>
-    </figure>
+          curved surface of a cylinder (the Möbius strip is constructed the same way the cylinder is, except one of
+        the portals is flipped).
 
       <figure>
           <img src="assets/images/cylinder.png" alt="Portalgon representing a cylinder"/>
@@ -307,7 +302,7 @@
       using the signature \(\sigma(\pi)\).
 
       <p>
-      In the actual implementation of the algorithm, the distance functions \(f_{\sigma(\pi),e}\) are objects
+      In the actual implementation of the algorithm, the distance functions \(f_{\sigma(\pi)\mid e}\) are objects
         that have access to:
       <ol>
       <li>The signature \(\sigma(\pi)\) it is linked to.</li>
@@ -318,7 +313,7 @@
     </ol>
 
       In particular, this means that finding the embedding of the signature \(\sigma(\pi)\) is necessary to compute
-      \(f_{\sigma(\pi),e}\).
+      \(f_{\sigma(\pi)\mid e}\).
       Given this information, a distance function may be queried for any input \(q\in e\) in \(\mathcal{O}(1)\), which
       is enough to perform the operations described later on them.
 
@@ -327,13 +322,13 @@
       <section id="Envelopes">
         <h3>Envelopes</h3>
 
-        Clearly, \(f_{\sigma(\pi),e}\) is a symmetric function, increasing as the distance to its minimum increases.
-        Except these facts, the exact shape of a distance function \(f_{\sigma(\pi),e}\) is of
+        Clearly, \(f_{\sigma(\pi)\mid e}\) is a symmetric function, increasing as the distance to its minimum increases.
+        Except these facts, the exact shape of a distance function \(f_{\sigma(\pi)\mid e}\) is of
         no importance.
         <p>
           Let \(e\) be some portal.
           Take every path \(\pi\) from \(s\) with a signature \(\sigma(\pi)\) that ends in \(e\).
-          For all of these signatures, we can plot \(f_{\sigma(\pi),e}\).
+          For all of these signatures, we can plot \(f_{\sigma(\pi)\mid e}\).
           The very important fact to notice is that the lower <i>envelope</i> of this set of functions is the \(SPM_e\)!
         Indeed, the interval of \(e\) in which some signature \(\sigma\) gives a minimal distance function is an
         interval where the signature \(\sigma\) is optimal.
@@ -342,12 +337,12 @@
           <img src="assets/images/distancefunctionfused.png" alt="envelopeportalgonanddistances"/>
           <figcaption>Figure 10. A portalgon and a collection of paths from \(s\) to \(e\) (in red) with signature
             \(\sigma=s\) and a collection of paths (in blue) with a signature \(\sigma'=s,e_1\) alongside
-            the plot of \(f_{\sigma,e}\) and \(f_{\sigma',e}\).</figcaption>
+            the plot of \(f_{\sigma\mid e}\) and \(f_{\sigma'\mid e}\).</figcaption>
         </figure>
 
         This gives a direct bruteforce algorithm to compute the \(SPM\) restricted to the edges: given a portal \(e\),
         compute every possible signature that goes from \(s\) to \(e\) and compute the lower envelope of the
-        distance functions \(f_{\sigma(\pi),e}\).
+        distance functions \(f_{\sigma(\pi)\mid e}\).
         To find the shortest path from \(s\) to a point \(q\in e\), find which distance function realizes the envelope
         at point \(q\) and retrieve its signature.
 
@@ -360,13 +355,13 @@
       <section id="dsEnvelope">
         <h3>Data structure to maintain a lower envelope</h3>
         As stated in the precedent section, we would like to maintain a lower envelope of a set of distance functions
-        \(F=\{f_{\sigma_1,e},f_{\sigma_2,e},\ldots,f_{\sigma_k,e}\}\) for every edge \(e\).
+        \(F=\{f_{\sigma_1\mid e},f_{\sigma_2\mid e},\ldots,f_{\sigma_k\mid e}\}\) for every edge \(e\).
         The authors of <a href="#References">[1]</a> propose an efficient data structure to do so.
         First of all, note that any functions \(f\) and \(f'\) can only intersect twice because of their shape.
           <p>
           This data structure supports the following operations:
         <ul>
-        <li>\(\texttt{Insert(}f\texttt{)}\): the insertion of a new function \(f_{\sigma_i,e}\).</li>
+        <li>\(\texttt{Insert(}f\texttt{)}\): the insertion of a new function \(f_{\sigma_i\mid e}\).</li>
         <li>\(\texttt{NextLocalMinimum(}\delta\texttt{)}\): finding the smallest local minimum larger than \( \delta \).</li>
         <li>\(\texttt{NextVertex(}f,q\texttt{)}\): given a function \(f\) realizing the envelope at some point \(q\in e\), find the lowest intersection
           \((v,f'(v))\) of \(f\) with some other function \(f'\in \text{env}\) such that \(f'(v)>f(q)\).</li>
@@ -375,7 +370,7 @@
         envelope data structures.
         Every sub-envelope \(\text{env}_i\) contains
           a binary search tree of the intervals of the envelope ordered by their \(x\)-coordinates (these intervals
-        can be seen obtained by collapsing the functions \(f_{\sigma_j,e}\in\text{env}_i\) on the \(x\)-axis) and a
+        can be seen obtained by collapsing the functions \(f_{\sigma_j\mid e}\in\text{env}_i\) on the \(x\)-axis) and a
           a list of local minima, ordered by their \(y\)-coordinates.
         Every envelope \(\text{env}_i\) stores the lower envelope of \(2^i\) functions from \(F\).
 
@@ -391,7 +386,8 @@
         We do a binary search on the vertices of the intervals of \(\text{env}_i\) to find the function \(f'\) realizes
         \(\text{env}_i\) at point \(q\).
         Then, we walk to the right of the envelope, examining every new function \(g\) that we encounter until we have
-        found an intersection between some function \(g\) and \(f\) (or not).
+        found an intersection between some function \(g\) and \(f\) (or not, this intersection can be found
+        analytically).
         We do the same on the left side and record the intersection point \(p\) with the lowest \(y\)-coordinate over
         all sub-envelopes.
         Clearly, answering the query in this way takes time
@@ -407,42 +403,128 @@
         in time \(\mathcal{O}(|\text{env}_i| + |\text{env}'_i| + |\text{env}'_{i+1}|)\).
         The authors then proceed to prove that the total number of intervals that are created during a sequence of \(m\)
         insertions is at most \(\mathcal{O}(\lambda_4(m)\log m)\) where \(\lambda_4(m)\) is the length of some
-        Davenport-Schintzel sequence, the details of which are out of the scope of this interactive paper.
-        Instead, we use the equivalence provided in <a href="#References">[3]</a> to get the following bound
+        Davenport-Schinzel sequence, the details of which are out of the scope of this interactive paper.
+        Instead, we use the equivalence provided in <a href="#References">[4]</a> to get the following bound
         (\(\alpha(n)\) is the inverse Ackermann function).
         \[\mathcal{O}(\lambda_4(m)\log m)=\mathcal{O}(m2^{\alpha(m)}\log m)\]
 
 
       </section>
 
-      <section id="Event">
-        <h3>Events</h3>
-        <p>
-          Different events can be triggered when crossing an edge \(e\). These events are stored in a 
-          priority queue for an edge \(e\) where the \(\delta\)' value the type of function associated with the events are saved.
-          The events take the form of a minimum of a function, a vertex from an endpoint of the edge or an intersection between functions from 
-          the lower envelope.
-      </p>
-      </section>
-
       <section id="Algorithm">
-        <h3>Sweepline Algorithm</h3>
-        We use a sweepline algorithm to progressively compute the shortest path map. The objective is to increase the height 
-        of the sweepline \( \delta \) while maintaining the shortest path map below it. By doing so, we can identify the relevant 
-        breakpoints that construct the shortest path \(\pi\).
+        <h3>The Algorithm</h3>
+        We use a sweep line algorithm to progressively compute the shortest path map.
+        Let \(\delta\) be the distance from the source point \(s\).
+        Instead of sweeping from left to right as is generally the case with sweep line algorithms, we here
+        sweep from \(\delta=0\) and progressively increase \(\delta\).
+        This can be seen as some form of a "continuous Dijkstra" algorithm.
+        The objective is to increase the height of the sweep line \( \delta \) while maintaining the shortest path map below it.
+        Keep in mind that we are trying to compute \(SPM_e\) for every \(e\in\mathcal{E}\).
+        Note that before starting the algorithm, we can assume that the input portalgon \(\mathcal{P}\) is
+        triangulated.
+        It is possible to triangulate every fragment of a portalgon by carefully replacing every edge in the classical
+        triangulation by a portal.
+        This triangulation can be found in linear time using the algorithm presented by Chazelle
+        (<a href="#References">[5]</a>).
         <p>
-        Initially, the height of the sweepline is set to \( \delta = 0 \), and the set of signatures \(S_{k(e, 0)}\) for all edges \(e\) that do not 
-        contain the source \( s \) is empty. The only possible event at this stage is moving from the source \( s \) to a portal, 
-        provided that \( s \) lies inside the triangle. At any event, new signatures of a path \(\pi\) may appear, and we generate functions based on 
-        these signatures. Functions that lie below the sweepline and do not contribute to the lower envelope are removed. 
-        Additionally, we check for new available events.
-        </p>
-        This process continues until no further events can be added to the priority queue. At this point, the algorithm terminates
-        and we found the shortest path map from the source \( s \) to a destination located on the edge of the portalgon.
+        Notice that for every portal \(e\), a shortest path to \(e\) comes either from a triangle \(T_A\) or a triangle
+        \(T_B\).
+        Hence, we can split every signature that touches \(e\) before time \(\delta\) in two sets:
+          \(S_A(e,\delta)\) and \(S_B(e,\delta)\).
+          This also means that we can split \(\text{env}(e,\delta)\) (the envelope of distance functions
+          \(f_{\sigma_i\mid e}\) that goes to \(e\) considering only signatures that reach \(e\) in distance at most
+          \(\delta\)) in two envelopes: \(\text{env}_A(e,\delta)\) and \(\text{env}_B(e,\delta)\).
+          This way, \(\text{env}(e,\delta)\) is the lower envelope of \(\text{env}_A(e,\delta)\) and
+          \(\text{env}_B(e,\delta)\).
+          <p>
+        As the sweep line progresses (say that it is a height \(\delta\)), we maintain the sets \(S_A(e,\delta)\) and
+        \(S_B(e,\delta)\) as well as \(\text{env}^{\leq\delta}(e,\delta)\): the part of \(\text{env}(e,\delta)\) that
+        lies below the sweep line and \(\text{env}^{=\delta}(e,\delta)\): the intersection points of
+        \(\text{env}_A(e,\delta)\) and \(\text{env}_B(e,\delta)\) with the sweep line.
+        We store \(\text{env}^{\leq\delta}(e,\delta)\) in a binary search tree, in the same way that we did in the
+        data structure to maintain a lower envelope (the limit of each interval may move continuously with the sweep line).
+        We also store \(\text{env}^{=\delta}(e,\delta)\) in a binary search tree and store the functions of
+        \(\text{env}_A(e,\delta)\) or \(\text{env}_B(e,\delta)\) corresponding to the intersection.
+        <p>
+        We now describe the events \(\delta'>\delta\) that the sweep line works with.
+        Every event "belongs" to some portal \(e\) but is centralized in a global event priority queue.
+        <ol>
+        <li>\(\delta'\) is the minimum of some function \(f_{\sigma\mid e}\) for some
+          \(\sigma\in S_A(e,\delta)\cup S_B(e,\delta)\) (this corresponds to the
+        first time that a portal is reached using the signature \(\sigma\), a new point appears on
+          \(\text{env}^{=\delta}(e,\delta)\)).</li>
+        <li>\(\delta'\) corresponds to a vertex of \(\text{env}_A(e,\delta)\) or \(\text{env}_B(e,\delta)\)
+          (this corresponds to a time where a point on \(\text{env}^{=\delta}(e,\delta)\) either disappears
+          or the distance function corresponding to said point changes).</li>
+        <li>\(\delta'\) corresponds to an intersection between \(f_{\sigma\mid e}\in \text{env}_A(e,\delta)\) and
+          \(f_{\sigma'\mid e}\in \text{env}_B(e,\delta)\) where the two functions are neighbours in
+          \(\text{env}^{=\delta}(e,\delta)\) (in particular, their order must change in \(\text{env}^{=\delta}(e,\delta)\)).</li>
+      </ol>
+        <p>
+        When an event is triggered, the correct modifications to \(\text{env}^{=\delta}(e,\delta)\) must be made.
+        Note that new events might be discovered simply by updating \(\text{env}^{=\delta}(e,\delta)\): for instance,
+          if a type 2 event is triggered and a function \(f'\in\text{env}_A(e,\delta)\) replaces a function
+          \(f\in\text{env}_A(e,\delta)\) in \(\text{env}^{=\delta}(e,\delta)\),
+        we could find an intersection with \(f'\) and some other function \(g\in\text{env}_B(e,\delta)\) that would
+        create a type 3 event.
+        It could also be the case that we need to remove events from the event priority queue when an event happens
+        (in the previous example, we could have detected an intersection between \(f\) and \(g\) above the sweep line
+        but since \(f'\) replaced \(f\), the previously inserted event must be removed).
+          These events are discovered using the methods that we defined on the lower envelope data structure.
+        The few examples provided in this paragraph do not reflect everything that must be taken into account to
+        properly maintain the information that we seek to maintain.
+        <p>
+        Finally, an event could place a new function \(f_{\sigma,e}\) from \(\text{env}_A(e,\delta)\)
+        (or \(\text{env}_B(e,\delta)\)) in \(\text{env}^{\leq\delta}(e,\delta)\) (which happens if
+        \(f_{\sigma,e}\) appears in \(\text{env}^{=\delta}(e,\delta)\) at some point \(q\in e\) that is still empty in
+        \(\text{env}^{\leq\delta}(e,\delta)\)).
+        If such a thing happens, this means that we have found a new shortest path to some point of \(e\) and we must
+        propagate the signature \(\sigma'=\sigma,e\) to every other portal \(e'\) incident to the triangle \(T_A\)
+        (or \(T_B\)) by inserting \(\sigma'\) into \(S_A(e',\delta)\) (or \(S_B(e',\delta)\)).
+        Note that when a new signature is discovered, one must compute the embedding of said signature in order to
+        retrieve the position of \(v\) relative to the position of the portal \(e'\) in the embedding (in order
+        to compute \(f_{\sigma\mid e'}\)).
+        <p>
+        What is described in the last paragraph does not allow for vertices to be added to signatures.
+        If one of the endpoints of \(e\) is some vertex \(a\), we can wait for \(a\) to be covered in
+        \(\text{env}^{\leq\delta}(e,\delta)\) and then proceed analogously to what was described previously, with
+        \(\sigma'=\sigma,a,e\) (and we can do the same for the other endpoint \(a'\) of \(e\)).
+        <p>
+        To initialize the algorithm, simply put \(\sigma=s\) in the \(S_A(e,\delta)\) set of every portal \(e\)
+        incident to the source \(s\) (or \(S_B(e,\delta)\), depending on how we defined \(T_A\) and \(T_B\) for \(e\)).
+        Otherwise, \(S_A(e',\delta)\) and \(S_B(e',\delta)\) are initially empty for every other portal \(e'\).
+        Stop when the priority queue of events is empty.
 
+        <h1>talk about complexity</h1>
       </section>
     </section>
 
+    <section id="Extension">
+      <h2>Extension of the SPM to the interior</h2>
+      Let \(SPM_{\mathcal{P}}\) be the shortest path map of the whole portalgon \(\mathcal{P}\) and \(SPM_{\partial P}\)
+      be the shortest path map restricted to the boundary of \(\mathcal{P}\) (which is what we have computed).
+      We can define \(SPM_{T}\) and \(SPM_{\partial T}\) analogously.
+
+      <p>
+      We have computed \(SPM_e\) for every portal \(e\), and in particular have the shortest path map
+      \(SPM_{\partial T}\) for any triangle \(T\).
+      To compute \(SPM_T\), the authors of <a href="#References">[1]</a>
+      propose to use the Build-Subdivision algorithm presented by <a href="#References">[3]</a> (Lemma 8.2).
+      If \(SPM_{\partial T}\) consists of \(m\) intervals, \(SPM_T\) can be computed in time \(\mathcal{O}(m\log m)\).
+
+      <p>
+      Since the purpose of this interactive paper was not to compute the \(SPM\) of the whole portalgon but simply to
+      compute shortest paths between a source \(s\) and a destination point \(d\), we propose a simple algorithm to find
+      such a shortest path given \(SPM_{\partial \mathcal{P}}\).
+
+      <p>
+      Let \(T\) be the triangle in which \(d\) lies.
+      For every function \(f_{\sigma\mid e}\) that is optimal on some point on the boundary of \(T\) (one per interval of
+      \(SPM_{\partial T}\)), verify if \(\sigma\) is a valid signature to reach \(d\).
+      If so, compute the length of the path (by constructing its embedding).
+      Remember the shortest of all of these paths.
+      This gives a \(\mathcal{O}(m)\) algorithm to find a shortest path given \(SPM_{\partial P}\).
+    </section>
 
     <section id="Authors">
       <h2>Authors</h2>
@@ -470,9 +552,14 @@
     <section id="References">
       <h2>References</h2>
       <ul>
-        <li>[1] M.Löffler, T.Ophelders, F.Staals, R.I.Silveira, "Shortest Paths in Portalgons", arXiv:2303.08937v1 [cs.CG] 15 Mar 2023</li>
-        <li>[2] JOSEPH S. B. MITCHELL, DAVID M. MOUNT AND CHRISTOS H. PAPADIMITRIOU, "THE DISCRETE GEODESIC PROBLEM", Vol. 16, No. 4, Society for Industrial and Applied Mathematics, pp. 647-668, Aug. 1987</li>
-        <li>[3] Sharir, M. (1988). Davenport-Schinzel Sequences and their Geometric Applications. In: Earnshaw, R.A. (eds) Theoretical Foundations of Computer Graphics and CAD. NATO ASI Series, vol 40. Springer, Berlin, Heidelberg. https://doi.org/10.1007/978-3-642-83539-1_9</li>
+        <li>[1] M. Löffler, T. Ophelders, F. Staals, R.I. Silveira, "Shortest Paths in Portalgons", arXiv:2303.08937v1 [cs.CG] 15 Mar 2023</li>
+        <li>[2] M. Löffler, T. Ophelders, R. I. Silveira, and F. Staals, “Shortest Paths in Portalgons,” in 39th Interna-
+          tional Symposium on Computational Geometry (SoCG 2023) (E. W. Chambers and J. Gudmundsson,
+          eds.), vol. 258 of Leibniz International Proceedings in Informatics (LIPIcs), (Dagstuhl, Germany),
+          pp. 48:1–48:16, Schloss Dagstuhl – Leibniz-Zentrum für Informatik, 2023.</li>
+        <li>[3] JOSEPH S. B. MITCHELL, DAVID M. MOUNT AND CHRISTOS H. PAPADIMITRIOU, "THE DISCRETE GEODESIC PROBLEM", Vol. 16, No. 4, Society for Industrial and Applied Mathematics, pp. 647-668, Aug. 1987</li>
+        <li>[4] Sharir, M. (1988). Davenport-Schinzel Sequences and their Geometric Applications. In: Earnshaw, R.A. (eds) Theoretical Foundations of Computer Graphics and CAD. NATO ASI Series, vol 40. Springer, Berlin, Heidelberg. https://doi.org/10.1007/978-3-642-83539-1_9</li>
+        <li>[5] Chazelle, B. Triangulating a simple polygon in linear time. Discrete Comput Geom 6, 485–524 (1991). https://doi.org/10.1007/BF02574703</li>
       </ul>
 
       <h3>Additional resources</h3>
