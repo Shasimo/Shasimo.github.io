@@ -25,7 +25,6 @@ function generateEmbeddingFromSignature(portalgon, signature, destFragmentIdx, d
             embeddedPortalgon.portals.push(newFragmentPortal[1]);
             lastOriginFragmentIdx = currentPortal.portalEnd2.fragmentIdx;
         } else　{
-            // console.log(i, signature.path, embeddedPortalgon.fragments[nbFragments]);
             points.push(
                 embeddedPortalgon.fragments[nbFragments].vertices[signature.path[i]].add(
                     embeddedPortalgon.fragments[nbFragments].origin)
