@@ -153,14 +153,14 @@
       <p>
 
       <figure id="housePortalgon">
-      <img src="assets/images/notHappyHouse.png" alt="not Happy House" />
-        <figcaption>Figure 6. An example of a shortest path that goes 4 times through the same fragment before reaching its
+      <img src="assets/images/unhappy.png" alt="not Happy House" />
+        <figcaption>Figure 6. An example of a shortest path that goes 3 times through the same fragment before reaching its
           destination.</figcaption>
       </figure>
 
       The example above showcases how, with a single shortests path, we might have to cross a portal multiple times before
         being able to reach the destination.
-      In particular, since we can make the chimney of the house arbitrarily long, it shows that, in general, the
+      In particular, since we can make the parallelogram arbitrarily long, it shows that, in general, the
       number of times that a shortest path goes through a fragment is unbounded.
         We can imagine pathological cases where we tend to cross the same portal an unbounded number of times.
 
@@ -175,7 +175,7 @@
       A portalgon is \(h\)-happy when its happiness is a most \(h\).
       We say that a portalgon is <i>happy</i> if it is \(\mathcal{O}(1)\)-<i>happy</i>.
       Note that in these definitions, the happiness depends on a <i>portalgon</i> and not on a surface \(\Sigma\).
-      Indeed, as we will see in the next section, different representations of the same surface can have different
+      Indeed, as we will see, different representations of the same surface can have different
       happiness.
 
       <p>
@@ -187,17 +187,17 @@
       The notion of happiness has repercussions on the possible algorithms that can solve the shortest path problem:
       if \(h\) is unbounded, the total number of signatures is too and simple bruteforce algorithm might not work.
 
-
-
       <figure id="housePortalgonTransformed">
-        <img src="assets/images/happyHouse.png" alt="HappyHouse" />
+        <img src="assets/images/happy.png" alt="HappyHouse" />
         <figcaption>Figure 7. A portalgon equivalent to the one of figure <a href="#housePortalgon">6</a> but
           with constant happiness.</figcaption>
       </figure>
       A result of <a href="#References">[1]</a> is that for any portalgon \(\mathcal{P}\), there exists a portalgon
       \(\mathcal{P}'\) equivalent to \(\mathcal{P}\) but with  \(\mathcal{O}(1)\)-happiness.
-      <br><br>
-      And we know shortest paths in this case have a linear complexity in  \( \mathcal{O}(n) \).
+      <p>
+        Because the complexity of a path is \( \mathcal{O}(n + hm) \), a shortest path in a happy portalgon
+        would only have paths of length  \( \mathcal{O}(n + m) = \mathcal{O}(n)\), which is very useful to compute
+        shortest paths quickly.
 
     </section>
 
@@ -351,22 +351,68 @@
         To find the shortest path from \(s\) to a point \(q\in e\), find which distance function realizes the envelope
         at point \(q\) and retrieve its signature.
 
+        <p>
+        Note that, as shown in the previous figure, an envelope lives in the \(e\times \delta\) space, where \(\delta\)
+        is the distance from the origin to some point on \(e\).
+
       </section>
 
       <section id="dsEnvelope">
         <h3>Data structure to maintain a lower envelope</h3>
-          We compute a function \(f_{\sigma|e}\) from the path of a signature \(f_{\sigma(\pi),e}\). 
-          We take as input the interval of the signature (\(I\)), the last vertex of the signature 
-          and the distance from the source to this last vertex (\(d(v,s)\)).
+        As stated in the precedent section, we would like to maintain a lower envelope of a set of distance functions
+        \(F=\{f_{\sigma_1,e},f_{\sigma_2,e},\ldots,f_{\sigma_k,e}\}\) for every edge \(e\).
+        The authors of <a href="#References">[1]</a> propose an efficient data structure to do so.
+        First of all, note that any functions \(f\) and \(f'\) can only intersect twice because of their shape.
           <p>
-          We maintain a data structure that represents the lower envelope of a set of functions \( \{f_1, f_2, \dots, f_m\} \). 
-          This data structure supports the insertion of a new function,
-          finding the smallest local minimum larget than \( \delta \)' and determining the next vertex in finding the lowest endpoint 
-          of the segment on the envelope containing \((q, f(q))\) for given \(q\) and \(f(q)\), with \(f(q) > \delta'\).
-        </p>
-          For \(m\) functions, the lower envelope is stored in \(O(\log m)\) data structures. These data structures contain
-          a binary search tree which maintains the intervals of the functions ordered by their \(x\)-coordinates and a
+          This data structure supports the following operations:
+        <ul>
+        <li>\(\texttt{Insert(}f\texttt{)}\): the insertion of a new function \(f_{\sigma_i,e}\).</li>
+        <li>\(\texttt{NextLocalMinimum(}\delta\texttt{)}\): finding the smallest local minimum larger than \( \delta \).</li>
+        <li>\(\texttt{NextVertex(}f,q\texttt{)}\): given a function \(f\) realizing the envelope at some point \(q\in e\), find the lowest intersection
+          \((v,f'(v))\) of \(f\) with some other function \(f'\in \text{env}\) such that \(f'(v)>f(q)\).</li>
+      </ul>
+        We represent the envelope of our functions \(f\in F\), \(\text{env}_F\) with \(\mathcal{O}(\log m)\) of these lower
+        envelope data structures.
+        Every sub-envelope \(\text{env}_i\) contains
+          a binary search tree of the intervals of the envelope ordered by their \(x\)-coordinates (these intervals
+        can be seen obtained by collapsing the functions \(f_{\sigma_j,e}\in\text{env}_i\) on the \(x\)-axis) and a
           a list of local minima, ordered by their \(y\)-coordinates.
+        Every envelope \(\text{env}_i\) stores the lower envelope of \(2^i\) functions from \(F\).
+
+        <p>
+        To handle the \(\texttt{NextLocalMinimum(}\delta\texttt{)}\) queries, we can binary search on the
+          \(\mathcal{O}(\log m)\) sub-envelopes \(\text{env}_i\) and find the local minimum of \(\text{env}_i\) by
+          binary searching its minima list.
+        This lets us answer such queries in \(\mathcal{O}(\log^2 m)\) time.
+
+          <p>
+        To tackle \(\texttt{NextVertex(}f,q\texttt{)}\) queries, we consider every \(\text{env}_i\) one by one
+        (remember that we have \(\mathcal{O}(\log m)\) of those).
+        We do a binary search on the vertices of the intervals of \(\text{env}_i\) to find the function \(f'\) realizes
+        \(\text{env}_i\) at point \(q\).
+        Then, we walk to the right of the envelope, examining every new function \(g\) that we encounter until we have
+        found an intersection between some function \(g\) and \(f\) (or not).
+        We do the same on the left side and record the intersection point \(p\) with the lowest \(y\)-coordinate over
+        all sub-envelopes.
+        Clearly, answering the query in this way takes time
+        \[\mathcal{O}\left(\sum_{i=0}^{\mathcal{O}(\log m)}\overbrace{\left(|env_i|+ \log |env_i|\right)}^{\text{walking + binary search}}\right)=
+        \mathcal{O}\left(\sum_{i=0}^{\mathcal{O}(\log m)}|env_i|\right)=\mathcal{O}(\log^2 m)\]
+
+        <p>
+        Finally, to insert a function \(f\), create a new envelope \(\text{env}'_0\) containing only \(f\).
+        If there exists another envelope \(\text{env}_0\), merge the two envelopes.
+        Proceed recursively until every sub-envelope has a different size.
+        To merge two envelope at a level \(i\) (of size \(2^i\)), one can merge the local minima list in linear time and
+        compute the actual intervals of the envelope by walking simultaneously on \(\text{env}_i\) and \(\text{env}'_i\)
+        in time \(\mathcal{O}(|\text{env}_i| + |\text{env}'_i| + |\text{env}'_{i+1}|)\).
+        The authors then proceed to prove that the total number of intervals that are created during a sequence of \(m\)
+        insertions is at most \(\mathcal{O}(\lambda_4(m)\log m)\) where \(\lambda_4(m)\) is the length of some
+        Davenport-Schintzel sequence, the details of which are out of the scope of this interactive paper.
+        Instead, we use the equivalence provided in <a href="#References">[3]</a> to get the following bound
+        (\(\alpha(n)\) is the inverse Ackermann function).
+        \[\mathcal{O}(\lambda_4(m)\log m)=\mathcal{O}(m2^{\alpha(m)}\log m)\]
+
+
       </section>
 
       <section id="Event">
@@ -426,12 +472,14 @@
       <ul>
         <li>[1] M.Löffler, T.Ophelders, F.Staals, R.I.Silveira, "Shortest Paths in Portalgons", arXiv:2303.08937v1 [cs.CG] 15 Mar 2023</li>
         <li>[2] JOSEPH S. B. MITCHELL, DAVID M. MOUNT AND CHRISTOS H. PAPADIMITRIOU, "THE DISCRETE GEODESIC PROBLEM", Vol. 16, No. 4, Society for Industrial and Applied Mathematics, pp. 647-668, Aug. 1987</li>
+        <li>[3] Sharir, M. (1988). Davenport-Schinzel Sequences and their Geometric Applications. In: Earnshaw, R.A. (eds) Theoretical Foundations of Computer Graphics and CAD. NATO ASI Series, vol 40. Springer, Berlin, Heidelberg. https://doi.org/10.1007/978-3-642-83539-1_9</li>
       </ul>
 
       <h3>Additional resources</h3>
 
       <ul>
         <li>[A] Wolfgang Muzler, "Shortest Paths in Polygons", Frei Universität Berlin, 22 april 2021</li>
+        <li>Maarten Löffler et al., EuroCG, 2021 april 7-9, https://www.youtube.com/watch?v=l04dpczEGqU</li>
       </ul>
     </section>
 
