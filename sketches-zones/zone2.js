@@ -55,6 +55,13 @@ function clickZone2() {
             previewPointZone2
             )
         ) {
+            // make sure that the point is not ON the boundary of the triangle
+            if (
+                isPointInSegment(currentVert[0].add(triangulatedPortalgon.fragments[i].origin), currentVert[1].add(triangulatedPortalgon.fragments[i].origin), previewPointZone2) ||
+                isPointInSegment(currentVert[1].add(triangulatedPortalgon.fragments[i].origin), currentVert[2].add(triangulatedPortalgon.fragments[i].origin), previewPointZone2) ||
+                isPointInSegment(currentVert[2].add(triangulatedPortalgon.fragments[i].origin), currentVert[0].add(triangulatedPortalgon.fragments[i].origin), previewPointZone2)
+            )
+                continue;
             if (source === null)
                 source = [previewPointZone2.sub(triangulatedPortalgon.fragments[i].origin), i];
             else {

@@ -54,8 +54,11 @@
         following the reading of the paper written by Löffler, Ophelders, Staals, I.Silveira <a href="#References">[1]</a>
         in the scope of the
         "Computational Geometry INFO-F420" ULB course given by Pr. Stefan Langerman.
-        We present after a brief introduction the description of a shortest path map output by an algorithm taking a
-        source point allowing fast queries on the pre-processed portalgon.
+        We present what portalgons are, what is the motivation behind them and then proceed to talk about shortest paths
+        in portalgons.
+        We then, after an interactive example, present the algorithm of Löffler et al. <a href="#References">[1]</a> to
+        compute the shortest path map of a portalgon and describe briefly the modified algorithm that is implemented
+        here.
         We vividly encourage any interested reader to pursue the reading of this page with the reading the referenced
         paper <a href="#References">[1]</a> for further details.
 
@@ -253,6 +256,7 @@
         You are now able to place two points: a source point (blue) and a destination point (red).
         Note that you can change the position of the destination point at any point by simply clicking on the new
         desired position.
+        Note that the algorithm will not work if
         <div id="zone-two" ></div>
       </section>
       <section id="shortestPathZone">
@@ -407,8 +411,10 @@
         Instead, we use the equivalence provided in <a href="#References">[4]</a> to get the following bound
         (\(\alpha(n)\) is the inverse Ackermann function).
         \[\mathcal{O}(\lambda_4(m)\log m)=\mathcal{O}(m2^{\alpha(m)}\log m)\]
-
-
+        <p>
+        Finally, we get that inserting \(m\) functions and doing \(k\) \(\texttt{NextLocalMinimum(}\delta\texttt{)}\) and
+        \(\texttt{NextVertex(}f,q\texttt{)}\) queries takes time
+        \[\mathcal{O}(m2^{\alpha(m)}\log m + k\log^2 m)\]
       </section>
 
       <section id="Algorithm">
@@ -437,31 +443,33 @@
           This way, \(\text{env}(e,\delta)\) is the lower envelope of \(\text{env}_A(e,\delta)\) and
           \(\text{env}_B(e,\delta)\).
           <p>
-        As the sweep line progresses (say that it is a height \(\delta\)), we maintain the sets \(S_A(e,\delta)\) and
+        As the sweep line progresses (say that it is at height \(\delta\)), we maintain the sets \(S_A(e,\delta)\) and
         \(S_B(e,\delta)\) as well as \(\text{env}^{\leq\delta}(e,\delta)\): the part of \(\text{env}(e,\delta)\) that
         lies below the sweep line and \(\text{env}^{=\delta}(e,\delta)\): the intersection points of
         \(\text{env}_A(e,\delta)\) and \(\text{env}_B(e,\delta)\) with the sweep line.
         We store \(\text{env}^{\leq\delta}(e,\delta)\) in a binary search tree, in the same way that we did in the
-        data structure to maintain a lower envelope (the limit of each interval may move continuously with the sweep line).
+        data structure to maintain a lower envelope (the boundaries of each interval may move continuously with the sweep line).
         We also store \(\text{env}^{=\delta}(e,\delta)\) in a binary search tree and store the functions of
-        \(\text{env}_A(e,\delta)\) or \(\text{env}_B(e,\delta)\) corresponding to the intersection.
+        \(\text{env}_A(e,\delta)\) or \(\text{env}_B(e,\delta)\) corresponding each intersection.
         <p>
         We now describe the events \(\delta'>\delta\) that the sweep line works with.
         Every event "belongs" to some portal \(e\) but is centralized in a global event priority queue.
         <ol>
         <li>\(\delta'\) is the minimum of some function \(f_{\sigma\mid e}\) for some
           \(\sigma\in S_A(e,\delta)\cup S_B(e,\delta)\) (this corresponds to the
-        first time that a portal is reached using the signature \(\sigma\), a new point appears on
-          \(\text{env}^{=\delta}(e,\delta)\)).</li>
+        first time that \(e\) is reached using the signature \(\sigma\), a new point appears on
+          \(\text{env}^{=\delta}(e,\delta)\) and a new interval might appear in \(\text{env}^{\leq\delta}(e,\delta)\)).</li>
         <li>\(\delta'\) corresponds to a vertex of \(\text{env}_A(e,\delta)\) or \(\text{env}_B(e,\delta)\)
           (this corresponds to a time where a point on \(\text{env}^{=\delta}(e,\delta)\) either disappears
-          or the distance function corresponding to said point changes).</li>
+          or the distance function corresponding to said point changes, note that this might create another
+          interval in \(\text{env}^{\leq\delta}(e,\delta)\)).</li>
         <li>\(\delta'\) corresponds to an intersection between \(f_{\sigma\mid e}\in \text{env}_A(e,\delta)\) and
           \(f_{\sigma'\mid e}\in \text{env}_B(e,\delta)\) where the two functions are neighbours in
           \(\text{env}^{=\delta}(e,\delta)\) (in particular, their order must change in \(\text{env}^{=\delta}(e,\delta)\)).</li>
       </ol>
         <p>
-        When an event is triggered, the correct modifications to \(\text{env}^{=\delta}(e,\delta)\) must be made.
+        When an event is triggered, the correct modifications to \(\text{env}^{=\delta}(e,\delta)\) and
+          \(\text{env}^{\leq\delta}(e,\delta)\) must be made.
         Note that new events might be discovered simply by updating \(\text{env}^{=\delta}(e,\delta)\): for instance,
           if a type 2 event is triggered and a function \(f'\in\text{env}_A(e,\delta)\) replaces a function
           \(f\in\text{env}_A(e,\delta)\) in \(\text{env}^{=\delta}(e,\delta)\),
@@ -478,11 +486,12 @@
         (or \(\text{env}_B(e,\delta)\)) in \(\text{env}^{\leq\delta}(e,\delta)\) (which happens if
         \(f_{\sigma,e}\) appears in \(\text{env}^{=\delta}(e,\delta)\) at some point \(q\in e\) that is still empty in
         \(\text{env}^{\leq\delta}(e,\delta)\)).
-        If such a thing happens, this means that we have found a new shortest path to some point of \(e\) and we must
+        If such a thing happens, this means that we have found a shortest path to some point of \(e\) and we must
         propagate the signature \(\sigma'=\sigma,e\) to every other portal \(e'\) incident to the triangle \(T_A\)
         (or \(T_B\)) by inserting \(\sigma'\) into \(S_A(e',\delta)\) (or \(S_B(e',\delta)\)).
         Note that when a new signature is discovered, one must compute the embedding of said signature in order to
-        retrieve the position of \(v\) relative to the position of the portal \(e'\) in the embedding (in order
+        retrieve the position of \(v\) relative to the position of the portal \(e'\) in the embedding as well
+        as \(I_{\sigma,e'}\) (in order
         to compute \(f_{\sigma\mid e'}\)).
         <p>
         What is described in the last paragraph does not allow for vertices to be added to signatures.
@@ -495,17 +504,66 @@
         Otherwise, \(S_A(e',\delta)\) and \(S_B(e',\delta)\) are initially empty for every other portal \(e'\).
         Stop when the priority queue of events is empty.
 
-        <h1>talk about complexity</h1>
+        <section id="analysis">
+        <h4>Analysis</h4>
+        Let \(SPM_{\mathcal{P}}\) be the shortest path map of the whole portalgon \(\mathcal{P}\) and
+        \(SPM_{\partial \mathcal{P}}\)
+        be the shortest path map restricted to the boundary of \(\mathcal{P}\) (every portal \(e\in\mathcal{P}\),
+        which is what we have computed).
+        We can define \(SPM_{T}\) and \(SPM_{\partial T}\) analogously for a triangle \(T\in\mathcal{F}\).
+        The authors of <a href="#References">[1]</a> proceeded to prove that the total number of intervals in
+        \(SPM_{\partial\mathcal{P}}\) (the total number of signatures that realize some point of the envelope
+        \(\text{env}\)) is
+        \[\left|SPM_{\partial\mathcal{P}}\right|=\mathcal{O}(n^2h)\]
+
+        The prove that the total number of events over every edge \(e\) is bounded by
+        \(\mathcal{O}(\lambda_{4}(n^2h))=\mathcal{O}(n^2h\cdot 2^{\alpha(n^2h)})\).
+        To handle an event on some portal \(e\), we use a constant number of update operations on
+        \(\text{env}^{\leq\delta}(e,\delta)\) and \(\text{env}^{=\delta}(e,\delta)\) and a constant number of calls to
+        the operations \(\texttt{Insert(}f\texttt{)}\), \(\texttt{NextLocalMinimum(}\delta\texttt{)}\) and
+        \(\texttt{NextVertex(}f,q\texttt{)}\).
+        It follows, from the analysis done in the section about the lower envelope data structure, that the cost of
+        handling one event is \(\mathcal{O}(\log (n^2h))\).
+
+        <p>
+        Since we know a bound on the total number of events, we get that the total time needed to compute
+        \(SPM_{\partial\mathcal{P}}\) follows.
+        \[\mathcal{O}(n^2h\cdot 2^{\alpha(n^2h)}\log^2 (n^2h))\]
+        We get that the algorithm presented in <a href="#References">[1]</a> finds the \(SPM_{\partial\mathcal{P}}\)
+        in quasi-quadratic time relative to the size of the input portalgon \(\mathcal{P}\).
+        Note that as expected, a bigger happiness means that the algorithm runs slower.
+        However, the impact of the happiness \(h\) on the running time is quasi-linear.
       </section>
+      </section>
+    </section>
+
+    <section id="ourimpl">
+      <h2>What we implemented</h2>
+      The algorithm presented in the two previous sections is not what we have implemented.
+      <p>
+        We are given a triangulated portalgon and a source \(s\).
+        Our algorithm is a simplified version of what is presented in this paper.
+        Instead of having a full data structure to maintain a lower envelope for each portal \(e\), we have a list
+        \(L(e)\) of distance functions \(f_{\sigma\mid e}\) that can reach \(e\).
+        If one wants to know which signature to take to reach some point \(q\in e\), iterate over every function
+        \(f_{\sigma\mid e}\in L(e)\) and compute \(\arg\min_{f\in L(e)}f(q)\).
+
+      <p>
+      The initialization of the algorithm a slightly adapted version of the one presented previously.
+      Originally, we only have a signature \(\sigma=s\) in \(L(e)\) for every portal \(e\) incident to the triangle
+      in which \(s\) lies.
+      From there, we start the procedure of the sweep line algorithm.
+      An event is simply the distance \(\delta'\) at which we reach a new portal \(e\) using signature \(\sigma\), which
+      will propagate a new signature \(\sigma'=\sigma, e\) to \(L(e')\) for every portal \(e'\) incident to the triangle
+      that we are entering by touching \(e\) with the signature \(\sigma\).
+      To ensure that the number of events is bounded, we only add a new signature in \(L(e)\) if it improves the
+      envelope at some point \(q\in e\).
+
+
     </section>
 
     <section id="Extension">
       <h2>Extension of the SPM to the interior</h2>
-      Let \(SPM_{\mathcal{P}}\) be the shortest path map of the whole portalgon \(\mathcal{P}\) and \(SPM_{\partial P}\)
-      be the shortest path map restricted to the boundary of \(\mathcal{P}\) (which is what we have computed).
-      We can define \(SPM_{T}\) and \(SPM_{\partial T}\) analogously for a triangle \(T\).
-
-      <p>
       We have computed \(SPM_e\) for every portal \(e\), and in particular have the shortest path map
       \(SPM_{\partial T}\) for any triangle \(T\).
       To compute \(SPM_T\), the authors of <a href="#References">[1]</a>
@@ -523,7 +581,7 @@
       \(SPM_{\partial T}\)), verify if \(\sigma\) is a valid signature to reach \(d\).
       If so, compute the length of the path (by constructing its embedding).
       Remember the shortest of all of these paths.
-      This gives a \(\mathcal{O}(m)\) algorithm to find a shortest path given \(SPM_{\partial P}\).
+      This gives a \(\mathcal{O}(m)\) algorithm to find a shortest path given \(SPM_{\partial \mathcal{P}}\).
     </section>
 
     <section id="Authors">
@@ -539,6 +597,7 @@
           <ul>
             <li>portalgon builder</li>
             <li>embedding implementation</li>
+            <li>shortest path algorithm</li>
             <li>theoretical writeup</li>
           </ul>
         <li>Testaert Sacha</li>

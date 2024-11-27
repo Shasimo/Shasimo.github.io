@@ -34,7 +34,7 @@ function draw_zone3(sketch) {
         refreshPath = false;
     }
 
-    if (portalTestPoints === []) {
+    if (portalTestPoints !== null && portalTestPoints.length === 0) {
         sketch.text("No path found.", 30, 100);
     }
 
