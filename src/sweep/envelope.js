@@ -32,7 +32,7 @@ class Envelope {
         for (let i = f.interval[0]; i <= f.interval[1]; i += 1 / RESOLUTION) {
             let minimal = true;
             for (let fun of this.envelope.functionsList) {
-                if (f.computeDistance(i) > fun.computeDistance(i)) {
+                if (f.computeDistance(i) >= fun.computeDistance(i)) {
                     minimal = false;
                     break;
                 }
