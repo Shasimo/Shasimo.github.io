@@ -93,11 +93,15 @@ class Fragment {
             if (i === edgeIdx1 || i === edgeIdx2) continue;
 
             let angle = Math.abs(getAngleBetween(mainVec, this.vertices[i].sub(this.vertices[edgeIdx1])));
+            if (tertiaryOrient(this.vertices[edgeIdx1], this.vertices[edgeIdx2], this.vertices[i]) > 0)
+                angle = -angle;
             this.vertices[i].rotate(2 * angle, this.vertices[edgeIdx1]);
         }
 
         if (this.attachedVertex !== null) {
             let angle = Math.abs(getAngleBetween(mainVec, this.attachedVertex.sub(this.vertices[edgeIdx1])));
+            if (tertiaryOrient(this.vertices[edgeIdx1], this.vertices[edgeIdx2], this.attachedVertex) > 0)
+                angle = -angle;
             this.attachedVertex.rotate(2 * angle, this.vertices[edgeIdx1]);
         }
     }

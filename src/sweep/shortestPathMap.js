@@ -113,6 +113,7 @@ class ShortestPathMap {
         }
 
         console.log("-----");
+        console.log(bestSignature);
 
         return bestSignature;
     }
@@ -207,9 +208,9 @@ class ShortestPathMap {
                 // be the one where we go through a vertex. This is made to prevent the algorithms of building
                 // self-intersecting paths where the destination lands miraculously next to the source,
                 // enabling a signature without any vertices except s that should turn but should'nt
-                if (distanceFunction !== null && distanceFunction.interval !== null &&
-                    Math.abs(distanceFunction.interval[0] - distanceFunction.interval[1]) < 1 / RESOLUTION)
-                    continue;
+                // if (distanceFunction !== null && distanceFunction.interval !== null &&
+                //    Math.abs(distanceFunction.interval[0] - distanceFunction.interval[1]) < 1 / RESOLUTION)
+                //    continue;
 
                 if (currentMapEntry.insertSignature(df)) {
                     let nextLocMin = currentMapEntry.env.nextLocalMinimum(delta);
